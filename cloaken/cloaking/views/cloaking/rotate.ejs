@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en-US" class="lang-en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Just a moment...</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="/_beacon.js" async defer></script>
+  <link href="/cloaking.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="main-wrapper" role="main">
+    <div class="main-content">
+      <h1 class="zone-name-title h1"><%= domain %></h1>
+      <h2 id="challenge-running" class="h2">Checking if the site connection is secure</h2>
+
+      <form id="form" action="/" method="POST">
+        <input type="hidden" name="challengeToken" id="challengeToken" />
+        <input type="hidden" name="challengeAnswer" id="challengeAnswer" />
+        <input type="hidden" value="rotate" name="captchaType" />
+        <input type="hidden" name="proxyId" id="proxyId" value="<%= proxyId %>" />
+      </form>
+
+      <div id="challenge-body-text" class="core-msg spacer"><%= domain %> needs to review the security of your
+        connection
+        before proceeding.</div>
+
+    </div><noscript>
+      <div id="challenge-error-title">
+        <div class="h2"><span class="icon-wrapper">
+            <div class="heading-icon warning-icon"></div>
+          </span><span id="challenge-error-text">Enable JavaScript and cookies to continue</span></div>
+      </div>
+    </noscript>
+  </div>
+  </div>
+  <div class="footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="clearfix diagnostic-wrapper">
+        <div class="ray-id">Ray ID: <code>7f71c0bd0c3148ee</code></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    ; (function (root, factory) {
+      if (typeof define === 'function' && define.amd) {
+        define(factory);
+      } else if (typeof exports === 'object') {
+        module.exports = factory();
+      } else {
+        root.RVerify = factory();
+      }
+    })(this, function () {
+      'use strict';
+
+      var RVerify = {};
+
+      RVerify.version = '0.1.3';
+
+      var Settings = {
+        mask: 0.5,
+        maskClosable: false,
+        sliderIcon:
+          '<svg t="1590338601818" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="6547" width="20" height="20"><path d="M512.299934 1023.800044c-10.797617 0-21.595234-3.999117-29.993381-11.797396-17.496139-16.496359-18.195984-44.090269-1.799602-61.586408l412.508958-437.10353c8.398147-8.898036 8.298169-23.894726-0.599868-32.692784L481.606708 74.409578c-17.096227-16.896271-17.296183-44.490181-0.299934-61.586408 16.896271-16.896271 44.390203-17.196205 61.586408-0.299934l410.809333 406.11037c42.290666 41.790777 43.590379 111.075485 2.699404 154.465909l-412.508958 437.003552c-8.69808 9.097992-20.195543 13.696977-31.593027 13.696977z" p-id="6548"></path><path d="M86.093999 924.821889c-10.697639 0-21.495256-3.999117-29.793425-11.897374-17.496139-16.496359-18.295962-44.090269-1.799603-61.586408l315.930274-334.626147c8.398147-9.097992 8.298169-24.094682-0.599868-32.792762L55.500751 173.587689c-16.996249-16.896271-17.196205-44.490181-0.299934-61.686386 16.896271-16.996249 44.390203-17.296183 61.586408-0.199956L431.017873 422.032856c42.290666 41.790777 43.490402 111.075485 2.799382 154.465909l-315.930273 334.626147c-8.69808 9.097992-20.195543 13.696977-31.792983 13.696977z" p-id="6549"></path></svg>',
+        duration: 500,
+        title: 'CAPTCHA Verification',
+        text: 'Slide to rotate image upright',
+        zIndex: 9999,
+        album: [],
+      };
+
+      // Configure
+      RVerify.configure = function (options) {
+        var key, value;
+        for (key in options) {
+          value = options[key];
+          if (value !== undefined && options.hasOwnProperty(key)) {
+            Settings[key] = value;
+          }
+        }
+        return this;
+      };
+
+      // Action
+      RVerify.action = async function () {
+        var challenge = await getChallenge();
+        var modal =
+          '<div class="rv-root"><div class="rv-mask"></div><div class="rv-wrap"><div class="rv-title">' +
+          Settings.title +
+          '</div><div class="rv-content"><div class="rv-text">' +
+          Settings.text +
+          '</div><div class="rv-image"><img src="' +
+          challenge.challengeImage +
+          '" draggable="false" class="rv-img"><div class="rv-image-mask"><svg t="1590812400512" class="rv-image-mask-success" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="2647" width="80" height="80"><path d="M927.97968 108.360629a50.575037 50.575037 0 0 0-69.085501 18.517689l-391.898737 678.933747-316.000056-182.409708A50.575037 50.575037 0 0 0 100.427574 711.005546l359.812488 207.690002a50.553362 50.553362 0 0 0 69.078276-18.517689L946.504593 177.44613a50.575037 50.575037 0 0 0-18.524913-69.085501z" fill="#ffffff" p-id="2648"></path></svg><svg t="1590815914523" class="rv-image-mask-error" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="3574" width="80" height="80"><path d="M441.23 511.44L79.4 149.62c-17.44-19.25-16.72-48.81 1.65-67.18 18.38-18.37 47.93-19.1 67.18-1.65l361.83 361.82L871.89 80.79a48.718 48.718 0 0 1 47.95-14.55 48.725 48.725 0 0 1 35.43 35.43 48.728 48.728 0 0 1-14.54 47.95L578.89 511.44l361.83 361.83a48.734 48.734 0 0 1 14.54 47.95 48.709 48.709 0 0 1-35.43 35.43 48.768 48.768 0 0 1-47.95-14.55L510.06 580.27 148.23 942.1c-19.25 17.44-48.8 16.72-67.18-1.65-18.37-18.37-19.09-47.93-1.65-67.18l361.83-361.83z" p-id="3575" fill="#ffffff"></path></svg></div></div><div class="rv-control"><div class="rv-bar">' +
+          '</div><div class="rv-slider">' +
+          Settings.sliderIcon +
+          '</div></div></div></div></div>';
+
+        var createNode = document.createElement('div');
+        createNode.innerHTML = modal;
+        $('body').appendChild(createNode);
+
+        var root = $('.rv-root'),
+          bar = $('.rv-bar'),
+          slider = $('.rv-slider'),
+          img = $('.rv-img'),
+          control = $('.rv-control'),
+          wrap = $('.rv-wrap'),
+          mask = $('.rv-mask'),
+          maskImg = $('.rv-image-mask'),
+          maskSuccess = $('.rv-image-mask-success'),
+          maskError = $('.rv-image-mask-error'),
+          html = $('html');
+
+        var distance = bar.offsetWidth - slider.offsetWidth;
+
+        // Check isMobile and bind different events
+        var touchMove,
+          inMobile = isMobile(),
+          downX,
+          touching = false;
+        if (isMobile()) {
+          slider.ontouchstart = touchStart;
+          document.ontouchmove = touchMove;
+          document.ontouchend = async () => await touchEnd();
+        } else {
+          slider.onmousedown = touchStart;
+          document.onmousemove = touchMove;
+          document.onmouseup = async () => await touchEnd();
+        }
+
+        // Init
+        // add touch-action style in <html></html>
+        html.setAttribute('style', 'touch-action:pan-y !important;');
+        mask.style['background-color'] = 'rgba(0, 0, 0,' + Settings.mask + ')';
+        mask.style['z-index'] = Settings.zIndex;
+        wrap.style['z-index'] = Settings.zIndex;
+        img.style.transform = 'rotate(0deg)';
+
+        var currentAngle = getImgAngle();
+
+        // Touch Move
+        function touchMove(e) {
+          if (!touching) return;
+          var e = e || window.event;
+          var moveX = inMobile ? e.touches[0].clientX : e.clientX;
+          var offsetX = moveX - downX;
+          var targetAngle = (offsetX / distance) * 360;
+
+          if (offsetX > distance) {
+            offsetX = distance;
+          } else if (offsetX < 0) {
+            offsetX = 0;
+          } else {
+            slider.style.left = offsetX + 'px';
+            targetAngle = currentAngle + targetAngle;
+            img.style.transform = 'rotate(' + targetAngle + 'deg)';
+          }
+        }
+
+        // Touch Start
+        function touchStart(e) {
+          // Clear transition
+          slider.style.transition = '';
+          img.style.transition = '';
+          slider.classList.add('rv-slider-normal');
+
+          var e = e || window.event;
+          downX = inMobile ? e.touches[0].clientX : e.clientX;
+          touching = true;
+        }
+
+        // Touch End
+        function touchEnd() {
+          slider.classList.remove('rv-slider-normal');
+          if (!touching) return;
+          touching = false;
+          document.getElementById("challengeAnswer").value = getImgAngle();
+          document.getElementById("challengeToken").value = challenge.challengeToken;
+          document.getElementById("form").submit();
+        }
+      };
+
+      async function getChallenge() {
+        let challenge = await fetch("/captcha/rotate", {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+        challenge = await challenge.json();
+        return challenge;
+      }
+
+      // Get image angle
+      function getImgAngle() {
+        return parseFloat(
+          $('.rv-img').style['transform'].replace(/[^0-9\\.\\^0-9]/gi, '')
+        );
+      }
+
+      // Verify angle
+      function verify(angle) {
+        console.log(angle);
+        return angle >= 180;
+      }
+
+      // Check isMobile
+      function isMobile() {
+        return 'ontouchstart' in window;
+      }
+
+      // Global query selector
+      var $ = function (selector) {
+        return document.querySelector(selector);
+      };
+
+      if (typeof window !== 'undefined') {
+        window.RVerify = RVerify;
+      }
+
+      return RVerify;
+    });
+
+    RVerify.configure({});
+    RVerify.action();
+  </script>
+
+  <style>
+    .rv-root {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .rv-mask {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 9999;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .rv-wrap {
+      position: relative;
+      width: 18.5rem;
+      background-color: #fff;
+      border-radius: 10px;
+      z-index: 9999;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .rv-wrap .rv-title {
+      text-align: center;
+      margin: 0.625rem auto;
+      font-size: 14px;
+      font-weight: bold;
+      color: black;
+    }
+
+    .rv-wrap .rv-content {
+      padding: 0.75rem 1rem 1.125rem;
+      text-align: center;
+    }
+
+    .rv-wrap .rv-content .rv-text {
+      color: black;
+      font-size: 18px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      word-break: break-all;
+    }
+
+    .rv-wrap .rv-content .rv-image {
+      position: relative;
+      margin: 1.5625rem auto;
+    }
+
+    .rv-wrap .rv-content .rv-image img,
+    .rv-wrap .rv-content .rv-image .rv-image-mask {
+      border-radius: 50%;
+      width: 152px;
+      height: 152px;
+      user-select: none;
+    }
+
+    .rv-wrap .rv-content .rv-image .rv-image-mask {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      margin: auto;
+      width: 152px;
+      height: 152px;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .rv-wrap .rv-content .rv-image .rv-image-mask {
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.2s ease-in-out;
+    }
+
+    .rv-wrap .rv-content .rv-image .rv-image-mask svg {
+      margin: auto;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      transition: fill 0.2s ease-in-out;
+    }
+
+    .rv-wrap .rv-content .rv-control {
+      position: relative;
+      width: 95%;
+      height: 3.125rem;
+      margin: 0 auto 0.9375rem auto;
+      user-select: none;
+    }
+
+    .rv-wrap .rv-content .rv-control .rv-bar {
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 100%;
+      background-color: #f1f1f1;
+      border-radius: 100px;
+    }
+
+    .rv-wrap .rv-content .rv-control .rv-slider {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 3.125rem;
+      width: 3.125rem;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: 0 21px 52px 0 rgba(82, 82, 82, 0.2);
+      transition: background 0.2s ease-in-out, border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+
+    .rv-wrap .rv-content .rv-control .rv-slider.rv-slider-normal {
+      background: #4E6EF2;
+      border-color: #4E6EF2;
+      box-shadow: 0px 7px 18px -5px #4E6EF2;
+    }
+
+    .rv-wrap .rv-content .rv-control .rv-slider.rv-slider-normal svg {
+      fill: #fff;
+    }
+
+    .rv-wrap .rv-content .rv-control .rv-slider svg {
+      margin: auto;
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      fill: #8a8a8a;
+      transition: fill 0.2s ease-in-out;
+    }
+  </style>
+</body>
+
+</html>

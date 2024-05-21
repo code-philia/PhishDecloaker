@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  phishing_kits:
+    image: gyataro/cloaken_phishing_kits:latest
+    build: ./phishing_kits/
+
+  cloaking:
+    image: gyataro/cloaken_cloaking:latest
+    build: ./cloaking/
+    ports:
+      - 3000:3000
+    env_file: ./cloaking/.env
+
+  nginx:
+    image: gyataro/cloaken_nginx:latest
+    build: ./nginx/
+    ports:
+      - 80:80
+      - 443:443

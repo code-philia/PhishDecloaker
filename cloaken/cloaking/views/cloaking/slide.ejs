@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en-US" class="lang-en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>Just a moment...</title>
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <script src="https://static.geetest.com/v4/gt4.js"></script>
+  <script src="/_beacon.js" async defer></script>
+  <link href="/cloaking.css" rel="stylesheet">
+</head>
+
+<body>
+  <div class="main-wrapper" role="main">
+    <div class="main-content">
+      <h1 class="zone-name-title h1"><%= domain %></h1>
+      <h2 id="challenge-running" class="h2">Checking if the site connection is secure</h2>
+
+      <br>
+
+      <form id="form" action="/" method="POST">
+        <input type="hidden" name="captchaType" id="captchaType" value="slide" />
+        <input type="hidden" name="proxyId" id="proxyId" value="<%= proxyId %>" />
+        <input type="hidden" name="lotNumber" id="lotNumber" />
+        <input type="hidden" name="captchaOutput" id="captchaOutput" />
+        <input type="hidden" name="passToken" id="passToken" />
+        <input type="hidden" name="genTime" id="genTime" />
+      </form>
+
+      <div id="challenge-body-text" class="core-msg spacer"><%= domain %> needs to review the security of your
+        connection
+        before proceeding.</div>
+
+    </div><noscript>
+      <div id="challenge-error-title">
+        <div class="h2"><span class="icon-wrapper">
+            <div class="heading-icon warning-icon"></div>
+          </span><span id="challenge-error-text">Enable JavaScript and cookies to continue</span></div>
+      </div>
+    </noscript>
+  </div>
+  </div>
+  <div class="footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="clearfix diagnostic-wrapper">
+        <div class="ray-id">Ray ID: <code>7f71c0bd0c3148ee</code></div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var captchaId = '<%= siteKey %>';
+    var product = "float";
+    var riskType = "slide";
+
+    initGeetest4({
+      captchaId: captchaId,
+      product: product,
+      riskType: riskType
+    }, function (gt) {
+      window.gt = gt
+      gt.appendTo("form")
+        .onSuccess(function (e) {
+          var result = gt.getValidate();
+          document.getElementById("lotNumber").value = result["lot_number"];
+          document.getElementById("captchaOutput").value = result["captcha_output"];
+          document.getElementById("passToken").value = result["pass_token"];
+          document.getElementById("genTime").value = result["gen_time"];
+          document.getElementById("form").submit();
+        })
+    });
+  </script>
+</body>
+
+</html>
