@@ -1,5 +1,7 @@
 # Datasets
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.11228974.svg)](https://doi.org/10.5281/zenodo.11228974)
+
 All datasets created/used in the paper are available at [Zenodo](https://zenodo.org/records/11228974).
 
 ## Overview

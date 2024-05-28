@@ -1,9 +1,9 @@
 # Cloaken
 
-Cloaken is a CAPTCHA-based hardening framework that can automatically cloak phishing ktis with CAPTCHAs and serve them through randomly generated URLs.
+Cloaken is a CAPTCHA-based hardening framework that can automatically cloak phishing kits with CAPTCHAs and serve them through randomly generated URLs.
 
 Cloaken is developed as part of the paper: _"PhishDecloaker: Detecting CAPTCHA-cloaked Phishing Websites via Hybrid
-Vision-based Interactive Models"_ paper to study the ability of state-of-the-art phishing detectors in detecting CAPTCHA-cloaked phishing, published at [USENIX Security '24](https://www.usenix.org/conference/usenixsecurity24/).
+Vision-based Interactive Models"_ to study the ability of state-of-the-art phishing detectors in detecting CAPTCHA-cloaked phishing, published at [USENIX Security '24](https://www.usenix.org/conference/usenixsecurity24/).
 
 ## Technical Details
 
