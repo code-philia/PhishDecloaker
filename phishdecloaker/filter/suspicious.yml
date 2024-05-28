@@ -1,0 +1,366 @@
+whitelist:
+    '.kxsrd.io': -1
+    '.windows-int.net': -1
+    '.aws.dev': -1
+    '.ec2.aws.dev': -1
+    '.amazon.dev': -1
+    '.amazonaws.com': -1
+    '.amazongamelift.com': -1
+    '.amazonlightsail.com': -1
+    '.hanacloud.ondemand.com': -1
+    '.mybluehost.me': -1
+    '.zendesk.com': -1
+    '.opendns.com': -1
+    '.azure.com': -1
+    '.windows.net': -1
+    '.webex.com': -1
+    '.int-azure-api.net': -1
+    '.quickconnect.to': -1
+    '.microsoft.com': -1
+    '.remotewd.com': -1
+    '.confluent.cloud': -1
+    '.pages.dev': -1
+
+keywords:
+# Account & authentication
+    'account': 25
+    'access': 25
+    'auth': 25
+    'login': 25
+    'log-in': 25
+    'sign-in': 25
+    'signin': 25
+    'verification': 25
+    'verify': 25
+    'webscr': 25
+    'password': 25
+    'credential': 25
+    'support': 25
+    'activity': 25
+    'security': 25
+    'authentication': 30
+    'authenticate': 30
+    'authorize': 25
+    'alert': 25
+    'purchase': 25
+    'transaction': 25
+    'recover': 25
+    'unlock': 25
+    'confirm': 20
+    'live': 15
+    'office': 15
+    'service': 15
+    'manage': 15
+    'portal': 15
+    'invoice': 15
+    'secure': 10
+    'customer': 10
+    'client': 10
+    'bill': 10
+    'online': 10
+    'safe': 10
+    'form': 10
+    'drive': 15
+    'confirmation': 10
+    'pay': 20
+    'user': 25
+    'company': 25
+    'admin': 25
+    'identity': 25
+    'privilege': 25
+    'token': 25
+    'validation': 25
+    'assurance': 25
+    'availability': 25
+    'confidentiality': 25
+    'integrity': 25
+    'privacy': 25
+    'safety': 25
+    'trust': 25
+    'lock': 25
+    'biometrics': 25
+    'session': 25
+    'notify': 25
+    'email': 25
+    'validate': 25
+    'manager': 25
+    'assistant': 25
+    'dashboard': 25
+    'information': 25
+    'communication': 25
+    'finance': 25
+    'maintenance': 25
+    'billing': 25
+    'subscription': 25
+    'order': 25
+    'shipment': 25
+    'update': 25
+    'receipt': 25
+    'payment': 25
+
+# Apple iCloud
+    'appleid': 70
+    'icloud': 60
+    'iforgot': 60
+    'itunes': 50
+    'apple': 30
+
+# Email
+    'office365': 50
+    'microsoft': 60
+    'windows': 30
+    'protonmail': 70
+    'tutanota': 60
+    'hotmail': 60
+    'gmail': 70
+    'outlook': 60
+    'yahoo': 60
+    'google': 60
+    'yandex': 60
+
+# Social Media
+    'twitter': 60
+    'facebook': 60
+    'tumblr': 60
+    'reddit': 60
+    'youtube': 40 # some false positives
+    'linkedin': 60
+    'instagram': 60
+    'flickr': 60
+    'whatsapp': 60
+
+# Instagram
+    'verified': 60
+    'telifhakki': 60
+    'copyright-support': 60
+    'ihlali': 60
+    'copyright': 60
+    'verified-badge': 60
+    'account-support': 60
+
+# Cryptocurrency
+    'localbitcoin': 70
+    'poloniex': 60
+    'coinhive': 70
+    'bithumb': 60
+    'kraken': 50 # some false positives
+    'bitstamp': 60
+    'bittrex': 60
+    'blockchain': 70
+    'bitflyer': 60
+    'coinbase': 60
+    'hitbtc': 60
+    'lakebtc': 60
+    'bitfinex': 60
+    'bitconnect': 60
+    'coinsbank': 60
+    'wallet': 30
+    'ledger': 30
+
+# Bank/money
+    'paypal': 70
+    'moneygram': 60
+    'westernunion': 60
+    'bankofamerica': 60
+    'wellsfargo': 60
+    'citigroup': 60
+    'santander': 60
+    'morganstanley': 60
+    'barclays': 50
+    'hsbc': 50
+    'scottrade': 60
+    'ameritrade': 60
+    'merilledge': 60
+    'bank': 60
+    'banco': 60
+    'credit': 50
+    'ing': 25
+    'union': 25
+    'stripe': 25
+
+# Ecommerce
+    'amazon': 60
+    'overstock': 60
+    'alibaba': 60
+    'aliexpress': 60
+    'leboncoin': 70
+    'ebay': 60
+    'rakuten': 50
+
+# Telecom
+    'att': 40
+    'orange': 40
+    'telkom': 40
+    'telekom': 40
+
+# Other
+    'netflix': 70
+    'disney': 50
+    'hulu': 50
+    'skype': 60
+    'github': 20
+    'onedrive': 45 #(Added to drive)
+    'dropbox': 60
+    'docomo': 60
+    'gitlab': 10
+    'jira': 20
+    'link': 20
+    'chat': 20
+    'square': 40
+    '365': 40
+
+# Miscellaneous & SE tricks
+    'cgi-bin': 50
+    '-com.': 30
+    '.net-': 30
+    '.org-': 30
+    '.com-': 30
+    '.net.': 30
+    '.org.': 30
+    '.com.': 30
+    '.gov-': 30
+    '.gov.': 30
+    '.gouv-': 40
+    '-gouv-': 40
+    '.gouv.': 40
+    # FR specific
+    'suivi': 50
+    'laposte': 50
+    'post': 50
+
+# Logistics
+    'parcel': 60
+    'package': 60
+    'track': 60
+    'delivery': 60
+    'dhl': 60
+    'fedex': 60
+
+# Captcha
+    'captcha': 60
+    'check': 60
+    'valid': 60
+    'anti': 60
+
+# Free hosting platforms
+    'workers.dev': 80
+    'glitch.me': 80
+    'weeblysite.com': 80
+    'wixsite.com': 80
+    'webflow.io': 80
+    'mybluehost.me': 80
+
+tlds:
+    '.accountant':
+    '.accountants':
+    '.agency':
+    '.airforce':
+    '.army':
+    '.asia':
+    '.band':
+    '.bank':
+    '.bid':
+    '.bike':
+    '.blackfriday':
+    '.blue':
+    '.business':
+    '.cafe':
+    '.cam':
+    '.casa':
+    '.cc':
+    '.center':
+    '.cf':
+    '.christmas':
+    '.click':
+    '.cloud':
+    '.club':
+    '.country':
+    '.creditcard':
+    '.cricket':
+    '.cymru':
+    '.date':
+    '.desi':
+    '.diet':
+    '.download':
+    '.email':
+    '.equipment':
+    '.eus':
+    '.express':
+    '.faith':
+    '.fun':
+    '.futbol':
+    '.ga':
+    '.gb':
+    '.gdn':
+    '.gq':
+    '.help':
+    '.hospital':
+    '.host':
+    '.immo':
+    '.info':
+    '.institute':
+    '.jetzt':
+    '.kim':
+    '.life':
+    '.limited':
+    '.link':
+    '.loan':
+    '.lol':
+    '.ltda':
+    '.men':
+    '.ml':
+    '.mom':
+    '.nagoya':
+    '.navy':
+    '.network':
+    '.one':
+    '.online':
+    '.organic':
+    '.party':
+    '.press':
+    '.promo':
+    '.pub':
+    '.pw':
+    '.racing':
+    '.red':
+    '.reise':
+    '.reisen':
+    '.ren':
+    '.repair':
+    '.review':
+    '.rodeo':
+    '.ryukyu':
+    '.schule':
+    '.science':
+    '.services':
+    '.shop':
+    '.site':
+    '.soccer':
+    '.soy':
+    '.space':
+    '.store':
+    '.stream':
+    '.study':
+    '.support':
+    '.systems':
+    '.tech':
+    '.technology':
+    '.tk':
+    '.today':
+    '.tokyo':
+    '.top':
+    '.trade':
+    '.trading':
+    '.viajes':
+    '.vip':
+    '.webcam':
+    '.website':
+    '.whoswho':
+    '.win':
+    '.work':
+    '.world':
+    '.wtf':
+    '.xin':
+    '.xn--tckwe':
+    '.xyz':
+    '.yokohama':
