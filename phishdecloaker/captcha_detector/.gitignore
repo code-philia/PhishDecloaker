@@ -1,0 +1,10 @@
+# Model weights & database data excluded
+ocr/craft_mlt_25k.pth
+ocr/zh_sim_g2.pth
+siamese/embedder.ts
+siamese/trunk.ts
+detector/oln_detector.pth
+database/vectors.npy
+database/payload.json
+
+__pycache__
