@@ -27,7 +27,7 @@ dependencies:
   - wheel=0.43.0=pyhd8ed1ab_1
   - xz=5.2.6=h166bdaf_0
   - pip:
-      - ./fairseq/fairseq-0.12.2-cp310-cp310-linux_x86_64.whl
+      - /fairseq/fairseq-0.12.2-cp310-cp310-linux_x86_64.whl
       - https://download.pytorch.org/whl/cu113/torch-1.11.0%2Bcu113-cp310-cp310-linux_x86_64.whl#sha256=a68c33657a546131eb9bc44e2a98d2fa704aafae861460b051b82813852ccb44
       - https://download.pytorch.org/whl/cu113/torchvision-0.12.0%2Bcu113-cp310-cp310-linux_x86_64.whl#sha256=a1cb063876bdebb1dc64657ed68983ff1307b9f9a88b5eba620d87afe48485f1
       - absl-py==2.1.0
