@@ -8,7 +8,6 @@ import logging
 from dataclasses import dataclass
 
 import numpy as np
-from openai import OpenAI
 from PIL import Image
 from playwright.async_api import Page, Response, FrameLocator, Locator, TimeoutError
 
@@ -79,10 +78,7 @@ class Status:
     BLOCKED = "blocked"           # CAPTCHA failed, solver is detected/blocked
 
 class Solver:
-    def __init__(self, openai_api_key: str):
-        self.openai_client = OpenAI(
-            api_key=openai_api_key
-        )
+    def __init__(self):
         self.sitekey_pattern = re.compile(r'&k=(.*?)&co=')
         self.coco_detector = CocoDetector()
         self.custom_detector = CustomDetector()
