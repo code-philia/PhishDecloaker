@@ -1,0 +1,3 @@
+[submodule "phishdecloaker/captcha_solvers/hcaptcha_solver_v1/OFA"]
+	path = phishdecloaker/captcha_solvers/hcaptcha_solver_v1/OFA
+	url = https://github.com/OFA-Sys/OFA.git
