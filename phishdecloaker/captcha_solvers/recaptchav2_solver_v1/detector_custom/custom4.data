@@ -1,0 +1,6 @@
+classes = 11
+train  = vision/custom/train.txt
+valid  = vision/custom/test.txt 
+eval   = vision/custom/test.txt 
+names = /solver_recaptchav2/detector_custom/objects.names  
+backup = vision/custom/backup
