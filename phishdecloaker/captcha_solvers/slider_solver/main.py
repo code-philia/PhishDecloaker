@@ -72,6 +72,7 @@ async def callback(in_message: DeliveredMessage):
             selectors = None
             if captcha_type == "geetest_slide_puzzle": 
                 selectors = Config(
+                    OFFSET=0,
                     WINDOW=".geetest_window",
                     PUZZLE_PIECE=".geetest_slice", 
                     BACKGROUND=".geetest_bg", 
@@ -81,6 +82,7 @@ async def callback(in_message: DeliveredMessage):
                 )
             elif captcha_type == "netease_slide":
                 selectors = Config(
+                    OFFSET=18,
                     WINDOW=".yidun_panel",
                     PUZZLE_PIECE=".yidun_jigsaw", 
                     BACKGROUND=".yidun_bgimg", 
@@ -90,6 +92,7 @@ async def callback(in_message: DeliveredMessage):
                 )
             elif captcha_type == "tencent_slide":
                 selectors = Config(
+                    OFFSET=0,
                     WINDOW=".tc-bg-img",
                     PUZZLE_PIECE=".tc-fg-item", 
                     BACKGROUND=".tc-bg-img", 

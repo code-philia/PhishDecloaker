@@ -12,6 +12,8 @@ logger = logging.getLogger('solver')
 
 @dataclass
 class Config:
+    OFFSET: int
+    
     WINDOW: str
     PUZZLE_PIECE: str
     BACKGROUND: str
