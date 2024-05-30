@@ -15,7 +15,7 @@ class Config:
     CURRENT_DIR = os.path.dirname(__file__)
     OFA_DIR = os.path.join(CURRENT_DIR, "OFA")
     BPE_DIR = os.path.join(OFA_DIR, "utils", "BPE")
-    MODEL_PATH = os.path.join(OFA_DIR, "checkpoints", "ofa_large_384.pt")
+    MODEL_PATH = os.path.join(OFA_DIR, "checkpoints", "vqa_base_best.pt")
 
 
 sys.path += [Config.OFA_DIR]

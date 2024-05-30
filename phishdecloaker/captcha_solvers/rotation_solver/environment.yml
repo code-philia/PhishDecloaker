@@ -45,8 +45,8 @@ dependencies:
       - playwright==1.38.0
       - pyee==9.0.4
       - sympy==1.12
-      - torch==2.3.0+cpu
-      - torchaudio==2.3.0+cpu
-      - torchvision==0.18.0+cpu
+      - https://download.pytorch.org/whl/cpu-cxx11-abi/torch-2.3.0%2Bcpu.cxx11.abi-cp310-cp310-linux_x86_64.whl#sha256=896e8a82f441ff8ae5c8acd2fddd48d9ae1f2738fb8c083b912debbbe09c553b
+      - https://download.pytorch.org/whl/cpu/torchaudio-2.3.0%2Bcpu-cp310-cp310-linux_x86_64.whl#sha256=fec488d1e034a78b58de46552fd684868ee8e49853c3b901628be9dbbc40095b
+      - https://download.pytorch.org/whl/cpu/torchvision-0.18.0%2Bcpu-cp310-cp310-linux_x86_64.whl#sha256=6f285024f8a93598a67fbd2c86b534cd01236e8f6bda8704cd3459cc63d665a3
       - typing-extensions==4.12.0
       - yarl==1.9.4
