@@ -1,0 +1,189 @@
+version: '3.9'
+
+services:
+  # Get domains from CertStream
+  certstream:
+    image: 0rickyy0/certstream-server-go:latest
+
+  # Capture highly suspicious URLs
+  filter:
+    image: gyataro/pdfs_filter:latest
+    build: ./filter/
+    environment:      
+      - FILTER_THRESHOLD=60
+      - QUEUE_URL=amqp://queue?heartbeat=0&connection_attempts=10&retry_delay=10
+      - CERTSTREAM_URL=ws://certstream:8080/full-stream
+
+  # Queue for URLs and crawled URLs
+  queue:
+    image: rabbitmq:3.13-rc-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+
+  # CAPTCHA crawler (see README > Technical Details > Branch A)
+  # It is recommended to scale up the number of replicas
+  crawler_captcha:
+    image: gyataro/pdfs_crawler:latest
+    build: ./crawler/
+    environment:
+      - CRAWL_MODE=CAPTCHA
+      - BROWSER_HOST=load_balancer
+      - QUEUE_URL=amqp://queue?heartbeat=0&connection_attempts=10&retry_delay=10
+      - KEYWORD_WHITELIST=${KEYWORD_WHITELIST}
+      - DOMAIN_WHITELIST=${DOMAIN_WHITELIST}
+      - SUBDOMAIN_WHITELIST=${SUBDOMAIN_WHITELIST}
+    deploy:
+      mode: replicated
+      replicas: 5
+
+  # Baseline crawler (see README > Technical Details > Branch B)
+  # It is recommended to scale up the number of replicas
+  crawler_baseline:
+    image: gyataro/pdfs_crawler:latest
+    build: ./crawler/
+    environment:
+      - CRAWL_MODE=BASELINE
+      - BROWSER_HOST=load_balancer
+      - QUEUE_URL=amqp://queue?heartbeat=0&connection_attempts=10&retry_delay=10
+      - KEYWORD_WHITELIST=${KEYWORD_WHITELIST}
+      - DOMAIN_WHITELIST=${DOMAIN_WHITELIST}
+      - SUBDOMAIN_WHITELIST=${SUBDOMAIN_WHITELIST}
+    deploy:
+      mode: replicated
+      replicas: 5
+
+  # Controller
+  controller:
+    image: gyataro/pdfs_controller:latest
+    build: ./controller/
+    environment:
+      - QUEUE_URL=amqp://queue?heartbeat=0&connection_attempts=10&retry_delay=10
+      - DATABASE_URL=mongodb://admin:password@database:27017
+      - BROWSER_HOST=load_balancer
+      - CAPTCHA_DETECTOR_URL=http://captcha_detector:8000
+      - VIRUSTOTAL_API_KEY=${VIRUSTOTAL_API_KEY}
+      - PHISHING_DETECTOR_URL=http://phishing_detector:8000
+      - POLLER_URL=http://poller:8000
+
+  # Phishing detection
+  phishing_detector:
+    image: gyataro/pdfs_detector:latest
+    build: ./phishing_detector/
+    environment:
+      - BROWSER_HOST=load_balancer
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ["0"]
+            capabilities: [gpu]
+
+  # CAPTCHA detection
+  captcha_detector:
+    image: gyataro/pdfs_captcha_detector:latest
+    build: ./captcha_detector/
+    environment:
+      - DATABASE_URL=http://captcha_detector_database:6333
+    ports:
+      - 8083:8000
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            device_ids: ["0"]
+            capabilities: [gpu]
+
+  # CAPTCHA detection database
+  captcha_detector_database:
+    image: "qdrant/qdrant"
+
+  # If a website is confirmed as phishing, re-crawl the website with different decloaking groups 1-5 (for field study only)
+  # This way we only deploy crawler groups 1-5 on phishing websites for improved efficiency
+  crawler_group:
+    image: gyataro/pdfs_crawler:latest
+    build: ./crawler/
+    environment:
+      - CRAWL_MODE=GROUP
+      - BROWSER_HOST=load_balancer
+      - QUEUE_URL=amqp://queue?heartbeat=0&connection_attempts=10&retry_delay=10
+      - KEYWORD_WHITELIST=${KEYWORD_WHITELIST}
+      - DOMAIN_WHITELIST=${DOMAIN_WHITELIST}
+      - SUBDOMAIN_WHITELIST=${SUBDOMAIN_WHITELIST}
+    deploy:
+      mode: replicated
+      replicas: 1
+
+  # Data of confirmed phishing websites and detected CAPTCHAs are stored here
+  database:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    volumes:
+      - database_storage:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+
+  # For browsing database (optional)
+  database_viewer:
+    image: mongo-express:1.0.0-alpha.4
+    restart: always
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_URL=mongodb://admin:password@database:27017
+
+  # Notify user via Telegram to label captured phishing websites and CAPTCHAs
+  poller:
+    image: gyataro/pdfs_poller:latest
+    ports:
+      - 8082:8000
+    environment:
+      - DATABASE_URL=mongodb://admin:password@database:27017
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_WEBHOOK_URL=${TELEGRAM_WEBHOOK_URL}
+      - TELEGRAM_VOTERS=1
+      - TELEGRAM_GROUP_ID=${TELEGRAM_GROUP_ID}
+  
+  # Load balancer for containerized browser cluster
+  load_balancer:
+    image: nginx
+    volumes:
+      - ./load_balancer/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - browser
+
+  # Browser cluster
+  # Ensure that total no. of crawler + controller + solver + phishing_detector replicas < MAX_CONCURRENT_SESSIONS * replicas
+  browser:
+    image: browserless/chrome
+    restart: always
+    environment:
+      - DEFAULT_LAUNCH_ARGS=["--window-size=1920,1080"]
+      - DEFAULT_IGNORE_HTTPS_ERRORS=true
+      - DEFAULT_BLOCK_ADS=true
+      - DEFAULT_STEALTH=true
+      - EXIT_ON_HEALTH_FAILURE=true
+      - MAX_CONCURRENT_SESSIONS=5
+    deploy:
+      replicas: 4
+
+  # Tunneling private network
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    command: >
+      tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    restart: unless-stopped
+
+volumes:
+  database_storage: {}
+
+networks:
+  default:
+    external:
+      name: phishdecloaker

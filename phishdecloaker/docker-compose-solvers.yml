@@ -1,0 +1,49 @@
+version: '3.9'
+
+services:
+  # reCAPTCHA v2 solver
+  recaptchav2_solver:
+    image: gyataro/pdfs_recaptchav2_solver:v3
+    build: ./captcha_solvers/recaptchav2_solver_v3
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - BROWSER_HOST=load_balancer
+      - QUEUE_URL=amqp://queue?heartbeat=0&connection_attempts=10&retry_delay=10
+    depends_on:
+      - queue
+
+  # hCaptcha solver
+  hcaptcha_solver:
+    image: gyataro/pdfs_hcaptcha_solver:v3
+    build: ./captcha_solvers/hcaptcha_solver_v3
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - BROWSER_HOST=load_balancer
+      - QUEUE_URL=amqp://queue?heartbeat=0&connection_attempts=10&retry_delay=10
+    depends_on:
+      - queue
+
+  # slider CAPTCHA solver
+  slider_solver:
+    image: gyataro/pdfs_slider_solver:latest
+    build: ./captcha_solvers/slider_solver
+    environment:
+      - BROWSER_HOST=load_balancer
+      - QUEUE_URL=amqp://queue?heartbeat=0&connection_attempts=10&retry_delay=10
+    depends_on:
+      - queue
+
+  # rotation CAPTCHA solver
+  rotation_solver:
+    image: gyataro/pdfs_rotation_solver:latest
+    build: ./captcha_solvers/rotation_solver
+    environment:
+      - BROWSER_HOST=load_balancer
+      - QUEUE_URL=amqp://queue?heartbeat=0&connection_attempts=10&retry_delay=10
+    depends_on:
+      - queue
+
+networks:
+  default:
+    external:
+      name: phishdecloaker
