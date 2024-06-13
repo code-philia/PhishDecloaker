@@ -66,7 +66,7 @@ class Solver:
             logger.info(f"\t[>] /payload [image {img.size}]")
             if img.size == (128, 128) or img.size == (144, 144):
                 self.challenge_tile_images.append(img)
-            elif img.size == (256, 256) or img.size == (512, 512) or img.size == (384, 256):
+            elif img.size == (256, 256) or img.size == (512, 512) or img.size == (384, 256) or img.size == (400, 280):
                 self.challenge_area_images.append(img)
 
             if not self.challenge_loaded.done() and len(self.challenge_tile_images) >= 9:

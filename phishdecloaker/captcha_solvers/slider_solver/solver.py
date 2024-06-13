@@ -65,12 +65,12 @@ class Solver:
 
             return grad
         
-        puzzle_piece = puzzle_piece.screenshot()
+        puzzle_piece = await puzzle_piece.screenshot()
         puzzle_piece = np.frombuffer(puzzle_piece, dtype=np.uint8)
         puzzle_piece = cv2.imdecode(puzzle_piece, cv2.IMREAD_COLOR)
         puzzle_piece = _detect_edges(puzzle_piece)
 
-        background = background.screenshot()
+        background = await background.screenshot()
         background = np.frombuffer(background, dtype=np.uint8)
         background = cv2.imdecode(background, cv2.IMREAD_COLOR)
         background = _detect_edges(background)
@@ -80,6 +80,7 @@ class Solver:
 
         for _ in range(2):
             _, _, _, max_loc = cv2.minMaxLoc(matches)
+            cv2.circle(matches, max_loc, 40, 0, -1)
             points.append(max_loc)
 
         begin = points[0][0]
@@ -104,11 +105,11 @@ class Solver:
         await page.mouse.up()
 
     async def solve(self, page: Page, config: Config) -> bool:
-        page.wait_for_selector(config.WINDOW)
+        await page.wait_for_selector(config.WINDOW)
         background = page.locator(config.BACKGROUND)
         slider = await page.query_selector(config.SLIDER)
 
-        pieces: list[ElementHandle] = page.query_selector_all(config.PUZZLE_PIECE)
+        pieces: list[ElementHandle] = await page.query_selector_all(config.PUZZLE_PIECE)
         puzzle_piece = None
         if len(pieces) > 1:
             for piece in pieces:
@@ -124,9 +125,10 @@ class Solver:
         try:
             async with page.expect_response(
                 lambda response: response.url.startswith(config.VERIFY_URL),
-                timeout=3000
+                timeout=4000
             ) as response_info:
                 await self.drag_slider(page, slider, distance)
+                await page.wait_for_timeout(1000)
                 response = await response_info.value
                 data = await response.text()
                 if config.VERIFY_SUCCESS_KEYWORD in data: return True
