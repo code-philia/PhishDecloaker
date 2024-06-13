@@ -97,9 +97,9 @@ Cloaken is tested on UNIX systems running Docker. Follow these steps to deploy t
 
     # 8. For rotate CAPTCHA cloaking
     # 8.1 Domain used to generate URLs cloaked with rotation CAPTCHA
-    # 8.2 Secret key, can be any string
+    # 8.2 Secret key, must be a 64-character long hexadecimal string
     ROTATE_DOMAIN="cloaken.com"
-    ROTATE_SECRET_KEY="secret"
+    ROTATE_SECRET_KEY="52dcb71944d86b9e5046329..........72ff8f58acf50acac2ef7f18ee474ab"
     ```
 
 2. **Configure docker compose**

@@ -70,14 +70,6 @@ router.get('/', async (req, res, next) => {
     next();
 });
 
-router.get('/*', async (req, res, next) => {
-    if (req.honeypotId) {
-        return phishingKitResourcesProxy(req, res, next);
-    }
-
-    next();
-});
-
 // Submit CAPTCHA challenge
 router.post('/', async (req, res, next) => {
     let captchaType = req.body.captchaType;
@@ -122,5 +114,13 @@ router.get('/captcha/rotate', async (req, res, next) => {
         res.json({ challengeImage: im64, challengeToken: token });
     }), Math.random() * (3000))
 })
+
+router.get('/*', async (req, res, next) => {
+    if (req.honeypotId) {
+        return phishingKitResourcesProxy(req, res, next);
+    }
+
+    next();
+});
 
 module.exports = router;

@@ -61,10 +61,8 @@ class Solver:
             px, py = p
             await page.mouse.move(px, py)
 
-        await page.mouse.up()
-
     async def solve(self, page: Page, config: Config) -> bool:
-        page.wait_for_selector(config.WINDOW)
+        await page.wait_for_selector(config.WINDOW, state="visible")
 
         # Capture challenge image.
         background = await page.query_selector(config.IMAGE)
@@ -84,13 +82,15 @@ class Solver:
         else:
             pred = pred.item()
 
-        slider = page.query_selector(config.SLIDER)
+        slider = await page.query_selector(config.SLIDER)
+        await self.drag_slider(page, slider, pred, config.SLIDER_LENGTH)
+
         try:
             async with page.expect_response(
                 lambda response: config.VERIFY_URL in response.url,
-                timeout=3000
+                timeout=5000
             ) as response_info:
-                await self.drag_slider(page, slider, pred, config.SLIDER_LENGTH)
+                await page.mouse.up()
                 response = await response_info.value
                 data = await response.text()
                 if config.VERIFY_SUCCESS_KEYWORD in data: return True
