@@ -121,7 +121,7 @@ class Solver:
     async def handle_response(self, response: Response):
         """Intercept responses to determine current state of reCAPTCHAv2 challenge.
         """
-        if "recaptcha/api2/payload" in response.url:
+        if all(keyword in response.url for keyword in ["recaptcha", "payload"]):
             img_data = await response.body()
             img_bytes = io.BytesIO(img_data)
             img_size = Image.open(img_bytes).size
@@ -129,7 +129,7 @@ class Solver:
             self.img_queue.put_nowait(img_b64)
             logger.info(f"\t[>] /payload [image {img_size}]")
 
-        if "recaptcha/api2/reload" in response.url:
+        if all(keyword in response.url for keyword in ["recaptcha", "reload"]):
             r_data = await response.text()
             r_data = json.loads(r_data.replace(")]}\'\n", ""))
             r = ReloadResponse(next_challenge_type=r_data[5])
