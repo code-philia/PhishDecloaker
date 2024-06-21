@@ -13,3 +13,6 @@ Project structure
 ## Contact
 
 Feel free to open a GitHub issue if you encounter a bug or want to suggest a feature. For other inquiries, please contact the following authors: [Xiwen Teoh](https://xiwen.me), [Yun Lin](http://linyun.info).
+
+Special thanks:
+- [Siqi Li](https://github.com/siqirua)
