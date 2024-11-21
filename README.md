@@ -1,4 +1,6 @@
-# PhishDecloaker
+# PhishDecloaker 
+
+![CI](https://github.com/<用户名>/<仓库名>/actions/workflows/ci.yml/badge.svg)
 
 The repository contains all artifacts for the paper _"PhishDecloaker: Detecting CAPTCHA-cloaked Phishing Websites via Hybrid
 Vision-based Interactive Models"_, published at [USENIX Security '24](https://www.usenix.org/conference/usenixsecurity24/).
