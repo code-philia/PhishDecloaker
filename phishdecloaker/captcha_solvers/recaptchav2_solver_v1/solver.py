@@ -188,7 +188,7 @@ class Solver:
         """
         img_full: np.ndarray = await self.img_queue.get()
         imgs = utils.divide_image(img_full, 3, 3)
-        indices = [i for i in range(9)]
+        indices = list(range(9))
 
         while True:
             tiles = await frame.locator(".rc-imageselect-tile").all()
