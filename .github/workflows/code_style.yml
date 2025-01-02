@@ -24,7 +24,7 @@ jobs:
           - phishdecloaker/captcha_detector
           - phishdecloaker/captcha_solvers/hcaptcha_solver_v3
           - phishdecloaker/captcha_solvers/recaptchav2_solver_v3
-          - phishdecloaker/captcha_solvers/rotation_solver
+          # - phishdecloaker/captcha_solvers/rotation_solver # Uncomment this line for env conflict
           - phishdecloaker/captcha_solvers/slider_solver
           - phishdecloaker/controller
           - phishdecloaker/crawler
