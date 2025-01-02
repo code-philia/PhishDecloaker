@@ -1,4 +1,4 @@
-# PhishDecloaker 
+# PhishDecloaker
 
 ![CI](https://github.com/<用户名>/<仓库名>/actions/workflows/ci.yml/badge.svg)
 
@@ -18,3 +18,4 @@ Feel free to open a GitHub issue if you encounter a bug or want to suggest a fea
 
 Special thanks:
 - [Siqi Li](https://github.com/siqirua)
+- [Zedong Peng](https://github.com/zedong-peng)
