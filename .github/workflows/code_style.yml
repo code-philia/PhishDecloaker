@@ -57,7 +57,7 @@ jobs:
             conda env create -f "$env_file" -n "$env_name" || conda env update -f "$env_file" -n "$env_name"
 
             # 激活环境
-            source activate "$env_name"
+            conda activate "$env_name"
 
             # 安装代码质量检查工具（如果未包含在 environment.yml 中）
             pip install black flake8 mypy bandit vulture pytest
