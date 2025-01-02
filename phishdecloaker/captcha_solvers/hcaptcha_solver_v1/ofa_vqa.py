@@ -1,14 +1,14 @@
 from __future__ import annotations
-
-import os
 import re
+import os
 import sys
 
 import numpy as np
 import torch
-from fairseq import checkpoint_utils, options, tasks, utils
-from fairseq.dataclass.utils import convert_namespace_to_omegaconf
 from torchvision import transforms
+from fairseq import checkpoint_utils
+from fairseq import options, tasks, utils
+from fairseq.dataclass.utils import convert_namespace_to_omegaconf
 
 
 class Config:
@@ -20,10 +20,9 @@ class Config:
 
 sys.path += [Config.OFA_DIR]
 
-from PIL import Image
-from tasks.mm_tasks.vqa_gen import VqaGenTask
 from utils.zero_shot_utils import zero_shot_step
-
+from tasks.mm_tasks.vqa_gen import VqaGenTask
+from PIL import Image
 
 # Normalize the question
 def pre_question(question, max_ques_words):

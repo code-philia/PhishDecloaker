@@ -1,7 +1,7 @@
 import json
 import os
 import random
-from typing import Any, Callable, Dict, List, Tuple
+from typing import Any, Dict, List, Tuple, Callable
 
 import cv2
 import detectron2.data.transforms as T
@@ -148,10 +148,10 @@ class DAGAttacker:
                 vis_og = v.draw_instance_predictions(instances.to("cpu")).get_image()
 
                 # Save side-by-side
-                #                 concat = np.concatenate((vis_og, vis_adv), axis=1)
+#                 concat = np.concatenate((vis_og, vis_adv), axis=1)
 
-                #                 save_path = os.path.join(vis_save_dir, f"{i}.jpg")
-                #                 cv2.imwrite(save_path, concat[:, :, ::-1])
+#                 save_path = os.path.join(vis_save_dir, f"{i}.jpg")
+#                 cv2.imwrite(save_path, concat[:, :, ::-1])
 
                 save_path = os.path.join(vis_save_dir, f"{i}.jpg")
                 save_adv_path = os.path.join(vis_save_dir, f"{i}_adv.jpg")
@@ -164,11 +164,11 @@ class DAGAttacker:
             if i % 100 == 0:
                 with open(results_save_path, "w") as f:
                     json.dump(coco_instances_results, f)
-
+                
         # Save predictions as COCO results json format
         with open(results_save_path, "w") as f:
             json.dump(coco_instances_results, f)
-
+            
         return coco_instances_results
 
     def attack_image(self, batched_inputs: List[Dict[str, Any]]) -> torch.Tensor:
@@ -220,10 +220,8 @@ class DAGAttacker:
             # i.e. filter for correctly predicted targets;
             # only attack targets that are still correctly predicted so far
             # FIXME
-            active_cond = (
-                logits.argmax(dim=1) == target_labels
-            )  # relaxed stopping criteria
-            #             active_cond = logits.argmax(dim=1) != adv_labels
+            active_cond = logits.argmax(dim=1) == target_labels # relaxed stopping criteria
+#             active_cond = logits.argmax(dim=1) != adv_labels
 
             target_boxes = target_boxes[active_cond]
             logits = logits[active_cond]
@@ -346,7 +344,7 @@ class DAGAttacker:
         # FIXME Make this more efficient / vectorized?
         for i in range(len(labels)):
             # FIXME Include or exclude background class?
-            incorrect_labels = [l for l in range(self.n_classes + 1) if l != labels[i]]
+            incorrect_labels = [l for l in range(self.n_classes+1) if l != labels[i]]
             adv_labels[i] = random.choice(incorrect_labels)
 
         return adv_labels.to(self.device)

@@ -1,32 +1,27 @@
+import pandas as pd
 import json
 import os
 import shutil
 
-import pandas as pd
-
 ################# Write failed cases for 460 legitimate ###############################
 # get predicted URL
-with open(
-    "./datasets/460_legitimate_detectedURL_eager_obfuscate.json", "rt", encoding="utf-8"
-) as handle:
+with open('./datasets/460_legitimate_detectedURL_eager_obfuscate.json', 'rt', encoding='utf-8') as handle:
     urldict = json.load(handle)
 
 # read gt URLs
-gt = pd.read_table("./datasets/gt_loginurl_for460.txt")
-gt["folder"] = gt["base_url"].apply(lambda x: x.split("//")[1])
+gt = pd.read_table('./datasets/gt_loginurl_for460.txt')
+gt['folder'] = gt['base_url'].apply(lambda x: x.split('//')[1])
 total = 0
 correct = 0
 wrong_cases = []
 all_cases = []
 
-for base_url in set(list(gt["folder"])):
-    gt_login = list(gt.loc[gt["folder"] == base_url]["url"])
-    if not base_url in urldict.keys() and base_url not in os.listdir(
-        "./datasets/1003_legitimate_loginbutton_labelled/460_legitimate"
-    ):
+for base_url in set(list(gt['folder'])):
+    gt_login = list(gt.loc[gt['folder'] == base_url]['url'])
+    if not base_url in urldict.keys() and base_url not in os.listdir('./datasets/1003_legitimate_loginbutton_labelled/460_legitimate'):
         continue
     if not base_url in urldict.keys():
-        print("Not found in prediction dict", base_url)
+        print('Not found in prediction dict', base_url)
         all_cases.append(base_url)
         wrong_cases.append(base_url)
         total += 1
@@ -41,61 +36,47 @@ for base_url in set(list(gt["folder"])):
             found = True
             break
         # TODO: match only the front before spm=, tmall use spm to record data
-        elif url.split("spm=")[0] in [x.split("spm=")[0] for x in gt_login]:
+        elif url.split('spm=')[0] in [x.split('spm=')[0] for x in gt_login]:
             correct += 1
             found = True
             break
-        elif url.split("client_id=")[0] in [x.split("client_id=")[0] for x in gt_login]:
+        elif url.split('client_id=')[0] in [x.split('client_id=')[0] for x in gt_login]:
             correct += 1
             found = True
             break
-        elif url.split("state=")[0] in [x.split("state=")[0] for x in gt_login]:
+        elif url.split('state=')[0] in [x.split('state=')[0] for x in gt_login]:
             correct += 1
             found = True
             break
-        elif (
-            "login" in url
-            or "signin" in url
-            or "signup" in url
-            or "register" in url
-            or "sign_in" in url
-            or "log_in" in url
-            or "sign_up" in url
-        ):
+        elif 'login' in url or 'signin' in url or 'signup' in url or 'register' in url or 'sign_in' in url or 'log_in' in url or 'sign_up' in url:
             correct += 1
             found = True
             break
-        elif url.split("_ga")[0] in [x.split("_ga")[0] for x in gt_login]:
+        elif url.split('_ga')[0] in [x.split('_ga')[0] for x in gt_login]:
             correct += 1
             found = True
             break
-        elif url.split("?vrid=")[0] in [x.split("?vrid=")[0] for x in gt_login]:
+        elif url.split('?vrid=')[0] in [x.split('?vrid=')[0] for x in gt_login]:
             correct += 1
             found = True
             break
-        elif url.split("interaction/")[0] in [
-            x.split("interaction/")[0] for x in gt_login
-        ]:
+        elif url.split('interaction/')[0] in [x.split('interaction/')[0] for x in gt_login]:
             correct += 1
             found = True
             break
-        elif url.split("?_gl=")[0] in [x.split("?_gl=")[0] for x in gt_login]:
+        elif url.split('?_gl=')[0] in [x.split('?_gl=')[0] for x in gt_login]:
             correct += 1
             found = True
             break
-        elif url.split("adobe_mc=")[0] in [x.split("adobe_mc=")[0] for x in gt_login]:
+        elif url.split('adobe_mc=')[0] in [x.split('adobe_mc=')[0] for x in gt_login]:
             correct += 1
             found = True
             break
-        elif url.split("?login_challenge=")[0] in [
-            x.split("?login_challenge=")[0] for x in gt_login
-        ]:
+        elif url.split('?login_challenge=')[0] in [x.split('?login_challenge=')[0] for x in gt_login]:
             correct += 1
             found = True
             break
-        elif url.split("&client_sdrn")[0] in [
-            x.split("&client_sdrn")[0] for x in gt_login
-        ]:
+        elif url.split('&client_sdrn')[0] in [x.split('&client_sdrn')[0] for x in gt_login]:
             correct += 1
             found = True
             break
@@ -106,11 +87,11 @@ for base_url in set(list(gt["folder"])):
 
 print(correct, total)
 #
-with open("./datasets/fail_login_finder_eager_460_obfuscate.txt", "w") as f:
+with open('./datasets/fail_login_finder_eager_460_obfuscate.txt', 'w') as f:
     pass
 for case in wrong_cases:
-    with open("./datasets/fail_login_finder_eager_460_obfuscate.txt", "a+") as f:
-        f.write(case + "\n")
+    with open('./datasets/fail_login_finder_eager_460_obfuscate.txt', 'a+') as f:
+        f.write(case+'\n')
 
 ################ Write failed 600 legitimate #################
 # with open('./datasets/600_legitimate_detectedURL_eager_HTML.json', 'rt', encoding='utf-8') as handle:

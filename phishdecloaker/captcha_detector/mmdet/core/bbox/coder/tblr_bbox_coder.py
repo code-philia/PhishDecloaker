@@ -41,7 +41,8 @@ class TBLRBBoxCoder(BaseBBoxCoder):
         """
         assert bboxes.size(0) == gt_bboxes.size(0)
         assert bboxes.size(-1) == gt_bboxes.size(-1) == 4
-        encoded_bboxes = bboxes2tblr(bboxes, gt_bboxes, normalizer=self.normalizer)
+        encoded_bboxes = bboxes2tblr(
+            bboxes, gt_bboxes, normalizer=self.normalizer)
         return encoded_bboxes
 
     def decode(self, bboxes, pred_bboxes, max_shape=None):
@@ -62,8 +63,7 @@ class TBLRBBoxCoder(BaseBBoxCoder):
             pred_bboxes,
             normalizer=self.normalizer,
             max_shape=max_shape,
-            clip_border=self.clip_border,
-        )
+            clip_border=self.clip_border)
 
         return decoded_bboxes
 
@@ -95,7 +95,7 @@ def bboxes2tblr(priors, gts, normalizer=4.0, normalize_by_wh=True):
     # dist b/t match center and prior's center
     if not isinstance(normalizer, float):
         normalizer = torch.tensor(normalizer, device=priors.device)
-        assert len(normalizer) == 4, "Normalizer must have length = 4"
+        assert len(normalizer) == 4, 'Normalizer must have length = 4'
     assert priors.size(0) == gts.size(0)
     prior_centers = (priors[:, 0:2] + priors[:, 2:4]) / 2
     xmin, ymin, xmax, ymax = gts.split(1, dim=1)
@@ -114,9 +114,12 @@ def bboxes2tblr(priors, gts, normalizer=4.0, normalize_by_wh=True):
     return loc / normalizer
 
 
-def tblr2bboxes(
-    priors, tblr, normalizer=4.0, normalize_by_wh=True, max_shape=None, clip_border=True
-):
+def tblr2bboxes(priors,
+                tblr,
+                normalizer=4.0,
+                normalize_by_wh=True,
+                max_shape=None,
+                clip_border=True):
     """Decode tblr outputs to prediction boxes.
 
     The process includes 3 steps: 1) De-normalize tblr coordinates by
@@ -146,7 +149,7 @@ def tblr2bboxes(
     """
     if not isinstance(normalizer, float):
         normalizer = torch.tensor(normalizer, device=priors.device)
-        assert len(normalizer) == 4, "Normalizer must have length = 4"
+        assert len(normalizer) == 4, 'Normalizer must have length = 4'
     assert priors.size(0) == tblr.size(0)
     loc_decode = tblr * normalizer
     prior_centers = (priors[:, 0:2] + priors[:, 2:4]) / 2

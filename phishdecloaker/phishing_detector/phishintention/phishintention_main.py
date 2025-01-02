@@ -1,16 +1,11 @@
-import logging
 import os
+import logging
+
+from playwright.sync_api import sync_playwright, Browser, BrowserContext, Page, CDPSession
 
 from phishintention.phishintention_config import *
-from playwright.sync_api import (
-    Browser,
-    BrowserContext,
-    CDPSession,
-    Page,
-    sync_playwright,
-)
 
-os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 #####################################################################################################################
 # ** Step 1: Enter Layout detector, get predicted elements
@@ -27,27 +22,12 @@ os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 #####################################################################################################################
 
 
-def test(
-    url,
-    domain,
-    html_code,
-    temp_dir,
-    AWL_MODEL,
-    CRP_CLASSIFIER,
-    CRP_LOCATOR,
-    SIAMESE_MODEL,
-    OCR_MODEL,
-    SIAMESE_THRE,
-    LOGO_FEATS,
-    LOGO_FILES,
-    DOMAIN_MAP: dict,
-    BROWSER_HOST,
-):
-    """
+def test(url, domain, html_code, temp_dir, AWL_MODEL, CRP_CLASSIFIER, CRP_LOCATOR, SIAMESE_MODEL, OCR_MODEL, SIAMESE_THRE, LOGO_FEATS, LOGO_FILES, DOMAIN_MAP: dict, BROWSER_HOST):
+    '''
     Phish-discovery main script
     :return phish_category: 0 for benign, 1 for phish
     :return phish_target: None/brand name
-    """
+    '''
 
     # 0 for benign, 1 for phish, default is benign
     screenshot_path = os.path.join(temp_dir, "screenshot.png")
@@ -57,15 +37,13 @@ def test(
     logging.info("Entering phishintention")
 
     ####################### Step1: layout detector ##############################################
-    pred_classes, pred_boxes, _ = element_recognition(
-        img=screenshot_path, model=AWL_MODEL
-    )
+    pred_classes, pred_boxes, _ = element_recognition(img=screenshot_path, model=AWL_MODEL)
 
     # If no element is reported
     if pred_boxes is None or len(pred_boxes) == 0:
-        logging.info("No element is detected, report as benign")
+        logging.info('No element is detected, report as benign')
         return pred_category, pred_target, has_crp
-    logging.info("Entering siamese")
+    logging.info('Entering siamese')
 
     # domain already in targetlist
     existing_brands = DOMAIN_MAP.keys()
@@ -76,49 +54,41 @@ def test(
     ######################## Step2: Siamese (logo matcher) ########################################
     pred_target, _, _ = phishpedia_classifier_OCR(
         pred_classes=pred_classes,
-        pred_boxes=pred_boxes,
-        domain_map=DOMAIN_MAP,
-        model=SIAMESE_MODEL,
-        ocr_model=OCR_MODEL,
+        pred_boxes=pred_boxes, 
+        domain_map=DOMAIN_MAP, model=SIAMESE_MODEL,
+        ocr_model = OCR_MODEL,
         logo_feat_list=LOGO_FEATS,
         file_name_list=LOGO_FILES,
-        domain=domain,
-        shot_path=screenshot_path,
-        ts=SIAMESE_THRE,
+        domain=domain, shot_path=screenshot_path,
+        ts=SIAMESE_THRE
     )
 
     if pred_target is None:
-        logging.info("Did not match to any brand, report as benign")
+        logging.info('Did not match to any brand, report as benign')
         return pred_category, pred_target, has_crp
 
     ######################## Step3: CRP checker (if a target is reported) #################################
-    logging.info("A target is reported by siamese, enter CRP classifier")
+    logging.info('A target is reported by siamese, enter CRP classifier')
 
     if pred_target is not None:
         # CRP HTML heuristic
         cre_pred = html_heuristic(html_code)
 
-        if cre_pred == 1:  # if HTML heuristic report as nonCRP
+        if cre_pred == 1: # if HTML heuristic report as nonCRP
             # CRP classifier
-            logging.info("Trying mixed credential classifier")
-            cre_pred, _, _ = credential_classifier_mixed_al(
-                img=screenshot_path,
-                coords=pred_boxes,
-                types=pred_classes,
-                model=CRP_CLASSIFIER,
-            )
+            logging.info('Trying mixed credential classifier')
+            cre_pred, _, _  = credential_classifier_mixed_al(img=screenshot_path, coords=pred_boxes, types=pred_classes, model=CRP_CLASSIFIER)
 
         ######################## Step4: Dynamic analysis #################################
         if cre_pred == 1:
-            logging.info("It is a Non-CRP page, enter dynamic analysis")
+            logging.info('It is a Non-CRP page, enter dynamic analysis')
 
             with sync_playwright() as p:
-                browser: Browser = p.chromium.connect_over_cdp(
-                    f"ws://{BROWSER_HOST}?stealth&timeout=300000"
-                )
+                browser: Browser = p.chromium.connect_over_cdp(f"ws://{BROWSER_HOST}?stealth&timeout=300000")
 
                 context: BrowserContext = browser.new_context(
-                    java_script_enabled=True, viewport={"width": 1920, "height": 1080}
+                    java_script_enabled=True,                                                          
+                    viewport={ 'width': 1920, 'height': 1080 }
                 )
 
                 page: Page = context.new_page()
@@ -129,18 +99,14 @@ def test(
                     cls_model=CRP_CLASSIFIER,
                     ele_model=AWL_MODEL,
                     login_model=CRP_LOCATOR,
-                    page=page,
+                    page=page
                 )
-
-                if successful == False:
-                    logging.info(
-                        "Dynamic analysis cannot find any link redirected to a CRP page, report as benign"
-                    )
-                else:
-                    cre_pred = 0
-
+                
+                if successful == False: logging.info('Dynamic analysis cannot find any link redirected to a CRP page, report as benign')
+                else: cre_pred = 0
+                
     ######################## Step4: Return #################################
     pred_category = True if pred_target is not None else False
     has_crp = True if cre_pred == 0 else False
-
+        
     return pred_category, pred_target, has_crp

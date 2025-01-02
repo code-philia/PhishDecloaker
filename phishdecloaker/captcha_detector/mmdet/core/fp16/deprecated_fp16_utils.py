@@ -1,6 +1,7 @@
 import warnings
 
-from mmcv.runner import Fp16OptimizerHook, auto_fp16, force_fp32, wrap_fp16_model
+from mmcv.runner import (Fp16OptimizerHook, auto_fp16, force_fp32,
+                         wrap_fp16_model)
 
 
 class DeprecatedFp16OptimizerHook(Fp16OptimizerHook):
@@ -19,16 +20,14 @@ class DeprecatedFp16OptimizerHook(Fp16OptimizerHook):
         warnings.warn(
             'Importing Fp16OptimizerHook from "mmdet.core" will be '
             'deprecated in the future. Please import them from "mmcv.runner" '
-            "instead"
-        )
+            'instead')
 
 
 def deprecated_auto_fp16(*args, **kwargs):
     warnings.warn(
         'Importing auto_fp16 from "mmdet.core" will be '
         'deprecated in the future. Please import them from "mmcv.runner" '
-        "instead"
-    )
+        'instead')
     return auto_fp16(*args, **kwargs)
 
 
@@ -36,8 +35,7 @@ def deprecated_force_fp32(*args, **kwargs):
     warnings.warn(
         'Importing force_fp32 from "mmdet.core" will be '
         'deprecated in the future. Please import them from "mmcv.runner" '
-        "instead"
-    )
+        'instead')
     return force_fp32(*args, **kwargs)
 
 
@@ -45,6 +43,5 @@ def deprecated_wrap_fp16_model(*args, **kwargs):
     warnings.warn(
         'Importing wrap_fp16_model from "mmdet.core" will be '
         'deprecated in the future. Please import them from "mmcv.runner" '
-        "instead"
-    )
+        'instead')
     wrap_fp16_model(*args, **kwargs)

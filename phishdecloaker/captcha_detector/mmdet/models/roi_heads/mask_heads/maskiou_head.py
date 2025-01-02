@@ -3,8 +3,9 @@ import torch
 import torch.nn as nn
 from mmcv.cnn import Conv2d, Linear, MaxPool2d, kaiming_init, normal_init
 from mmcv.runner import force_fp32
-from mmdet.models.builder import HEADS, build_loss
 from torch.nn.modules.utils import _pair
+
+from mmdet.models.builder import HEADS, build_loss
 
 
 @HEADS.register_module()
@@ -14,17 +15,15 @@ class MaskIoUHead(nn.Module):
     This head predicts the IoU of predicted masks and corresponding gt masks.
     """
 
-    def __init__(
-        self,
-        num_convs=4,
-        num_fcs=2,
-        roi_feat_size=14,
-        in_channels=256,
-        conv_out_channels=256,
-        fc_out_channels=1024,
-        num_classes=80,
-        loss_iou=dict(type="MSELoss", loss_weight=0.5),
-    ):
+    def __init__(self,
+                 num_convs=4,
+                 num_fcs=2,
+                 roi_feat_size=14,
+                 in_channels=256,
+                 conv_out_channels=256,
+                 fc_out_channels=1024,
+                 num_classes=80,
+                 loss_iou=dict(type='MSELoss', loss_weight=0.5)):
         super(MaskIoUHead, self).__init__()
         self.in_channels = in_channels
         self.conv_out_channels = conv_out_channels
@@ -41,16 +40,20 @@ class MaskIoUHead(nn.Module):
                 in_channels = self.conv_out_channels
             stride = 2 if i == num_convs - 1 else 1
             self.convs.append(
-                Conv2d(in_channels, self.conv_out_channels, 3, stride=stride, padding=1)
-            )
+                Conv2d(
+                    in_channels,
+                    self.conv_out_channels,
+                    3,
+                    stride=stride,
+                    padding=1))
 
         roi_feat_size = _pair(roi_feat_size)
         pooled_area = (roi_feat_size[0] // 2) * (roi_feat_size[1] // 2)
         self.fcs = nn.ModuleList()
         for i in range(num_fcs):
             in_channels = (
-                self.conv_out_channels * pooled_area if i == 0 else self.fc_out_channels
-            )
+                self.conv_out_channels *
+                pooled_area if i == 0 else self.fc_out_channels)
             self.fcs.append(Linear(in_channels, self.fc_out_channels))
 
         self.fc_mask_iou = Linear(self.fc_out_channels, self.num_classes)
@@ -65,10 +68,9 @@ class MaskIoUHead(nn.Module):
             kaiming_init(
                 fc,
                 a=1,
-                mode="fan_in",
-                nonlinearity="leaky_relu",
-                distribution="uniform",
-            )
+                mode='fan_in',
+                nonlinearity='leaky_relu',
+                distribution='uniform')
         normal_init(self.fc_mask_iou, std=0.01)
 
     def forward(self, mask_feat, mask_pred):
@@ -85,21 +87,19 @@ class MaskIoUHead(nn.Module):
         mask_iou = self.fc_mask_iou(x)
         return mask_iou
 
-    @force_fp32(apply_to=("mask_iou_pred",))
+    @force_fp32(apply_to=('mask_iou_pred', ))
     def loss(self, mask_iou_pred, mask_iou_targets):
         pos_inds = mask_iou_targets > 0
         if pos_inds.sum() > 0:
-            loss_mask_iou = self.loss_iou(
-                mask_iou_pred[pos_inds], mask_iou_targets[pos_inds]
-            )
+            loss_mask_iou = self.loss_iou(mask_iou_pred[pos_inds],
+                                          mask_iou_targets[pos_inds])
         else:
             loss_mask_iou = mask_iou_pred.sum() * 0
         return dict(loss_mask_iou=loss_mask_iou)
 
-    @force_fp32(apply_to=("mask_pred",))
-    def get_targets(
-        self, sampling_results, gt_masks, mask_pred, mask_targets, rcnn_train_cfg
-    ):
+    @force_fp32(apply_to=('mask_pred', ))
+    def get_targets(self, sampling_results, gt_masks, mask_pred, mask_targets,
+                    rcnn_train_cfg):
         """Compute target of mask IoU.
 
         Mask IoU target is the IoU of the predicted mask (inside a bbox) and
@@ -123,13 +123,14 @@ class MaskIoUHead(nn.Module):
             Tensor: mask iou target (length == num positive).
         """
         pos_proposals = [res.pos_bboxes for res in sampling_results]
-        pos_assigned_gt_inds = [res.pos_assigned_gt_inds for res in sampling_results]
+        pos_assigned_gt_inds = [
+            res.pos_assigned_gt_inds for res in sampling_results
+        ]
 
         # compute the area ratio of gt areas inside the proposals and
         # the whole instance
-        area_ratios = map(
-            self._get_area_ratio, pos_proposals, pos_assigned_gt_inds, gt_masks
-        )
+        area_ratios = map(self._get_area_ratio, pos_proposals,
+                          pos_assigned_gt_inds, gt_masks)
         area_ratios = torch.cat(list(area_ratios))
         assert mask_targets.size(0) == area_ratios.size(0)
 
@@ -143,8 +144,7 @@ class MaskIoUHead(nn.Module):
         gt_full_areas = mask_targets.sum((-1, -2)) / (area_ratios + 1e-7)
 
         mask_iou_targets = overlap_areas / (
-            mask_pred_areas + gt_full_areas - overlap_areas
-        )
+            mask_pred_areas + gt_full_areas - overlap_areas)
         return mask_iou_targets
 
     def _get_area_ratio(self, pos_proposals, pos_assigned_gt_inds, gt_masks):
@@ -165,17 +165,15 @@ class MaskIoUHead(nn.Module):
                 gt_mask_in_proposal = gt_mask.crop(bbox)
 
                 ratio = gt_mask_in_proposal.areas[0] / (
-                    gt_instance_mask_area[pos_assigned_gt_inds[i]] + 1e-7
-                )
+                    gt_instance_mask_area[pos_assigned_gt_inds[i]] + 1e-7)
                 area_ratios.append(ratio)
-            area_ratios = (
-                torch.from_numpy(np.stack(area_ratios)).float().to(pos_proposals.device)
-            )
+            area_ratios = torch.from_numpy(np.stack(area_ratios)).float().to(
+                pos_proposals.device)
         else:
-            area_ratios = pos_proposals.new_zeros((0,))
+            area_ratios = pos_proposals.new_zeros((0, ))
         return area_ratios
 
-    @force_fp32(apply_to=("mask_iou_pred",))
+    @force_fp32(apply_to=('mask_iou_pred', ))
     def get_mask_scores(self, mask_iou_pred, det_bboxes, det_labels):
         """Get the mask scores.
 

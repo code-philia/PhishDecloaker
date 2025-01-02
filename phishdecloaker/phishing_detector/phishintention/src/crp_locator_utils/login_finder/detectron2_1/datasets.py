@@ -4,8 +4,8 @@ import copy
 import logging
 from pathlib import Path
 
-import numpy as np
 import torch
+import numpy as np
 from detectron2.data import detection_utils as utils
 from detectron2.data import transforms as T
 from detectron2.data.datasets import register_coco_instances
@@ -40,9 +40,9 @@ def build_transform_gen(cfg, is_train):
         max_size = cfg.INPUT.MAX_SIZE_TEST
         sample_style = "choice"
     if sample_style == "range":
-        assert (
-            len(min_size) == 2
-        ), "more than 2 ({}) min_size(s) are provided for ranges".format(len(min_size))
+        assert len(min_size) == 2, "more than 2 ({}) min_size(s) are provided for ranges".format(
+            len(min_size)
+        )
 
     logger = logging.getLogger(__name__)
     tfm_gens = []
@@ -72,9 +72,7 @@ class LoginMapper:
     def __init__(self, cfg, is_train=True):
         if cfg.INPUT.CROP.ENABLED and is_train:
             self.crop_gen = T.RandomCrop(cfg.INPUT.CROP.TYPE, cfg.INPUT.CROP.SIZE)
-            logging.getLogger(__name__).info(
-                "CropGen used in training: " + str(self.crop_gen)
-            )
+            logging.getLogger(__name__).info("CropGen used in training: " + str(self.crop_gen))
         else:
             self.crop_gen = None
 
@@ -89,9 +87,7 @@ class LoginMapper:
         # fmt: on
         if self.keypoint_on and is_train:
             # Flip only makes sense in training
-            self.keypoint_hflip_indices = utils.create_keypoint_hflip_indices(
-                cfg.DATASETS.TRAIN
-            )
+            self.keypoint_hflip_indices = utils.create_keypoint_hflip_indices(cfg.DATASETS.TRAIN)
         else:
             self.keypoint_hflip_indices = None
 
@@ -139,9 +135,7 @@ class LoginMapper:
         # Pytorch's dataloader is efficient on torch.Tensor due to shared-memory,
         # but not efficient on large generic data structures due to the use of pickle & mp.Queue.
         # Therefore it's important to use torch.Tensor.
-        dataset_dict["image"] = torch.as_tensor(
-            np.ascontiguousarray(image.transpose(2, 0, 1))
-        )
+        dataset_dict["image"] = torch.as_tensor(np.ascontiguousarray(image.transpose(2, 0, 1)))
 
         # USER: Remove if you don't use pre-computed proposals.
         # Most users would not need this feature.
@@ -172,10 +166,7 @@ class LoginMapper:
             # USER: Implement additional transformations if you have other types of data
             annos = [
                 utils.transform_instance_annotations(
-                    obj,
-                    transforms,
-                    image_shape,
-                    keypoint_hflip_indices=self.keypoint_hflip_indices,
+                    obj, transforms, image_shape, keypoint_hflip_indices=self.keypoint_hflip_indices
                 )
                 for obj in dataset_dict.pop("annotations")
                 if obj.get("iscrowd", 0) == 0

@@ -1,13 +1,12 @@
 from __future__ import annotations
-
 import os
 
 import mmcv
+import torch
 import numpy as np
 import numpy.typing as npt
-import torch
-from mmdet.apis import inference_detector, init_detector
 from PIL import Image
+from mmdet.apis import init_detector, inference_detector
 
 
 class Config:
@@ -39,6 +38,5 @@ class Detector:
         result = inference_detector(self.detector, screenshot)
         bboxes = [x.tolist() for x in result[0] if x[-1] >= self.threshold]
         return [bboxes[0]] if bboxes else []
-
 
 detector = Detector()

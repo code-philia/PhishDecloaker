@@ -1,16 +1,17 @@
+import os
 import io
 import logging
-import os
 from dataclasses import dataclass
 
 import torch
-from model import RotModel
 from PIL import Image
-from playwright.async_api import ElementHandle, Page
+from playwright.async_api import Page, ElementHandle
 from torchvision.transforms import transforms
-from trajectory import Trajectory
 
-logger = logging.getLogger("solver")
+from trajectory import Trajectory
+from model import RotModel
+
+logger = logging.getLogger('solver')
 
 
 @dataclass
@@ -44,10 +45,8 @@ class Solver:
 
     async def __call__(self, *args, **kwargs):
         return await self.solve(**kwargs)
-
-    async def drag_slider(
-        self, page: Page, slider: ElementHandle, pred: float, max_length: int
-    ):
+    
+    async def drag_slider(self, page: Page, slider: ElementHandle, pred: float, max_length: int):
         slider_bbox = await slider.bounding_box()
         x = slider_bbox["x"] + slider_bbox["width"] / 2
         y = slider_bbox["y"] + slider_bbox["height"] / 2
@@ -88,14 +87,13 @@ class Solver:
 
         try:
             async with page.expect_response(
-                lambda response: config.VERIFY_URL in response.url, timeout=5000
+                lambda response: config.VERIFY_URL in response.url,
+                timeout=5000
             ) as response_info:
                 await page.mouse.up()
                 response = await response_info.value
                 data = await response.text()
-                if config.VERIFY_SUCCESS_KEYWORD in data:
-                    return True
-                else:
-                    return False
+                if config.VERIFY_SUCCESS_KEYWORD in data: return True
+                else: return False
         except:
             return False
