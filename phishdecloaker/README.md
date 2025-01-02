@@ -1,4 +1,4 @@
-# PhishDecloaker
+# PhishDecloaker 
 
 PhishDecloaker is a hybrid deep-vision system to detect, recognize, and solve diverse CAPTCHAs. The CAPTCHA solving repository currently supports 4 different CAPTCHA types: reCAPTCHA v2, hCaptcha, slide CAPTCHA, rotation CAPTCHA and can be extended to support more CAPTCHA types.
 
