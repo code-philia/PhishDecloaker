@@ -1,23 +1,162 @@
 name: Python Code Quality and Tests
 
 on:
-  push:
-    branches:
-      - main
   pull_request:
-    branches:
-      - main
+    paths:
+      - '.github/workflows/main.yml'
+      - 'phishdecloaker/**'
 
 jobs:
-  lint-test:
+  # Linting with black
+  black-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
           python-version: 3.9
+
+      # Cache pip dependencies for black
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       - run: pip install --upgrade pip
-      - run: pip install flake8 black pytest
+      - run: pip install black
       - run: black --check .
+
+  # Linting with flake8
+  flake8-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Cache pip dependencies for flake8
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - run: pip install --upgrade pip
+      - run: pip install flake8
       - run: flake8 .
+
+  # Linting with pylint
+  pylint-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Cache pip dependencies for pylint
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - run: pip install --upgrade pip
+      - run: pip install pylint
+      - run: pylint your_module_name  # Replace with actual module name
+
+  # Type checking with mypy
+  mypy-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Cache pip dependencies for mypy
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - run: pip install --upgrade pip
+      - run: pip install mypy
+      - run: mypy your_module_name  # Replace with actual module name
+
+  # Security analysis with bandit
+  bandit-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Cache pip dependencies for bandit
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - run: pip install --upgrade pip
+      - run: pip install bandit
+      - run: bandit -r your_project_folder  # Replace with your project folder
+
+  # Code dead code detection with vulture
+  vulture-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Cache pip dependencies for vulture
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - run: pip install --upgrade pip
+      - run: pip install vulture
+      - run: vulture your_project_folder  # Replace with your project folder
+
+  # Running tests with pytest
+  pytest-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: 3.9
+
+      # Cache pip dependencies for pytest
+      - name: Cache pip dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - run: pip install --upgrade pip
+      - run: pip install pytest
       - run: pytest
