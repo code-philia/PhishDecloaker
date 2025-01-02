@@ -46,7 +46,7 @@ dependencies:
       - pyee==9.0.4
       - sympy==1.12
       - https://download.pytorch.org/whl/cu113/torch-1.11.0%2Bcu113-cp310-cp310-linux_x86_64.whl#sha256=a68c33657a546131eb9bc44e2a98d2fa704aafae861460b051b82813852ccb44
-      - https://download.pytorch.org/whl/cu113/torchvision-0.13.0%2Bcu113-cp310-cp310-linux_x86_64.whl#sha256=4d2cc8226f7d8b10c1e50b520f892f23a5933fdf89d84a35c66f286f07f4721c
+      - https://download.pytorch.org/whl/cu113/torchvision-0.11.0%2Bcu113-cp310-cp310-linux_x86_64.whl#sha256=4d2cc8226f7d8b10c1e50b520f892f23a5933fdf89d84a35c66f286f07f4721c
       - https://download.pytorch.org/whl/cu113/torchaudio-0.11.0%2Bcu113-cp310-cp310-linux_x86_64.whl#sha256=664f805b2b445df27e1ccebd0403e156cbcdea9810c02eae696ed7bb1daba30e
       - typing-extensions==4.12.0
       - yarl==1.9.4
