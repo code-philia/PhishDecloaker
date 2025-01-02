@@ -28,7 +28,7 @@ jobs:
           - phishdecloaker/filter
           - phishdecloaker/phishing_detector
           - phishdecloaker/poller
-    name: CI - Lint, Format for ${{ matrix.project }}
+    name: Lint for ${{ matrix.project }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -63,7 +63,7 @@ jobs:
           # 安装代码质量检查工具（如果未包含在 environment.yml 中）
           pip install black flake8 mypy bandit vulture pytest
 
-      - name: Run Code Quality Checks
+      - name: Run black
         shell: bash -l {0}
         run: |
           project_dir="${{ matrix.project }}"
@@ -75,9 +75,57 @@ jobs:
 
           # 运行代码质量检查
           black --check "$project_dir"
-          flake8 "$project_dir" --ignore=E203,W503
+
+      - name: Run flake8
+        shell: bash -l {0}
+        run: |
+          project_dir="${{ matrix.project }}"
+          project_name=$(basename "$project_dir")
+          env_name="${project_name}_env"
+
+          # 激活环境
+          conda activate "$env_name"
+
+          # 运行代码质量检查
+          flake8 "$project_dir" --ignore=E501 # E501: line too long E203: whitespace before ':' W503: line break before binary operator
+
+      - name: Run mypy
+        shell: bash -l {0}
+        run: |
+          project_dir="${{ matrix.project }}"
+          project_name=$(basename "$project_dir")
+          env_name="${project_name}_env"
+
+          # 激活环境
+          conda activate "$env_name"
+
+          # 运行代码质量检查
           mypy "$project_dir" --explicit-package-bases
+
+      - name: Run bandit
+        shell: bash -l {0}
+        run: |
+          project_dir="${{ matrix.project }}"
+          project_name=$(basename "$project_dir")
+          env_name="${project_name}_env"
+
+          # 激活环境
+          conda activate "$env_name"
+
+          # 运行代码质量检查
           bandit -r "$project_dir"
+
+      - name: Run vulture
+        shell: bash -l {0}
+        run: |
+          project_dir="${{ matrix.project }}"
+          project_name=$(basename "$project_dir")
+          env_name="${project_name}_env"
+
+          # 激活环境
+          conda activate "$env_name"
+
+          # 运行代码质量检查
           vulture "$project_dir"
 
       - name: Run Tests
