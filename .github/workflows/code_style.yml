@@ -42,39 +42,43 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Process each environment.yml
+        shell: bash -l {0}
         run: |
+          # Initialize Conda in the current shell
+          source ~/miniconda3/etc/profile.d/conda.sh
+
           for env_file in $(find . -type f -name "environment.yml"); do
             echo "Processing $env_file"
 
-            # 获取项目名称（例如：captcha_detector）
+            # Get project name (e.g., captcha_detector)
             project_dir=$(dirname "$env_file")
             project_name=$(basename "$project_dir")
 
-            # 创建唯一的环境名称
+            # Create a unique environment name
             env_name="${project_name}_env"
 
-            # 创建和激活 Conda 环境
+            # Create or update the Conda environment
             conda env create -f "$env_file" -n "$env_name" || conda env update -f "$env_file" -n "$env_name"
 
-            # 激活环境
-            conda init
+            # Activate the environment
             conda activate "$env_name"
 
-            # 安装代码质量检查工具（如果未包含在 environment.yml 中）
+            # Install code quality check tools (if not included in environment.yml)
             pip install black flake8 mypy bandit vulture pytest
 
-            # 运行代码质量检查
+            # Run code quality checks
             black --check "$project_dir"
             flake8 "$project_dir" --ignore=E203,W503
             mypy "$project_dir" --explicit-package-bases
             bandit -r "$project_dir"
             vulture "$project_dir"
 
-            # 运行测试（如果适用）
+            # Run tests (if applicable)
             if [ -d "${project_dir}/tests" ]; then
+              mkdir -p reports
               pytest "$project_dir/tests" --junitxml=reports/${project_name}_test-results.xml
             fi
 
-            # 退出环境
+            # Deactivate the environment
             conda deactivate
           done
