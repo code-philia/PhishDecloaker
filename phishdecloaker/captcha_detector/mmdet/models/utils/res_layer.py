@@ -21,17 +21,19 @@ class ResLayer(nn.Sequential):
             False for Hourglass, True for ResNet. Default: True
     """
 
-    def __init__(self,
-                 block,
-                 inplanes,
-                 planes,
-                 num_blocks,
-                 stride=1,
-                 avg_down=False,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 downsample_first=True,
-                 **kwargs):
+    def __init__(
+        self,
+        block,
+        inplanes,
+        planes,
+        num_blocks,
+        stride=1,
+        avg_down=False,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        downsample_first=True,
+        **kwargs
+    ):
         self.block = block
 
         downsample = None
@@ -45,17 +47,22 @@ class ResLayer(nn.Sequential):
                         kernel_size=stride,
                         stride=stride,
                         ceil_mode=True,
-                        count_include_pad=False))
-            downsample.extend([
-                build_conv_layer(
-                    conv_cfg,
-                    inplanes,
-                    planes * block.expansion,
-                    kernel_size=1,
-                    stride=conv_stride,
-                    bias=False),
-                build_norm_layer(norm_cfg, planes * block.expansion)[1]
-            ])
+                        count_include_pad=False,
+                    )
+                )
+            downsample.extend(
+                [
+                    build_conv_layer(
+                        conv_cfg,
+                        inplanes,
+                        planes * block.expansion,
+                        kernel_size=1,
+                        stride=conv_stride,
+                        bias=False,
+                    ),
+                    build_norm_layer(norm_cfg, planes * block.expansion)[1],
+                ]
+            )
             downsample = nn.Sequential(*downsample)
 
         layers = []
@@ -68,7 +75,9 @@ class ResLayer(nn.Sequential):
                     downsample=downsample,
                     conv_cfg=conv_cfg,
                     norm_cfg=norm_cfg,
-                    **kwargs))
+                    **kwargs
+                )
+            )
             inplanes = planes * block.expansion
             for _ in range(1, num_blocks):
                 layers.append(
@@ -78,7 +87,9 @@ class ResLayer(nn.Sequential):
                         stride=1,
                         conv_cfg=conv_cfg,
                         norm_cfg=norm_cfg,
-                        **kwargs))
+                        **kwargs
+                    )
+                )
 
         else:  # downsample_first=False is for HourglassModule
             for _ in range(num_blocks - 1):
@@ -89,7 +100,9 @@ class ResLayer(nn.Sequential):
                         stride=1,
                         conv_cfg=conv_cfg,
                         norm_cfg=norm_cfg,
-                        **kwargs))
+                        **kwargs
+                    )
+                )
             layers.append(
                 block(
                     inplanes=inplanes,
@@ -98,5 +111,7 @@ class ResLayer(nn.Sequential):
                     downsample=downsample,
                     conv_cfg=conv_cfg,
                     norm_cfg=norm_cfg,
-                    **kwargs))
+                    **kwargs
+                )
+            )
         super(ResLayer, self).__init__(*layers)

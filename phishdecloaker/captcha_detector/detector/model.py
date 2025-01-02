@@ -39,4 +39,5 @@ class Detector:
         bboxes = [x.tolist() for x in result[0] if x[-1] >= self.threshold]
         return [bboxes[0]] if bboxes else []
 
+
 detector = Detector()

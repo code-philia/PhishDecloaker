@@ -85,7 +85,6 @@ class YoloDetector:
         return detections
 
     def detect_on_image(self, img, threshold=0.2):
-
         image = img
         if isinstance(img, str):
             images = load_images(img)

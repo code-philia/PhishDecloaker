@@ -9,6 +9,7 @@ import numpy as np
 from mmcv.utils import print_log
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
+
 # from terminaltables import AsciiTable
 
 from mmdet.core import eval_recalls
@@ -30,7 +31,6 @@ except AssertionError:
 
 @DATASETS.register_module()
 class CocoDataset(CustomDataset):
-
     CLASSES = (
         "person",
         "bicycle",

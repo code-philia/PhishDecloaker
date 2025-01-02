@@ -25,12 +25,7 @@ class Bottleneck(_Bottleneck):
     """
     expansion = 4
 
-    def __init__(self,
-                 inplanes,
-                 planes,
-                 rfp_inplanes=None,
-                 sac=None,
-                 **kwargs):
+    def __init__(self, inplanes, planes, rfp_inplanes=None, sac=None, **kwargs):
         super(Bottleneck, self).__init__(inplanes, planes, **kwargs)
 
         assert sac is None or isinstance(sac, dict)
@@ -45,17 +40,14 @@ class Bottleneck(_Bottleneck):
                 stride=self.conv2_stride,
                 padding=self.dilation,
                 dilation=self.dilation,
-                bias=False)
+                bias=False,
+            )
 
         self.rfp_inplanes = rfp_inplanes
         if self.rfp_inplanes:
             self.rfp_conv = build_conv_layer(
-                None,
-                self.rfp_inplanes,
-                planes * self.expansion,
-                1,
-                stride=1,
-                bias=True)
+                None, self.rfp_inplanes, planes * self.expansion, 1, stride=1, bias=True
+            )
         self.init_weights()
 
     def init_weights(self):
@@ -136,21 +128,24 @@ class ResLayer(nn.Sequential):
             base class.
     """
 
-    def __init__(self,
-                 block,
-                 inplanes,
-                 planes,
-                 num_blocks,
-                 stride=1,
-                 avg_down=False,
-                 conv_cfg=None,
-                 norm_cfg=dict(type='BN'),
-                 downsample_first=True,
-                 rfp_inplanes=None,
-                 **kwargs):
+    def __init__(
+        self,
+        block,
+        inplanes,
+        planes,
+        num_blocks,
+        stride=1,
+        avg_down=False,
+        conv_cfg=None,
+        norm_cfg=dict(type="BN"),
+        downsample_first=True,
+        rfp_inplanes=None,
+        **kwargs,
+    ):
         self.block = block
-        assert downsample_first, f'downsampel_first={downsample_first} is ' \
-                                 'not supported in DetectoRS'
+        assert downsample_first, (
+            f"downsampel_first={downsample_first} is " "not supported in DetectoRS"
+        )
 
         downsample = None
         if stride != 1 or inplanes != planes * block.expansion:
@@ -163,17 +158,22 @@ class ResLayer(nn.Sequential):
                         kernel_size=stride,
                         stride=stride,
                         ceil_mode=True,
-                        count_include_pad=False))
-            downsample.extend([
-                build_conv_layer(
-                    conv_cfg,
-                    inplanes,
-                    planes * block.expansion,
-                    kernel_size=1,
-                    stride=conv_stride,
-                    bias=False),
-                build_norm_layer(norm_cfg, planes * block.expansion)[1]
-            ])
+                        count_include_pad=False,
+                    )
+                )
+            downsample.extend(
+                [
+                    build_conv_layer(
+                        conv_cfg,
+                        inplanes,
+                        planes * block.expansion,
+                        kernel_size=1,
+                        stride=conv_stride,
+                        bias=False,
+                    ),
+                    build_norm_layer(norm_cfg, planes * block.expansion)[1],
+                ]
+            )
             downsample = nn.Sequential(*downsample)
 
         layers = []
@@ -186,7 +186,9 @@ class ResLayer(nn.Sequential):
                 conv_cfg=conv_cfg,
                 norm_cfg=norm_cfg,
                 rfp_inplanes=rfp_inplanes,
-                **kwargs))
+                **kwargs,
+            )
+        )
         inplanes = planes * block.expansion
         for _ in range(1, num_blocks):
             layers.append(
@@ -196,7 +198,9 @@ class ResLayer(nn.Sequential):
                     stride=1,
                     conv_cfg=conv_cfg,
                     norm_cfg=norm_cfg,
-                    **kwargs))
+                    **kwargs,
+                )
+            )
 
         super(ResLayer, self).__init__(*layers)
 
@@ -222,16 +226,18 @@ class DetectoRS_ResNet(ResNet):
     arch_settings = {
         50: (Bottleneck, (3, 4, 6, 3)),
         101: (Bottleneck, (3, 4, 23, 3)),
-        152: (Bottleneck, (3, 8, 36, 3))
+        152: (Bottleneck, (3, 8, 36, 3)),
     }
 
-    def __init__(self,
-                 sac=None,
-                 stage_with_sac=(False, False, False, False),
-                 rfp_inplanes=None,
-                 output_img=False,
-                 pretrained=None,
-                 **kwargs):
+    def __init__(
+        self,
+        sac=None,
+        stage_with_sac=(False, False, False, False),
+        rfp_inplanes=None,
+        output_img=False,
+        pretrained=None,
+        **kwargs,
+    ):
         self.sac = sac
         self.stage_with_sac = stage_with_sac
         self.rfp_inplanes = rfp_inplanes
@@ -266,9 +272,10 @@ class DetectoRS_ResNet(ResNet):
                 dcn=dcn,
                 sac=sac,
                 rfp_inplanes=rfp_inplanes if i > 0 else None,
-                plugins=stage_plugins)
+                plugins=stage_plugins,
+            )
             self.inplanes = planes * self.block.expansion
-            layer_name = f'layer{i + 1}'
+            layer_name = f"layer{i + 1}"
             self.add_module(layer_name, res_layer)
             self.res_layers.append(layer_name)
 

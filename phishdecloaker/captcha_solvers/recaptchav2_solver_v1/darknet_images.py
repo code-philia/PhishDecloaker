@@ -243,7 +243,10 @@ def batch_detection_example():
     )
     image_names = ["data/horses.jpg", "data/horses.jpg", "data/eagle.jpg"]
     images = [cv2.imread(image) for image in image_names]
-    images, detections, = batch_detection(
+    (
+        images,
+        detections,
+    ) = batch_detection(
         network, images, class_names, class_colors, batch_size=batch_size
     )
     for name, image in zip(image_names, images):

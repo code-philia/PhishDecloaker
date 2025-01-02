@@ -36,7 +36,8 @@ from detectron2.modeling import GeneralizedRCNNWithTTA
 from phishintention.src.AWL_detector_utils.detectron2_1.datasets import WebMapper
 from phishintention.src.AWL_detector_utils.detectron2_1.register_backbone import *
 import os
-os.environ["CUDA_VISIBLE_DEVICES"]="1"
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
 
 
 # Implement evaluation here
@@ -71,9 +72,7 @@ class Trainer(DefaultTrainer):
     # Insert custom data loading logic
     @classmethod
     def build_train_loader(cls, cfg):
-        return build_detection_train_loader(
-            cfg, mapper=WebMapper(cfg, is_train=True)
-        )
+        return build_detection_train_loader(cfg, mapper=WebMapper(cfg, is_train=True))
 
 
 def setup(args):

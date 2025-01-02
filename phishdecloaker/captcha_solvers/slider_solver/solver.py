@@ -7,13 +7,13 @@ from playwright.async_api import Page, ElementHandle
 
 from trajectory import Trajectory
 
-logger = logging.getLogger('solver')
+logger = logging.getLogger("solver")
 
 
 @dataclass
 class Config:
     OFFSET: int
-    
+
     WINDOW: str
     PUZZLE_PIECE: str
     BACKGROUND: str
@@ -26,13 +26,14 @@ class Config:
 class Solver:
     async def __call__(self, *args, **kwargs):
         return await self.solve(**kwargs)
-    
-    async def find_distance(self, puzzle_piece: ElementHandle, background: ElementHandle) -> int:
-        """Calculate the distance between puzzle piece and gap.
-        """
+
+    async def find_distance(
+        self, puzzle_piece: ElementHandle, background: ElementHandle
+    ) -> int:
+        """Calculate the distance between puzzle piece and gap."""
+
         def _detect_edges(img: cv2.Mat) -> cv2.Mat:
-            """Edge detection algorithm.
-            """
+            """Edge detection algorithm."""
             scale = 1
             delta = 0
             ddepth = cv2.CV_16S
@@ -64,7 +65,7 @@ class Solver:
             grad = cv2.addWeighted(abs_grad_x, 0.5, abs_grad_y, 0.5, 0)
 
             return grad
-        
+
         puzzle_piece = await puzzle_piece.screenshot()
         puzzle_piece = np.frombuffer(puzzle_piece, dtype=np.uint8)
         puzzle_piece = cv2.imdecode(puzzle_piece, cv2.IMREAD_COLOR)
@@ -87,7 +88,7 @@ class Solver:
         end = points[1][0]
 
         return abs(end - begin)
-    
+
     async def drag_slider(self, page: Page, slider: ElementHandle, distance: int):
         slider_bbox = await slider.bounding_box()
         x = slider_bbox["x"] + slider_bbox["width"] / 2
@@ -125,13 +126,15 @@ class Solver:
         try:
             async with page.expect_response(
                 lambda response: response.url.startswith(config.VERIFY_URL),
-                timeout=4000
+                timeout=4000,
             ) as response_info:
                 await self.drag_slider(page, slider, distance)
                 await page.wait_for_timeout(1000)
                 response = await response_info.value
                 data = await response.text()
-                if config.VERIFY_SUCCESS_KEYWORD in data: return True
-                else: return False
+                if config.VERIFY_SUCCESS_KEYWORD in data:
+                    return True
+                else:
+                    return False
         except:
             return False

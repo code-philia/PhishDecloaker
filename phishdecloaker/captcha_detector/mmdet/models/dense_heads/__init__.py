@@ -4,5 +4,7 @@ from .oln_rpn_head import OlnRPNHead
 
 
 __all__ = [
-    'AnchorHead', 'RPNHead', 'OlnRPNHead',
+    "AnchorHead",
+    "RPNHead",
+    "OlnRPNHead",
 ]

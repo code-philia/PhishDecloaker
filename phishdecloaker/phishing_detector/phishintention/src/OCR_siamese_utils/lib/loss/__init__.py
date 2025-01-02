@@ -4,5 +4,5 @@ from .sequenceCrossEntropyLoss import SequenceCrossEntropyLoss
 
 
 __all__ = [
-  'SequenceCrossEntropyLoss',
+    "SequenceCrossEntropyLoss",
 ]

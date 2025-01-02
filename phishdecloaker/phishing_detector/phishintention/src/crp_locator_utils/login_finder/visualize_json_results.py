@@ -16,7 +16,7 @@ from detectron2.utils.logger import setup_logger
 from detectron2.utils.visualizer import Visualizer
 
 from phishintention.src.crp_locator_utils.login_finder import detectron2_1
-from phishintention.src.crp_locator_utils.login_finder.detectron2_1.datasets import * # import dataset newly registered
+from phishintention.src.crp_locator_utils.login_finder.detectron2_1.datasets import *  # import dataset newly registered
 
 
 def create_instances(predictions, image_size):
@@ -97,7 +97,7 @@ if __name__ == "__main__":
         vis = Visualizer(img, metadata)
         vis_gt = vis.draw_dataset_dict(dic).get_image()
 
-        basename = f'pred_{i}.png'
+        basename = f"pred_{i}.png"
 
         concat = np.concatenate((vis_pred, vis_gt), axis=1)
         cv2.imwrite(os.path.join(args.output, basename), concat[:, :, ::-1])

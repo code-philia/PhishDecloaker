@@ -170,4 +170,5 @@ class Client:
             if score >= self.thresholds[type]:
                 return type
 
+
 client = Client()

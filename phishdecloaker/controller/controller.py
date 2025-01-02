@@ -61,10 +61,12 @@ def process_baseline(message: dict):
     effective_domains = message.get("effective_domains", [])
     screenshots = message.get("screenshots", [])
     html_codes = message.get("html_codes", [])
-    
+
     try:
         # Full phishing detection (vision + interaction)
-        phish_categories, phish_target, has_crp, _ = phishintention.detect(domain, effective_domains, screenshots, html_codes)
+        phish_categories, phish_target, has_crp, _ = phishintention.detect(
+            domain, effective_domains, screenshots, html_codes
+        )
         if has_crp and any(phish_categories) and phish_target != "Microsoft":
             logging.info(f"\t[>] phishing detected: {phish_target}")
             message["phish_pred"] = True
@@ -76,10 +78,12 @@ def process_baseline(message: dict):
 
             logging.info(f"\t[>] deploying group crawler, will come back later")
             channel.basic_publish(
-                exchange='',
+                exchange="",
                 routing_key=GROUP_CRAWLER_QUEUE_NAME,
                 body=json.dumps(message),
-                properties=pika.BasicProperties(delivery_mode=pika.DeliveryMode.Persistent)
+                properties=pika.BasicProperties(
+                    delivery_mode=pika.DeliveryMode.Persistent
+                ),
             )
 
     except Exception as e:
@@ -111,17 +115,24 @@ def process_group(message: dict):
     sample.phish_target = phish_target
     sample.vt_analysis_times = vt_analysis_times
     sample.vt_analysis_id = vt_analysis_id
-    for i in range(groups): setattr(sample, f"crawl_time_{i+1}", crawl_times[i])
-    
+    for i in range(groups):
+        setattr(sample, f"crawl_time_{i+1}", crawl_times[i])
+
     try:
         # Full phishing detection (vision + interaction)
-        phish_categories, _, _, sample.phish_det_time = phishintention.detect(domain, effective_domains, screenshots, html_codes)
-        for i in range(groups): setattr(sample, f"group_{i+1}", phish_categories[i])
+        phish_categories, _, _, sample.phish_det_time = phishintention.detect(
+            domain, effective_domains, screenshots, html_codes
+        )
+        for i in range(groups):
+            setattr(sample, f"group_{i+1}", phish_categories[i])
         logging.info(f"\t[>] group crawler verdicts: {phish_categories}")
 
         # Create poll, save sample to database
         sample.poll_open = True
-        for i in range(groups): setattr(sample, f"screenshot_{i+1}", f"data:image/png;base64,{screenshots[i]}")
+        for i in range(groups):
+            setattr(
+                sample, f"screenshot_{i+1}", f"data:image/png;base64,{screenshots[i]}"
+            )
         logging.info("\t[>] save to database")
         database.insert_baseline(sample.__dict__)
         logging.info("\t[>] create poll")
@@ -137,8 +148,15 @@ def process_captcha(message: dict):
     screenshots = message.get("screenshots", [])
     suspect_captcha = message.get("suspect_captcha", None)
 
-    has_captcha, captcha_type, captcha_det_time, captcha_rec_time = phishdecloaker.check_captcha(screenshots[-1])
-    logging.info(f"\t[>] captcha suspected: {suspect_captcha}, detected: {captcha_type}")
+    (
+        has_captcha,
+        captcha_type,
+        captcha_det_time,
+        captcha_rec_time,
+    ) = phishdecloaker.check_captcha(screenshots[-1])
+    logging.info(
+        f"\t[>] captcha suspected: {suspect_captcha}, detected: {captcha_type}"
+    )
 
     if suspect_captcha == "hcaptcha":
         has_captcha = True
@@ -150,21 +168,27 @@ def process_captcha(message: dict):
     message["captcha_det_time"] = captcha_det_time
     message["captcha_rec_time"] = captcha_rec_time
 
-    if has_captcha: 
+    if has_captcha:
         queue = None
         match captcha_type:
-            case "hcaptcha" | "hcaptcha_checkbox": queue = "hcaptcha_solver"
-            case "recaptchav2" | "recaptchav2_checkbox": queue = "recaptchav2_solver"
-            case "geetest_slide_puzzle" | "netease_slide" | "tencent_slide": queue = "slider_solver"
-            case "baidu_slide_rotate": queue = "rotation_solver"
+            case "hcaptcha" | "hcaptcha_checkbox":
+                queue = "hcaptcha_solver"
+            case "recaptchav2" | "recaptchav2_checkbox":
+                queue = "recaptchav2_solver"
+            case "geetest_slide_puzzle" | "netease_slide" | "tencent_slide":
+                queue = "slider_solver"
+            case "baidu_slide_rotate":
+                queue = "rotation_solver"
 
         if queue:
             logging.info(f"\t[>] deploying solver, will come back later")
             channel.basic_publish(
-                exchange='',
+                exchange="",
                 routing_key=queue,
                 body=json.dumps(message),
-                properties=pika.BasicProperties(delivery_mode=pika.DeliveryMode.Persistent)
+                properties=pika.BasicProperties(
+                    delivery_mode=pika.DeliveryMode.Persistent
+                ),
             )
         else:
             logging.info(f"\t[>] no solver")
@@ -209,7 +233,12 @@ def process_solved_captcha(message: dict):
 
     try:
         # Phishing detection
-        phish_categories, phish_target, has_crp, sample.phish_det_time = phishintention.detect(effective_domains, screenshots, html_codes, domain)
+        (
+            phish_categories,
+            phish_target,
+            has_crp,
+            sample.phish_det_time,
+        ) = phishintention.detect(effective_domains, screenshots, html_codes, domain)
         if has_crp and any(phish_categories):
             logging.info(f"\t[>] phishing detected: {phish_target}")
             sample.phish_pred = True
@@ -228,7 +257,7 @@ def process_solved_captcha(message: dict):
     except Exception as e:
         logging.error(traceback.format_exc())
         logging.error(f"{e}")
-    
+
 
 if __name__ == "__main__":
     channel.basic_consume(queue=QUEUE_NAME, on_message_callback=callback)

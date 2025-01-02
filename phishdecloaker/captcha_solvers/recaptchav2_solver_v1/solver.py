@@ -14,7 +14,7 @@ from playwright.async_api import Page, Response, FrameLocator, Locator, TimeoutE
 import utils
 from detector import CustomDetector, CocoDetector, YoloDetector
 
-logger = logging.getLogger('solver')
+logger = logging.getLogger("solver")
 
 RECAPTCHA_IMAGES = "images"
 RECAPTCHA_SQUARES = "squares"
@@ -61,67 +61,67 @@ SELECTORS = {
     "reload": "//div[contains(@class, 'reload-button-holder')]",
 }
 
+
 @dataclass
 class ReloadResponse:
     next_challenge_type: str = None
+
 
 @dataclass
 class UserVerifyResponse:
     solved: bool = False
 
+
 @dataclass
 class Status:
-    SUCCESS = "success"           # CAPTCHA solved, all challenges completed
-    RELOAD = "reload"             # CAPTCHA not solved yet, please select all matching images error
-    CONTINUE = "continue"         # CAPTCHA not solved yet, there are new challenges / please try again error
-    UNSEEN = "unseen"             # CAPTCHA not solved yet, new target object detected
-    BLOCKED = "blocked"           # CAPTCHA failed, solver is detected/blocked
+    SUCCESS = "success"  # CAPTCHA solved, all challenges completed
+    RELOAD = "reload"  # CAPTCHA not solved yet, please select all matching images error
+    CONTINUE = "continue"  # CAPTCHA not solved yet, there are new challenges / please try again error
+    UNSEEN = "unseen"  # CAPTCHA not solved yet, new target object detected
+    BLOCKED = "blocked"  # CAPTCHA failed, solver is detected/blocked
+
 
 class Solver:
     def __init__(self):
-        self.sitekey_pattern = re.compile(r'&k=(.*?)&co=')
+        self.sitekey_pattern = re.compile(r"&k=(.*?)&co=")
         self.coco_detector = CocoDetector()
         self.custom_detector = CustomDetector()
 
     def set_page(self, page: Page):
-        """Prepare to interact with reCAPTCHAv2 widget on page, use hook to listen to responses.
-        """
+        """Prepare to interact with reCAPTCHAv2 widget on page, use hook to listen to responses."""
         self.page = page
         self.r_queue = asyncio.Queue()
         self.img_queue = asyncio.Queue()
 
     def set_hook(self):
-        """Set hooks to start listening for responses.
-        """
+        """Set hooks to start listening for responses."""
         self.page.on("response", self.handle_response)
 
     async def __call__(self, *args, **kwargs):
-        """Solve reCAPTCHAv2
-        """
+        """Solve reCAPTCHAv2"""
         return await self.solve(**kwargs)
 
     async def get_sitekey(self):
-        """Get sitekey of CAPTCHA.
-        """
-        src = await self.page.get_attribute("//iframe[contains(@title,'reCAPTCHA')]", "src")
+        """Get sitekey of CAPTCHA."""
+        src = await self.page.get_attribute(
+            "//iframe[contains(@title,'reCAPTCHA')]", "src"
+        )
         sitekey = self.sitekey_pattern.search(src)
-        if sitekey: 
+        if sitekey:
             sitekey: str = sitekey.group()
             sitekey = sitekey.replace("&k=", "")
             sitekey = sitekey.replace("&co=", "")
         return sitekey
 
     async def handle_checkbox(self):
-        """Click on checkbox in reCAPTCHAv2 widget frame.
-        """
+        """Click on checkbox in reCAPTCHAv2 widget frame."""
         checkbox = self.page.frame_locator("//iframe[contains(@title,'reCAPTCHA')]")
         checkbox = await checkbox.locator("#recaptcha-anchor").element_handle()
         await checkbox.click(timeout=3000)
         logger.info("\t[>] clicked checkbox")
 
     async def handle_response(self, response: Response):
-        """Intercept responses to determine current state of reCAPTCHAv2 challenge.
-        """
+        """Intercept responses to determine current state of reCAPTCHAv2 challenge."""
         if "recaptcha/api2/payload" in response.url:
             img_data = await response.body()
             img_bytes = io.BytesIO(img_data)
@@ -132,30 +132,34 @@ class Solver:
 
         if "recaptcha/api2/reload" in response.url:
             r_data = await response.text()
-            r_data = json.loads(r_data.replace(")]}\'\n", ""))
+            r_data = json.loads(r_data.replace(")]}'\n", ""))
             r = ReloadResponse(next_challenge_type=r_data[5])
             self.r_queue.put_nowait(r)
             logger.info(f"\t[>] /reload (next: {r_data[5]})")
 
     async def handle_label(self, challenge_frame: FrameLocator):
-        """Extract target object from challenge instruction text 
-        """
-        label_elements: list[Locator] = await challenge_frame.locator("//div[starts-with(normalize-space(@class), 'rc-imageselect-desc')]").all()
+        """Extract target object from challenge instruction text"""
+        label_elements: list[Locator] = await challenge_frame.locator(
+            "//div[starts-with(normalize-space(@class), 'rc-imageselect-desc')]"
+        ).all()
         label: str = await label_elements[0].inner_text()
         label = label.split(":")[-1]
         obj = label.split("\n")[1].lower()
         return obj
-    
+
     async def handle_reload(self, challenge_frame: FrameLocator):
-        """Click on reload button in reCAPTCHAv2 challenge frame.
-        """
-        reload_button = await challenge_frame.locator("//button[contains(@id, 'recaptcha-reload-button')]").element_handle()
+        """Click on reload button in reCAPTCHAv2 challenge frame."""
+        reload_button = await challenge_frame.locator(
+            "//button[contains(@id, 'recaptcha-reload-button')]"
+        ).element_handle()
         await reload_button.click()
         logger.info("\t[>] clicked reload button")
 
-    async def _handle_imageselect_challenge(self, frame: FrameLocator, detector: YoloDetector, obj: str):
-        """Select all images with X
-        """
+    async def _handle_imageselect_challenge(
+        self, frame: FrameLocator, detector: YoloDetector, obj: str
+    ):
+        """Select all images with X"""
+
         async def _get_tiles(frame: FrameLocator):
             tr = await frame.locator(".rc-imageselect-table-33").locator("tr").all()
             full_table = [await x.locator("td").all() for x in tr]
@@ -183,9 +187,10 @@ class Solver:
             logger.info(f"\t[>] clicked {pos}")
             utils.random_sleep(0.2)
 
-    async def _handle_dynamic_challenge(self, frame: FrameLocator, detector: YoloDetector, obj: str):
-        """Select all images with X, click verify once there are none left
-        """
+    async def _handle_dynamic_challenge(
+        self, frame: FrameLocator, detector: YoloDetector, obj: str
+    ):
+        """Select all images with X, click verify once there are none left"""
         img_full: np.ndarray = await self.img_queue.get()
         imgs = utils.divide_image(img_full, 3, 3)
         indices = [i for i in range(9)]
@@ -208,8 +213,9 @@ class Solver:
                 while True:
                     try:
                         async with self.page.expect_request(
-                            lambda request: "recaptcha/api2/replaceimage" in request.url,
-                            timeout=3000
+                            lambda request: "recaptcha/api2/replaceimage"
+                            in request.url,
+                            timeout=3000,
                         ) as request_info:
                             tile = await tiles[pos].element_handle()
                             await tile.click(delay=1000)
@@ -225,9 +231,10 @@ class Solver:
             if not clicks:
                 break
 
-    async def _handle_tileset_challenge(self, frame: FrameLocator, detector: YoloDetector, obj: str):
-        """Select all squares with X
-        """
+    async def _handle_tileset_challenge(
+        self, frame: FrameLocator, detector: YoloDetector, obj: str
+    ):
+        """Select all squares with X"""
         tiles = await frame.locator(".rc-imageselect-tile").all()
         img: np.ndarray = await self.img_queue.get()
         detections = detector.detect_on_image(img, threshold=0.2)
@@ -253,7 +260,9 @@ class Solver:
 
     async def solve(self):
         # Get challenge frame
-        challenge_frame = self.page.frame_locator("//iframe[contains(@title,'recaptcha challenge expires in two minutes')]")
+        challenge_frame = self.page.frame_locator(
+            "//iframe[contains(@title,'recaptcha challenge expires in two minutes')]"
+        )
 
         # Reset state
         r: ReloadResponse = await self.r_queue.get()
@@ -262,7 +271,7 @@ class Solver:
             return Status.SUCCESS
         elif r.next_challenge_type == "doscaptcha":
             return Status.BLOCKED
-        
+
         # Get target object in challenge
         obj = await self.handle_label(challenge_frame)
         logger.info(f"\t[>] target object: {obj}")
@@ -277,13 +286,16 @@ class Solver:
         else:
             await self.handle_reload(challenge_frame)
             return Status.UNSEEN
-        
+
         # Solve challenge depending on its type (detect & click)
         if r.next_challenge_type == "imageselect":
             await self._handle_imageselect_challenge(challenge_frame, detector, obj)
         elif r.next_challenge_type == "dynamic":
             await self._handle_dynamic_challenge(challenge_frame, detector, obj)
-        elif r.next_challenge_type == "multicaptcha" or r.next_challenge_type == "tileselect":
+        elif (
+            r.next_challenge_type == "multicaptcha"
+            or r.next_challenge_type == "tileselect"
+        ):
             await self._handle_tileset_challenge(challenge_frame, detector, obj)
 
         # Clear image queue
@@ -293,10 +305,11 @@ class Solver:
         logger.info("\t[>] waiting for /userverify (request)")
         try:
             async with self.page.expect_request(
-                lambda request: "recaptcha/api2/userverify" in request.url,
-                timeout=3000
+                lambda request: "recaptcha/api2/userverify" in request.url, timeout=3000
             ) as request_info:
-                verify_button = await challenge_frame.locator("#recaptcha-verify-button").element_handle()
+                verify_button = await challenge_frame.locator(
+                    "#recaptcha-verify-button"
+                ).element_handle()
                 await verify_button.click()
                 logger.info("\t[>] clicked verify button")
                 await request_info.value
@@ -306,7 +319,7 @@ class Solver:
                 ) as response_info:
                     response = await response_info.value
                     uv_data = await response.text()
-                    uv_data = json.loads(uv_data.replace(")]}\'\n", ""))
+                    uv_data = json.loads(uv_data.replace(")]}'\n", ""))
                     if str(uv_data[0]) == "uvresp" and str(uv_data[3]) == "120":
                         logger.info("\t[>] /userverify (success)")
                         return Status.SUCCESS
@@ -320,7 +333,10 @@ class Solver:
 
         except TimeoutError:
             logger.info("\t[>] no /userverify (request)")
-            if r.next_challenge_type == "multicaptcha" or r.next_challenge_type == "tileselect":
+            if (
+                r.next_challenge_type == "multicaptcha"
+                or r.next_challenge_type == "tileselect"
+            ):
                 logger.info("\t[>] new challenge shown, same type")
                 await self.r_queue.put(r)
                 return Status.CONTINUE

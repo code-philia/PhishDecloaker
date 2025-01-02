@@ -20,11 +20,13 @@ class HourglassModule(nn.Module):
         norm_cfg (dict): Dictionary to construct and config norm layer.
     """
 
-    def __init__(self,
-                 depth,
-                 stage_channels,
-                 stage_blocks,
-                 norm_cfg=dict(type='BN', requires_grad=True)):
+    def __init__(
+        self,
+        depth,
+        stage_channels,
+        stage_blocks,
+        norm_cfg=dict(type="BN", requires_grad=True),
+    ):
         super(HourglassModule, self).__init__()
 
         self.depth = depth
@@ -36,7 +38,8 @@ class HourglassModule(nn.Module):
         next_channel = stage_channels[1]
 
         self.up1 = ResLayer(
-            BasicBlock, cur_channel, cur_channel, cur_block, norm_cfg=norm_cfg)
+            BasicBlock, cur_channel, cur_channel, cur_block, norm_cfg=norm_cfg
+        )
 
         self.low1 = ResLayer(
             BasicBlock,
@@ -44,18 +47,15 @@ class HourglassModule(nn.Module):
             next_channel,
             cur_block,
             stride=2,
-            norm_cfg=norm_cfg)
+            norm_cfg=norm_cfg,
+        )
 
         if self.depth > 1:
-            self.low2 = HourglassModule(depth - 1, stage_channels[1:],
-                                        stage_blocks[1:])
+            self.low2 = HourglassModule(depth - 1, stage_channels[1:], stage_blocks[1:])
         else:
             self.low2 = ResLayer(
-                BasicBlock,
-                next_channel,
-                next_channel,
-                next_block,
-                norm_cfg=norm_cfg)
+                BasicBlock, next_channel, next_channel, next_block, norm_cfg=norm_cfg
+            )
 
         self.low3 = ResLayer(
             BasicBlock,
@@ -63,7 +63,8 @@ class HourglassModule(nn.Module):
             cur_channel,
             cur_block,
             norm_cfg=norm_cfg,
-            downsample_first=False)
+            downsample_first=False,
+        )
 
         self.up2 = nn.Upsample(scale_factor=2)
 
@@ -109,13 +110,15 @@ class HourglassNet(nn.Module):
         (1, 256, 128, 128)
     """
 
-    def __init__(self,
-                 downsample_times=5,
-                 num_stacks=2,
-                 stage_channels=(256, 256, 384, 384, 384, 512),
-                 stage_blocks=(2, 2, 2, 2, 2, 4),
-                 feat_channel=256,
-                 norm_cfg=dict(type='BN', requires_grad=True)):
+    def __init__(
+        self,
+        downsample_times=5,
+        num_stacks=2,
+        stage_channels=(256, 256, 384, 384, 384, 512),
+        stage_blocks=(2, 2, 2, 2, 2, 4),
+        feat_channel=256,
+        norm_cfg=dict(type="BN", requires_grad=True),
+    ):
         super(HourglassNet, self).__init__()
 
         self.num_stacks = num_stacks
@@ -127,37 +130,42 @@ class HourglassNet(nn.Module):
 
         self.stem = nn.Sequential(
             ConvModule(3, 128, 7, padding=3, stride=2, norm_cfg=norm_cfg),
-            ResLayer(BasicBlock, 128, 256, 1, stride=2, norm_cfg=norm_cfg))
+            ResLayer(BasicBlock, 128, 256, 1, stride=2, norm_cfg=norm_cfg),
+        )
 
-        self.hourglass_modules = nn.ModuleList([
-            HourglassModule(downsample_times, stage_channels, stage_blocks)
-            for _ in range(num_stacks)
-        ])
+        self.hourglass_modules = nn.ModuleList(
+            [
+                HourglassModule(downsample_times, stage_channels, stage_blocks)
+                for _ in range(num_stacks)
+            ]
+        )
 
         self.inters = ResLayer(
-            BasicBlock,
-            cur_channel,
-            cur_channel,
-            num_stacks - 1,
-            norm_cfg=norm_cfg)
+            BasicBlock, cur_channel, cur_channel, num_stacks - 1, norm_cfg=norm_cfg
+        )
 
-        self.conv1x1s = nn.ModuleList([
-            ConvModule(
-                cur_channel, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
-            for _ in range(num_stacks - 1)
-        ])
+        self.conv1x1s = nn.ModuleList(
+            [
+                ConvModule(cur_channel, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
+                for _ in range(num_stacks - 1)
+            ]
+        )
 
-        self.out_convs = nn.ModuleList([
-            ConvModule(
-                cur_channel, feat_channel, 3, padding=1, norm_cfg=norm_cfg)
-            for _ in range(num_stacks)
-        ])
+        self.out_convs = nn.ModuleList(
+            [
+                ConvModule(cur_channel, feat_channel, 3, padding=1, norm_cfg=norm_cfg)
+                for _ in range(num_stacks)
+            ]
+        )
 
-        self.remap_convs = nn.ModuleList([
-            ConvModule(
-                feat_channel, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None)
-            for _ in range(num_stacks - 1)
-        ])
+        self.remap_convs = nn.ModuleList(
+            [
+                ConvModule(
+                    feat_channel, cur_channel, 1, norm_cfg=norm_cfg, act_cfg=None
+                )
+                for _ in range(num_stacks - 1)
+            ]
+        )
 
         self.relu = nn.ReLU(inplace=True)
 
@@ -190,9 +198,9 @@ class HourglassNet(nn.Module):
             out_feats.append(out_feat)
 
             if ind < self.num_stacks - 1:
-                inter_feat = self.conv1x1s[ind](
-                    inter_feat) + self.remap_convs[ind](
-                        out_feat)
+                inter_feat = self.conv1x1s[ind](inter_feat) + self.remap_convs[ind](
+                    out_feat
+                )
                 inter_feat = self.inters[ind](self.relu(inter_feat))
 
         return out_feats

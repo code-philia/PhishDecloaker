@@ -10,7 +10,14 @@ from .point_assigner import PointAssigner
 from .region_assigner import RegionAssigner
 
 __all__ = [
-    'BaseAssigner', 'MaxIoUAssigner', 'ApproxMaxIoUAssigner', 'AssignResult',
-    'PointAssigner', 'ATSSAssigner', 'CenterRegionAssigner', 'GridAssigner',
-    'HungarianAssigner', 'RegionAssigner'
+    "BaseAssigner",
+    "MaxIoUAssigner",
+    "ApproxMaxIoUAssigner",
+    "AssignResult",
+    "PointAssigner",
+    "ATSSAssigner",
+    "CenterRegionAssigner",
+    "GridAssigner",
+    "HungarianAssigner",
+    "RegionAssigner",
 ]

@@ -8,4 +8,4 @@ from . import utils
 from . import evaluators
 from . import trainers
 
-__version__ = '1.0.1.post2'
+__version__ = "1.0.1.post2"

@@ -24,6 +24,7 @@ from utils.zero_shot_utils import zero_shot_step
 from tasks.mm_tasks.vqa_gen import VqaGenTask
 from PIL import Image
 
+
 # Normalize the question
 def pre_question(question, max_ques_words):
     question = question.lower().lstrip(",.!?*#:;~").replace("-", " ").replace("/", " ")

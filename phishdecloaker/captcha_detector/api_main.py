@@ -48,10 +48,13 @@ def predict():
             results.append({"bbox": bbox, "type": captcha_type})
 
     detected = True if results else False
-    rec_time = (time.process_time()  - start_time) - det_time
-    return jsonify(
-        detected=detected,
-        results=results,
-        det_time=det_time,
-        rec_time=rec_time,
-    ), 200
+    rec_time = (time.process_time() - start_time) - det_time
+    return (
+        jsonify(
+            detected=detected,
+            results=results,
+            det_time=det_time,
+            rec_time=rec_time,
+        ),
+        200,
+    )

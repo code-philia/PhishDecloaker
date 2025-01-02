@@ -36,11 +36,13 @@ class ConvFCBBoxScoreHead(ConvFCBBoxHead):
                                     \-> bbox-scoring fcs -> bbox-score
     """  # noqa: W605
 
-    def __init__(self, 
-                 with_bbox_score=True, 
-                 bbox_score_type='BoxIoU',
-                 loss_bbox_score=dict(type='L1Loss', loss_weight=1.0),
-                 **kwargs):
+    def __init__(
+        self,
+        with_bbox_score=True,
+        bbox_score_type="BoxIoU",
+        loss_bbox_score=dict(type="L1Loss", loss_weight=1.0),
+        **kwargs
+    ):
         super(ConvFCBBoxScoreHead, self).__init__(**kwargs)
         self.with_bbox_score = with_bbox_score
         if self.with_bbox_score:
@@ -79,13 +81,13 @@ class ConvFCBBoxScoreHead(ConvFCBBoxHead):
 
         cls_score = self.fc_cls(x_cls) if self.with_cls else None
         bbox_pred = self.fc_reg(x_reg) if self.with_reg else None
-        bbox_score = (self.fc_bbox_score(x_bbox_score)
-                      if self.with_bbox_score else None)
+        bbox_score = self.fc_bbox_score(x_bbox_score) if self.with_bbox_score else None
 
         return cls_score, bbox_pred, bbox_score
 
-    def _get_target_single(self, pos_bboxes, neg_bboxes, pos_gt_bboxes,
-                           pos_gt_labels, cfg):
+    def _get_target_single(
+        self, pos_bboxes, neg_bboxes, pos_gt_bboxes, pos_gt_labels, cfg
+    ):
         num_pos = pos_bboxes.size(0)
         num_neg = neg_bboxes.size(0)
         num_samples = num_pos + num_neg
@@ -93,9 +95,7 @@ class ConvFCBBoxScoreHead(ConvFCBBoxHead):
         # original implementation uses new_zeros since BG are set to be 0
         # now use empty & fill because BG cat_id = num_classes,
         # FG cat_id = [0, num_classes-1]
-        labels = pos_bboxes.new_full((num_samples, ),
-                                     self.num_classes,
-                                     dtype=torch.long)
+        labels = pos_bboxes.new_full((num_samples,), self.num_classes, dtype=torch.long)
         label_weights = pos_bboxes.new_zeros(num_samples)
         bbox_targets = pos_bboxes.new_zeros(num_samples, 4)
         bbox_weights = pos_bboxes.new_zeros(num_samples, 4)
@@ -108,8 +108,7 @@ class ConvFCBBoxScoreHead(ConvFCBBoxHead):
             label_weights[:num_pos] = pos_weight
 
             if not self.reg_decoded_bbox:
-                pos_bbox_targets = self.bbox_coder.encode(
-                    pos_bboxes, pos_gt_bboxes)
+                pos_bbox_targets = self.bbox_coder.encode(pos_bboxes, pos_gt_bboxes)
             else:
                 # When the regression loss (e.g. `IouLoss`, `GIouLoss`)
                 # is applied directly on the decoded bounding boxes, both
@@ -118,30 +117,39 @@ class ConvFCBBoxScoreHead(ConvFCBBoxHead):
                 pos_bbox_targets = pos_gt_bboxes
             bbox_targets[:num_pos, :] = pos_bbox_targets
             bbox_weights[:num_pos, :] = 1
-            
+
             # Bbox-IoU as target
-            if self.bbox_score_type == 'BoxIoU':
+            if self.bbox_score_type == "BoxIoU":
                 pos_bbox_score_targets = bbox_overlaps(
-                    pos_bboxes, pos_gt_bboxes, is_aligned=True)
+                    pos_bboxes, pos_gt_bboxes, is_aligned=True
+                )
             # Centerness as target
-            elif self.bbox_score_type == 'Centerness':
+            elif self.bbox_score_type == "Centerness":
                 tblr_bbox_coder = build_bbox_coder(
-                    dict(type='TBLRBBoxCoder', normalizer=1.0))
+                    dict(type="TBLRBBoxCoder", normalizer=1.0)
+                )
                 pos_center_bbox_targets = tblr_bbox_coder.encode(
-                    pos_bboxes, pos_gt_bboxes)
-                valid_targets = torch.min(pos_center_bbox_targets,-1)[0] > 0
-                pos_center_bbox_targets[valid_targets==False,:] = 0
-                top_bottom = pos_center_bbox_targets[:,0:2]
-                left_right = pos_center_bbox_targets[:,2:4]
+                    pos_bboxes, pos_gt_bboxes
+                )
+                valid_targets = torch.min(pos_center_bbox_targets, -1)[0] > 0
+                pos_center_bbox_targets[valid_targets == False, :] = 0
+                top_bottom = pos_center_bbox_targets[:, 0:2]
+                left_right = pos_center_bbox_targets[:, 2:4]
                 pos_bbox_score_targets = torch.sqrt(
-                    (torch.min(top_bottom, -1)[0] / 
-                        (torch.max(top_bottom, -1)[0] + 1e-12)) *
-                    (torch.min(left_right, -1)[0] / 
-                        (torch.max(left_right, -1)[0] + 1e-12)))
+                    (
+                        torch.min(top_bottom, -1)[0]
+                        / (torch.max(top_bottom, -1)[0] + 1e-12)
+                    )
+                    * (
+                        torch.min(left_right, -1)[0]
+                        / (torch.max(left_right, -1)[0] + 1e-12)
+                    )
+                )
             else:
                 raise ValueError(
                     'bbox_score_type must be either "BoxIoU" (Default) or \
-                    "Centerness".')
+                    "Centerness".'
+                )
 
             bbox_score_targets[:num_pos] = pos_bbox_score_targets
             bbox_score_weights[:num_pos] = 1
@@ -149,28 +157,43 @@ class ConvFCBBoxScoreHead(ConvFCBBoxHead):
         if num_neg > 0:
             label_weights[-num_neg:] = 1.0
 
-        return (labels, label_weights, bbox_targets, bbox_weights,
-                bbox_score_targets, bbox_score_weights)
+        return (
+            labels,
+            label_weights,
+            bbox_targets,
+            bbox_weights,
+            bbox_score_targets,
+            bbox_score_weights,
+        )
 
-    def get_targets(self,
-                    sampling_results,
-                    gt_bboxes,
-                    gt_labels,
-                    rcnn_train_cfg,
-                    concat=True,
-                    class_agnostic=False):
+    def get_targets(
+        self,
+        sampling_results,
+        gt_bboxes,
+        gt_labels,
+        rcnn_train_cfg,
+        concat=True,
+        class_agnostic=False,
+    ):
         pos_bboxes_list = [res.pos_bboxes for res in sampling_results]
         neg_bboxes_list = [res.neg_bboxes for res in sampling_results]
         pos_gt_bboxes_list = [res.pos_gt_bboxes for res in sampling_results]
         pos_gt_labels_list = [res.pos_gt_labels for res in sampling_results]
-        (labels, label_weights, bbox_targets, bbox_weights, 
-         bbox_score_targets, bbox_score_weights) = multi_apply(
+        (
+            labels,
+            label_weights,
+            bbox_targets,
+            bbox_weights,
+            bbox_score_targets,
+            bbox_score_weights,
+        ) = multi_apply(
             self._get_target_single,
             pos_bboxes_list,
             neg_bboxes_list,
             pos_gt_bboxes_list,
             pos_gt_labels_list,
-            cfg=rcnn_train_cfg)
+            cfg=rcnn_train_cfg,
+        )
 
         if concat:
             labels = torch.cat(labels, 0)
@@ -180,33 +203,42 @@ class ConvFCBBoxScoreHead(ConvFCBBoxHead):
             bbox_score_targets = torch.cat(bbox_score_targets, 0)
             bbox_score_weights = torch.cat(bbox_score_weights, 0)
 
-        return (labels, label_weights, bbox_targets, bbox_weights,
-                bbox_score_targets, bbox_score_weights)
+        return (
+            labels,
+            label_weights,
+            bbox_targets,
+            bbox_weights,
+            bbox_score_targets,
+            bbox_score_weights,
+        )
 
-    @force_fp32(apply_to=('cls_score', 'bbox_pred', 'bbox_score'))
-    def loss(self,
-             cls_score,
-             bbox_pred,
-             bbox_score,
-             rois,
-             labels,
-             label_weights,
-             bbox_targets,
-             bbox_weights,
-             bbox_score_targets,
-             bbox_score_weights,
-             reduction_override=None):
+    @force_fp32(apply_to=("cls_score", "bbox_pred", "bbox_score"))
+    def loss(
+        self,
+        cls_score,
+        bbox_pred,
+        bbox_score,
+        rois,
+        labels,
+        label_weights,
+        bbox_targets,
+        bbox_weights,
+        bbox_score_targets,
+        bbox_score_weights,
+        reduction_override=None,
+    ):
         losses = dict()
         if cls_score is not None:
-            avg_factor = max(torch.sum(label_weights > 0).float().item(), 1.)
+            avg_factor = max(torch.sum(label_weights > 0).float().item(), 1.0)
             if cls_score.numel() > 0:
-                losses['loss_cls'] = self.loss_cls(
+                losses["loss_cls"] = self.loss_cls(
                     cls_score,
                     labels,
                     label_weights,
                     avg_factor=avg_factor,
-                    reduction_override=reduction_override)
-                losses['acc'] = accuracy(cls_score, labels)
+                    reduction_override=reduction_override,
+                )
+                losses["acc"] = accuracy(cls_score, labels)
         if bbox_pred is not None:
             bg_class_ind = self.num_classes
             # 0~self.num_classes-1 are FG, self.num_classes is BG
@@ -220,53 +252,56 @@ class ConvFCBBoxScoreHead(ConvFCBBoxHead):
                     # already encoded coordinates to absolute format.
                     bbox_pred = self.bbox_coder.decode(rois[:, 1:], bbox_pred)
                 if self.reg_class_agnostic:
-                    pos_bbox_pred = bbox_pred.view(
-                        bbox_pred.size(0), 4)[pos_inds.type(torch.bool)]
+                    pos_bbox_pred = bbox_pred.view(bbox_pred.size(0), 4)[
+                        pos_inds.type(torch.bool)
+                    ]
                 else:
-                    pos_bbox_pred = bbox_pred.view(
-                        bbox_pred.size(0), -1,
-                        4)[pos_inds.type(torch.bool),
-                           labels[pos_inds.type(torch.bool)]]
+                    pos_bbox_pred = bbox_pred.view(bbox_pred.size(0), -1, 4)[
+                        pos_inds.type(torch.bool), labels[pos_inds.type(torch.bool)]
+                    ]
 
-                losses['loss_bbox'] = self.loss_bbox(
+                losses["loss_bbox"] = self.loss_bbox(
                     pos_bbox_pred,
                     bbox_targets[pos_inds.type(torch.bool)],
                     bbox_weights[pos_inds.type(torch.bool)],
                     avg_factor=bbox_targets.size(0),
-                    reduction_override=reduction_override)
+                    reduction_override=reduction_override,
+                )
             else:
-                losses['loss_bbox'] = bbox_pred[pos_inds].sum()
+                losses["loss_bbox"] = bbox_pred[pos_inds].sum()
 
         if bbox_score is not None:
             if bbox_score.numel() > 0:
-                losses['loss_bbox_score'] = self.loss_bbox_score(
+                losses["loss_bbox_score"] = self.loss_bbox_score(
                     bbox_score.squeeze(-1).sigmoid(),
                     bbox_score_targets,
                     bbox_score_weights,
                     avg_factor=bbox_score_targets.size(0),
-                    reduction_override=reduction_override)
+                    reduction_override=reduction_override,
+                )
         return losses
 
-    @force_fp32(apply_to=('cls_score', 'bbox_pred'))
-    def get_bboxes(self,
-                   rois,
-                   cls_score,
-                   bbox_pred,
-                   bbox_score,
-                   rpn_score,
-                   img_shape,
-                   scale_factor,
-                   rescale=False,
-                   cfg=None):
+    @force_fp32(apply_to=("cls_score", "bbox_pred"))
+    def get_bboxes(
+        self,
+        rois,
+        cls_score,
+        bbox_pred,
+        bbox_score,
+        rpn_score,
+        img_shape,
+        scale_factor,
+        rescale=False,
+        cfg=None,
+    ):
         if isinstance(cls_score, list):
             cls_score = sum(cls_score) / float(len(cls_score))
         # cls_score is not used.
         # scores = F.softmax(
         #     cls_score, dim=1) if cls_score is not None else None
-        
+
         if bbox_pred is not None:
-            bboxes = self.bbox_coder.decode(
-                rois[:, 1:], bbox_pred, max_shape=img_shape)
+            bboxes = self.bbox_coder.decode(rois[:, 1:], bbox_pred, max_shape=img_shape)
         else:
             bboxes = rois[:, 1:].clone()
             if img_shape is not None:
@@ -278,8 +313,9 @@ class ConvFCBBoxScoreHead(ConvFCBBoxHead):
                 bboxes /= scale_factor
             else:
                 scale_factor = bboxes.new_tensor(scale_factor)
-                bboxes = (bboxes.view(bboxes.size(0), -1, 4) /
-                          scale_factor).view(bboxes.size()[0], -1)
+                bboxes = (bboxes.view(bboxes.size(0), -1, 4) / scale_factor).view(
+                    bboxes.size()[0], -1
+                )
 
         # The objectness score of a region is computed as a geometric mean of
         # the estimated localization quality scores of OLN-RPN and OLN-Box
@@ -292,17 +328,15 @@ class ConvFCBBoxScoreHead(ConvFCBBoxHead):
         if cfg is None:
             return bboxes, scores
         else:
-            det_bboxes, det_labels = multiclass_nms(bboxes, 
-                                                    scores,
-                                                    cfg.score_thr, cfg.nms,
-                                                    cfg.max_per_img)
+            det_bboxes, det_labels = multiclass_nms(
+                bboxes, scores, cfg.score_thr, cfg.nms, cfg.max_per_img
+            )
 
             return det_bboxes, det_labels
 
 
 @HEADS.register_module()
 class Shared2FCBBoxScoreHead(ConvFCBBoxScoreHead):
-
     def __init__(self, fc_out_channels=1024, *args, **kwargs):
         super(Shared2FCBBoxScoreHead, self).__init__(
             num_shared_convs=0,
@@ -313,4 +347,5 @@ class Shared2FCBBoxScoreHead(ConvFCBBoxScoreHead):
             num_reg_fcs=0,
             fc_out_channels=fc_out_channels,
             *args,
-            **kwargs)
+            **kwargs
+        )
