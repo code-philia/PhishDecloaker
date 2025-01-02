@@ -135,4 +135,4 @@ jobs:
           conda activate "$env_name"
 
           # 运行代码质量检查
-          vulture "$project_dir" || true
+          vulture "$project_dir"  --min-confidence 60 --exclude tests,docs || true
