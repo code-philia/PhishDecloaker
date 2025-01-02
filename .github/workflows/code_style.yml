@@ -77,6 +77,18 @@ jobs:
           # 运行代码质量检查
           black --check "$project_dir" || true
 
+      - name: Run isort
+        run: |
+          project_dir="${{ matrix.project }}"
+          project_name=$(basename "$project_dir")
+          env_name="${project_name}_env"
+
+          # 激活环境
+          conda activate "$env_name"
+
+          # 运行代码质量检查
+          isort . --check-only
+
       - name: Run flake8
         run: |
           project_dir="${{ matrix.project }}"
