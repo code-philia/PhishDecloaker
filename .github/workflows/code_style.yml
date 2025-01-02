@@ -14,6 +14,10 @@ on:
 
 jobs:
   lint-format-test:
+    defaults:
+      run:
+        shell: bash -l {0}
+
     name: CI - Lint, Format
     runs-on: ubuntu-latest
     steps:
@@ -42,7 +46,6 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Process each environment.yml
-        shell: bash -l {0}
         run: |
           # Initialize Conda in the current shell
           source ~/miniconda3/etc/profile.d/conda.sh
@@ -61,6 +64,7 @@ jobs:
             conda env create -f "$env_file" -n "$env_name" || conda env update -f "$env_file" -n "$env_name"
 
             # Activate the environment
+            conda init
             conda activate "$env_name"
 
             # Install code quality check tools (if not included in environment.yml)
