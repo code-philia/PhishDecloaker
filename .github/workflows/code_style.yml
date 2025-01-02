@@ -47,9 +47,6 @@ jobs:
 
       - name: Process each environment.yml
         run: |
-          # Initialize Conda in the current shell
-          source ~/miniconda3/etc/profile.d/conda.sh
-
           for env_file in $(find . -type f -name "environment.yml"); do
             echo "Processing $env_file"
 
