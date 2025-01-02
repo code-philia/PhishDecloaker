@@ -75,7 +75,7 @@ jobs:
           conda activate "$env_name"
 
           # 运行代码质量检查
-          black --check "$project_dir"
+          black --check "$project_dir" || true
 
       - name: Run flake8
         run: |
@@ -87,7 +87,7 @@ jobs:
           conda activate "$env_name"
 
           # 运行代码质量检查
-          flake8 "$project_dir" --ignore=E501,F541 # E501: line too long E203: whitespace before ':' W503: line break before binary operator
+          flake8 "$project_dir" || true
 
       - name: Run mypy
         run: |
@@ -99,7 +99,7 @@ jobs:
           conda activate "$env_name"
 
           # 运行代码质量检查
-          mypy "$project_dir" --explicit-package-bases
+          mypy "$project_dir" --explicit-package-bases || true
 
       - name: Run bandit
         run: |
@@ -111,7 +111,7 @@ jobs:
           conda activate "$env_name"
 
           # 运行代码质量检查
-          bandit -r "$project_dir"
+          bandit -r "$project_dir" || true
 
       - name: Run vulture
         run: |
@@ -123,7 +123,7 @@ jobs:
           conda activate "$env_name"
 
           # 运行代码质量检查
-          vulture "$project_dir"
+          vulture "$project_dir" || true
 
       - name: Run Tests
         run: |

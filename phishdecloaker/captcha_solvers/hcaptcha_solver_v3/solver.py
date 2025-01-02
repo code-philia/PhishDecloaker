@@ -235,7 +235,7 @@ class Solver:
         except openai.APIConnectionError as e:
             logger.info("\t[!] openai server could not be reached")
             logger.info(e.__cause__)
-        except openai.RateLimitError as e:
+        except openai.RateLimitError:
             logger.info("\t[!] openai server rate limited")
         except openai.APIStatusError as e:
             logger.info(f"\t[!] openai server returned status code {e.status_code}")
