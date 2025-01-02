@@ -63,7 +63,7 @@ jobs:
           conda activate "$env_name"
 
           # 安装代码质量检查工具（如果未包含在 environment.yml 中）
-          pip install black flake8 mypy bandit vulture pytest
+          pip install black flake8 mypy bandit vulture isort 
 
       - name: Run black
         run: |
