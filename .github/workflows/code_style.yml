@@ -34,11 +34,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-conda-
 
-      - name: Install Conda
-        run: |
-          conda install -y mamba
-          mamba update -n base -c defaults conda
-
       - name: Find all environment.yml files
         id: find_env
         run: |
