@@ -1,4 +1,4 @@
-name: Code style checks
+name: Code Style Checks
 
 on:
   push:
@@ -14,12 +14,21 @@ on:
 
 jobs:
   lint-format-test:
-    defaults:
-      run:
-        shell: bash -l {0}
-
-    name: CI - Lint, Format
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        project:
+          - phishdecloaker/captcha_detector
+          - phishdecloaker/captcha_solvers/hcaptcha_solver_v3
+          - phishdecloaker/captcha_solvers/recaptchav2_solver_v3
+          - phishdecloaker/captcha_solvers/rotation_solver
+          - phishdecloaker/captcha_solvers/slider_solver
+          - phishdecloaker/controller
+          - phishdecloaker/crawler
+          - phishdecloaker/filter
+          - phishdecloaker/phishing_detector
+          - phishdecloaker/poller
+    name: CI - Lint, Format for ${{ matrix.project }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
@@ -33,53 +42,56 @@ jobs:
       - name: Cache Conda packages
         uses: actions/cache@v3
         with:
-          path: ~/miniconda3/pkgs
-          key: ${{ runner.os }}-conda-${{ hashFiles('**/environment.yml') }}
+          path: ~/miniconda/pkgs
+          key: ${{ runner.os }}-conda-${{ hashFiles(matrix.project + '/environment.yml') }}
           restore-keys: |
             ${{ runner.os }}-conda-
 
-      - name: Find all environment.yml files
-        id: find_env
+      - name: Create or Update Conda Environment
+        shell: bash -l {0}
         run: |
-          echo "env_files<<EOF" >> $GITHUB_ENV
-          find . -type f -name "environment.yml" >> $GITHUB_ENV
-          echo "EOF" >> $GITHUB_ENV
+          env_file="${{ matrix.project }}/environment.yml"
+          project_name=$(basename "${{ matrix.project }}")
+          env_name="${project_name}_env"
 
-      - name: Process each environment.yml
+          # 创建或更新 Conda 环境
+          conda env create -f "$env_file" -n "$env_name" || conda env update -f "$env_file" -n "$env_name"
+
+          # 激活环境
+          conda activate "$env_name"
+
+          # 安装代码质量检查工具（如果未包含在 environment.yml 中）
+          pip install black flake8 mypy bandit vulture pytest
+
+      - name: Run Code Quality Checks
+        shell: bash -l {0}
         run: |
-          for env_file in $(find . -type f -name "environment.yml"); do
-            echo "Processing $env_file"
+          project_dir="${{ matrix.project }}"
+          project_name=$(basename "$project_dir")
+          env_name="${project_name}_env"
 
-            # Get project name (e.g., captcha_detector)
-            project_dir=$(dirname "$env_file")
-            project_name=$(basename "$project_dir")
+          # 激活环境
+          conda activate "$env_name"
 
-            # Create a unique environment name
-            env_name="${project_name}_env"
+          # 运行代码质量检查
+          black --check "$project_dir"
+          flake8 "$project_dir" --ignore=E203,W503
+          mypy "$project_dir" --explicit-package-bases
+          bandit -r "$project_dir"
+          vulture "$project_dir"
 
-            # Create or update the Conda environment
-            conda env create -f "$env_file" -n "$env_name" || conda env update -f "$env_file" -n "$env_name"
+      - name: Run Tests
+        shell: bash -l {0}
+        run: |
+          project_dir="${{ matrix.project }}"
+          project_name=$(basename "$project_dir")
+          env_name="${project_name}_env"
 
-            # Activate the environment
-            conda init
-            conda activate "$env_name"
+          # 激活环境
+          conda activate "$env_name"
 
-            # Install code quality check tools (if not included in environment.yml)
-            pip install black flake8 mypy bandit vulture pytest
-
-            # Run code quality checks
-            black --check "$project_dir"
-            flake8 "$project_dir" --ignore=E203,W503
-            mypy "$project_dir" --explicit-package-bases
-            bandit -r "$project_dir"
-            vulture "$project_dir"
-
-            # Run tests (if applicable)
-            if [ -d "${project_dir}/tests" ]; then
-              mkdir -p reports
-              pytest "$project_dir/tests" --junitxml=reports/${project_name}_test-results.xml
-            fi
-
-            # Deactivate the environment
-            conda deactivate
-          done
+          # 运行测试（如果适用）
+          if [ -d "${project_dir}/tests" ]; then
+            mkdir -p reports
+            pytest "$project_dir/tests" --junitxml=reports/${project_name}_test-results.xml
+          fi
