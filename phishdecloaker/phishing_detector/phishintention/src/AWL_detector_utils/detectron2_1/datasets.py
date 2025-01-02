@@ -4,8 +4,8 @@ import copy
 import logging
 from pathlib import Path
 
-import torch
 import numpy as np
+import torch
 from detectron2.data import detection_utils as utils
 from detectron2.data import transforms as T
 from detectron2.data.datasets import register_coco_instances

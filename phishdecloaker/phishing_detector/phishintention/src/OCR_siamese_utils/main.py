@@ -1,4 +1,5 @@
 from __future__ import absolute_import
+
 import sys
 
 sys.path.append("./")
@@ -8,11 +9,11 @@ import os
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-import os.path as osp
-import numpy as np
 import math
+import os.path as osp
 import time
 
+import numpy as np
 import torch
 from torch import nn, optim
 from torch.backends import cudnn
@@ -20,15 +21,15 @@ from torch.utils.data import DataLoader, SubsetRandomSampler
 
 from .config import get_args
 from .lib import datasets, evaluation_metrics, models
-from .lib.models.model_builder import ModelBuilder
-from .lib.datasets.dataset import LmdbDataset, AlignCollate
 from .lib.datasets.concatdataset import ConcatDataset
-from .lib.loss import SequenceCrossEntropyLoss
-from .lib.trainers import Trainer
+from .lib.datasets.dataset import AlignCollate, LmdbDataset
 from .lib.evaluators import Evaluator
+from .lib.loss import SequenceCrossEntropyLoss
+from .lib.models.model_builder import ModelBuilder
+from .lib.trainers import Trainer
 from .lib.utils.logging import Logger, TFLogger
-from .lib.utils.serialization import load_checkpoint, save_checkpoint
 from .lib.utils.osutils import make_symlink_if_not_exists
+from .lib.utils.serialization import load_checkpoint, save_checkpoint
 
 global_args = get_args(sys.argv[1:])
 

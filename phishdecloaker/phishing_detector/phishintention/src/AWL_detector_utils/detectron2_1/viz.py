@@ -17,18 +17,14 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import wandb
-from detectron2.data import (
-    DatasetCatalog,
-    MetadataCatalog,
-    build_detection_train_loader,
-)
+from detectron2.data import (DatasetCatalog, MetadataCatalog,
+                             build_detection_train_loader)
 from detectron2.structures import Boxes, BoxMode, Instances
 from detectron2.utils.visualizer import Visualizer
 from fvcore.common.file_io import PathManager
 from PIL import Image
-from tqdm import tqdm
-
 from src.AWL_detector_utils.detectron2_1.datasets import WebMapper
+from tqdm import tqdm
 
 
 def viz_data(cfg) -> List[wandb.Image]:

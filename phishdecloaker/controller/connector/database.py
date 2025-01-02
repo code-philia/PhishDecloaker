@@ -1,7 +1,7 @@
 from dataclasses import dataclass
-from bson.objectid import ObjectId
 from datetime import datetime
 
+from bson.objectid import ObjectId
 from pymongo import MongoClient
 
 

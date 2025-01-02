@@ -19,6 +19,7 @@ import argparse
 import logging
 import logging.config
 import os
+
 from phishintention.src.crp_classifier_utils import bit_hyperrule
 
 

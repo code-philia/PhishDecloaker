@@ -1,5 +1,6 @@
-import torch
 from typing import List
+
+import torch
 
 
 def dice_coefficient(area1, area2, inter_area):

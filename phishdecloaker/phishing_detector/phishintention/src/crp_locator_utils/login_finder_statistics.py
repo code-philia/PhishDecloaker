@@ -1,7 +1,8 @@
-import pandas as pd
 import json
 import os
 import shutil
+
+import pandas as pd
 
 ################# Write failed cases for 460 legitimate ###############################
 # get predicted URL

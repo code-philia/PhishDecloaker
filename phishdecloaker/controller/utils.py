@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+
 import requests
 
 VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY", None)

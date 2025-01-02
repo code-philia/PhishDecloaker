@@ -1,30 +1,25 @@
 # https://github.com/lolipopshock/Detectron2_AL/tree/7eb444e165f1aea6b3e1930ba0097dcaadf4c705/src/detectron2_al
 
-import layoutparser as lp
-from typing import Dict, List, Optional, Tuple, Union
-import torch
-import numpy as np
 import random
+import sys
 from copy import deepcopy
 from itertools import product
+from typing import Dict, List, Optional, Tuple, Union
 
-from detectron2.structures import Boxes, ImageList, Instances, pairwise_iou
-from detectron2.utils.registry import Registry
-from detectron2.modeling.roi_heads.fast_rcnn import (
-    FastRCNNOutputLayers,
-    FastRCNNOutputs,
-)
-from detectron2.modeling.roi_heads.roi_heads import (
-    ROIHeads,
-    StandardROIHeads,
-    ROI_HEADS_REGISTRY,
-)
-from detectron2.structures.boxes import Boxes
-
-import sys
-from scoring_utils import elementwise_iou
-from detectron2.modeling.box_regression import Box2BoxTransform
+import layoutparser as lp
+import numpy as np
+import torch
 import torch.nn.functional as F
+from detectron2.modeling.box_regression import Box2BoxTransform
+from detectron2.modeling.roi_heads.fast_rcnn import (FastRCNNOutputLayers,
+                                                     FastRCNNOutputs)
+from detectron2.modeling.roi_heads.roi_heads import (ROI_HEADS_REGISTRY,
+                                                     ROIHeads,
+                                                     StandardROIHeads)
+from detectron2.structures import Boxes, ImageList, Instances, pairwise_iou
+from detectron2.structures.boxes import Boxes
+from detectron2.utils.registry import Registry
+from scoring_utils import elementwise_iou
 
 __all__ = ["ROIHeadsAL"]
 

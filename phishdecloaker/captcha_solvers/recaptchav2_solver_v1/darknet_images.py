@@ -1,11 +1,12 @@
 import argparse
-import os
 import glob
+import os
 import random
 import time
+
 import cv2
-import numpy as np
 import darknet
+import numpy as np
 
 
 def parser():

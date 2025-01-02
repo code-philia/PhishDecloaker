@@ -1,15 +1,14 @@
-import os
-import io
-import time
 import base64
+import io
+import os
+import time
 
-from PIL import Image, ImageDraw, ImageFont
-from flask import Blueprint, request, jsonify, Response
-
-from ocr.model import text_encoder
 from database.client import client
-from siamese.model import embedder
 from detector.model import detector
+from flask import Blueprint, Response, jsonify, request
+from ocr.model import text_encoder
+from PIL import Image, ImageDraw, ImageFont
+from siamese.model import embedder
 
 
 class Config:

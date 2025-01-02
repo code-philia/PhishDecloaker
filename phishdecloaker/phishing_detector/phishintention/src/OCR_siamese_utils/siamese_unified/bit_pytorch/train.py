@@ -14,25 +14,23 @@
 
 # Lint as: python3
 """Fine-tune a BiT model on some downstream dataset."""
+import os
+import time
 #!/usr/bin/env python3
 # coding: utf-8
 from os.path import join as pjoin  # pylint: disable=g-importing-member
-import time
 
 import numpy as np
-import torch
-import torchvision as tv
-
+import phishintention.src.OCR_siamese_utils.siamese_unified.bit_common as bit_common
+import phishintention.src.OCR_siamese_utils.siamese_unified.bit_hyperrule as bit_hyperrule
 import phishintention.src.OCR_siamese_utils.siamese_unified.bit_pytorch.fewshot as fs
 import phishintention.src.OCR_siamese_utils.siamese_unified.bit_pytorch.lbtoolbox as lb
 import phishintention.src.OCR_siamese_utils.siamese_unified.bit_pytorch.models as models
-
-import phishintention.src.OCR_siamese_utils.siamese_unified.bit_common as bit_common
-import phishintention.src.OCR_siamese_utils.siamese_unified.bit_hyperrule as bit_hyperrule
+import torch
+import torchvision as tv
 from phishintention.src.OCR_siamese_utils.demo import *
 
 from .dataloader import GetLoader
-import os
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 

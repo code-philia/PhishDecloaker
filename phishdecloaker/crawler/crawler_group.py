@@ -1,13 +1,13 @@
+import base64
 import io
 import time
-import base64
 from enum import Flag, auto
 
 import tldextract
-from PIL import Image
-from playwright.sync_api import Browser, BrowserContext, Page, Dialog, CDPSession
-
 import utils
+from PIL import Image
+from playwright.sync_api import (Browser, BrowserContext, CDPSession, Dialog,
+                                 Page)
 
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080

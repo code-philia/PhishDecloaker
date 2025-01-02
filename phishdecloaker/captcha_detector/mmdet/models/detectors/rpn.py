@@ -1,8 +1,8 @@
-import torch
 import mmcv
+import torch
 from mmcv.image import tensor2imgs
+from mmdet.core import bbox2result, bbox_mapping
 
-from mmdet.core import bbox_mapping, bbox2result
 from ..builder import DETECTORS, build_backbone, build_head, build_neck
 from .base import BaseDetector
 

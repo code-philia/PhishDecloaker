@@ -1,18 +1,16 @@
+import logging
 import os
 import re
 import time
-import logging
 
 import cv2
 import numpy as np
-from playwright.sync_api import Page
-
-from detectron2.engine import DefaultPredictor
 from detectron2.config import get_cfg
-
-from phishintention.src.util.chrome import *
-from phishintention.src.crp_classifier import *
+from detectron2.engine import DefaultPredictor
 from phishintention.src.AWL_detector import *
+from phishintention.src.crp_classifier import *
+from phishintention.src.util.chrome import *
+from playwright.sync_api import Page
 
 # global dict
 class_dict = {0: "login"}

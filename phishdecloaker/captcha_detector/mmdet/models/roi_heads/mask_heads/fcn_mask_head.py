@@ -5,10 +5,9 @@ import torch.nn.functional as F
 from mmcv.cnn import Conv2d, ConvModule, build_upsample_layer
 from mmcv.ops.carafe import CARAFEPack
 from mmcv.runner import auto_fp16, force_fp32
-from torch.nn.modules.utils import _pair
-
 from mmdet.core import mask_target
 from mmdet.models.builder import HEADS, build_loss
+from torch.nn.modules.utils import _pair
 
 BYTES_PER_FLOAT = 4
 # TODO: This memory limit may be too much or too little. It would be better to
@@ -214,7 +213,8 @@ class FCNMaskHead(nn.Module):
 
         if torch.onnx.is_in_onnx_export():
             # TODO: Remove after F.grid_sample is supported.
-            from torchvision.models.detection.roi_heads import paste_masks_in_image
+            from torchvision.models.detection.roi_heads import \
+                paste_masks_in_image
 
             masks = paste_masks_in_image(mask_pred, bboxes, ori_shape[:2])
             thr = rcnn_test_cfg.get("mask_thr_binary", 0)

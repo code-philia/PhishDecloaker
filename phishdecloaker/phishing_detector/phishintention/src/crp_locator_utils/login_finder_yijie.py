@@ -1,25 +1,21 @@
 import os
-from phishintention.src.util.chrome import *
 import re
 import time
-from selenium.common.exceptions import TimeoutException, NoAlertPresentException
-from phishintention.src.crp_locator import (
-    login_config,
-    login_recognition,
-    dynamic_analysis,
-)
-from seleniumwire import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from webdriver_manager.chrome import ChromeDriverManager
+
 import helium
-from tldextract import tldextract
-from phishintention.src.AWL_detector import (
-    element_config,
-    element_recognition,
-    vis,
-    find_element_type,
-)
 import matplotlib
+from phishintention.src.AWL_detector import (element_config,
+                                             element_recognition,
+                                             find_element_type, vis)
+from phishintention.src.crp_locator import (dynamic_analysis, login_config,
+                                            login_recognition)
+from phishintention.src.util.chrome import *
+from selenium.common.exceptions import (NoAlertPresentException,
+                                        TimeoutException)
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from seleniumwire import webdriver
+from tldextract import tldextract
+from webdriver_manager.chrome import ChromeDriverManager
 
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt

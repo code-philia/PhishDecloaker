@@ -1,26 +1,26 @@
 from __future__ import absolute_import
 
-from PIL import Image
 import os
-import numpy as np
 from collections import OrderedDict
 
 # from scipy.misc import imresize
 import matplotlib
+import numpy as np
+from PIL import Image
 
 matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-from matplotlib.gridspec import GridSpec
-from io import BytesIO
-from multiprocessing import Pool
 import math
 import sys
+from io import BytesIO
+from multiprocessing import Pool
 
+import matplotlib.pyplot as plt
 import torch
+from matplotlib.gridspec import GridSpec
 from torch.nn import functional as F
 
-from . import to_torch, to_numpy
 from ..evaluation_metrics.metrics import get_str_list
+from . import to_numpy, to_torch
 
 
 def recognition_vis(images, preds, targets, scores, dataset, vis_dir):

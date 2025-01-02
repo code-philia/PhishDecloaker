@@ -1,8 +1,9 @@
 from __future__ import annotations
+
 import os
 
-import torch
 import numpy.typing as npt
+import torch
 from PIL import Image
 from torchvision.transforms import transforms
 

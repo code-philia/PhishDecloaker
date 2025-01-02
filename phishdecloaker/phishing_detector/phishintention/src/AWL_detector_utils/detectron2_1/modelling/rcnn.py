@@ -1,8 +1,8 @@
 # https://github.com/lolipopshock/Detectron2_AL/tree/7eb444e165f1aea6b3e1930ba0097dcaadf4c705/src/detectron2_al
 
-from detectron2.modeling.meta_arch.build import META_ARCH_REGISTRY
-from detectron2.modeling.meta_arch.rcnn import ProposalNetwork, GeneralizedRCNN
 import torch
+from detectron2.modeling.meta_arch.build import META_ARCH_REGISTRY
+from detectron2.modeling.meta_arch.rcnn import GeneralizedRCNN, ProposalNetwork
 
 __all__ = ["ActiveLearningRCNN"]
 

@@ -1,13 +1,14 @@
 from __future__ import annotations
+
 import os
 
 import easyocr
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
+from easyocr.utils import get_image_list, reformat_input
 from PIL import Image
 from torch.utils.data import DataLoader
-from easyocr.utils import reformat_input, get_image_list
 
 from .utils import AlignCollate, ListDataset
 

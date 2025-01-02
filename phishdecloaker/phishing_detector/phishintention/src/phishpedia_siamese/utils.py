@@ -1,5 +1,6 @@
-from PIL import Image
 import math
+
+from PIL import Image
 
 
 def resolution_alignment(img1, img2):

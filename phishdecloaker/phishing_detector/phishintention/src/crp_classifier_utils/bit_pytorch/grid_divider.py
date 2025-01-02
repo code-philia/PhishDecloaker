@@ -1,8 +1,9 @@
-import torch
+import math
+import os
+
 import cv2
 import numpy as np
-import os
-import math
+import torch
 
 
 def coord_reshape(coords, image_shape, reshaped_size=(256, 512)):

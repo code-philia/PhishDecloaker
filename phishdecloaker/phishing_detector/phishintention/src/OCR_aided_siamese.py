@@ -1,23 +1,19 @@
-from phishintention.src.phishpedia_siamese.siamese_retrain.bit_pytorch.models import (
-    KNOWN_MODELS,
-)
-from phishintention.src.phishpedia_siamese.inference import (
-    siamese_inference,
-    pred_siamese,
-)
-from phishintention.src.phishpedia_siamese.utils import brand_converter
-from phishintention.src.OCR_siamese_utils.inference import (
-    siamese_inference_OCR,
-    pred_siamese_OCR,
-)
-from phishintention.src.OCR_siamese_utils.demo import ocr_model_config
-import torch
 import os
-import numpy as np
-from collections import OrderedDict
 import pickle
-from tqdm import tqdm
+from collections import OrderedDict
+
+import numpy as np
 import tldextract
+import torch
+from phishintention.src.OCR_siamese_utils.demo import ocr_model_config
+from phishintention.src.OCR_siamese_utils.inference import (
+    pred_siamese_OCR, siamese_inference_OCR)
+from phishintention.src.phishpedia_siamese.inference import (pred_siamese,
+                                                             siamese_inference)
+from phishintention.src.phishpedia_siamese.siamese_retrain.bit_pytorch.models import \
+    KNOWN_MODELS
+from phishintention.src.phishpedia_siamese.utils import brand_converter
+from tqdm import tqdm
 
 
 def phishpedia_config(
@@ -107,7 +103,8 @@ def phishpedia_config_OCR(
 
     # Initialize model
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    from .OCR_siamese_utils.siamese_unified.bit_pytorch.models import KNOWN_MODELS
+    from .OCR_siamese_utils.siamese_unified.bit_pytorch.models import \
+        KNOWN_MODELS
 
     model = KNOWN_MODELS["BiT-M-R50x1"](head_size=num_classes, zero_head=True)
 
@@ -169,7 +166,8 @@ def phishpedia_config_OCR_easy(
 
     # Initialize model
     device = "cuda" if torch.cuda.is_available() else "cpu"
-    from .OCR_siamese_utils.siamese_unified.bit_pytorch.models import KNOWN_MODELS
+    from .OCR_siamese_utils.siamese_unified.bit_pytorch.models import \
+        KNOWN_MODELS
 
     model = KNOWN_MODELS["BiT-M-R50x1"](head_size=num_classes, zero_head=True)
 

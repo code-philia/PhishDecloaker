@@ -1,6 +1,7 @@
-from typing import List, Set, Dict, Tuple, Optional
-import os
 import json
+import os
+from typing import Dict, List, Optional, Set, Tuple
+
 import numpy
 
 

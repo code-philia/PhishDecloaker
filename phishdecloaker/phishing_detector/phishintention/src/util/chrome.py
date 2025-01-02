@@ -1,6 +1,7 @@
-from playwright.sync_api import Page
-import time
 import re
+import time
+
+from playwright.sync_api import Page
 
 
 def visit_url(page: Page, orig_url, popup=False, sleep=False):

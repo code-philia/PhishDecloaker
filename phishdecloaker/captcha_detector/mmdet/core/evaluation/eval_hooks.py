@@ -4,9 +4,8 @@ from math import inf
 
 import mmcv
 from mmcv.runner import Hook
-from torch.utils.data import DataLoader
-
 from mmdet.utils import get_root_logger
+from torch.utils.data import DataLoader
 
 
 class EvalHook(Hook):

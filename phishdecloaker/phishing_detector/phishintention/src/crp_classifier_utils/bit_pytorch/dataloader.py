@@ -1,21 +1,16 @@
-import torch.utils.data as data
-import numpy as np
-from phishintention.src.crp_classifier_utils.bit_pytorch.grid_divider import (
-    read_img,
-    coord2pixel,
-    topo2pixel,
-)
-from phishintention.src.crp_classifier_utils.bit_pytorch.utils import (
-    read_txt,
-    read_txt_screenshot,
-)
-import torchvision.transforms as transform
 import os
-import torch
 
-import matplotlib.pyplot as plt
-from PIL import Image
 import cv2
+import matplotlib.pyplot as plt
+import numpy as np
+import torch
+import torch.utils.data as data
+import torchvision.transforms as transform
+from phishintention.src.crp_classifier_utils.bit_pytorch.grid_divider import (
+    coord2pixel, read_img, topo2pixel)
+from phishintention.src.crp_classifier_utils.bit_pytorch.utils import (
+    read_txt, read_txt_screenshot)
+from PIL import Image
 
 
 class HybridLoader(data.Dataset):

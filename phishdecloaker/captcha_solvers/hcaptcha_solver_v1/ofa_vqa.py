@@ -1,14 +1,14 @@
 from __future__ import annotations
-import re
+
 import os
+import re
 import sys
 
 import numpy as np
 import torch
-from torchvision import transforms
-from fairseq import checkpoint_utils
-from fairseq import options, tasks, utils
+from fairseq import checkpoint_utils, options, tasks, utils
 from fairseq.dataclass.utils import convert_namespace_to_omegaconf
+from torchvision import transforms
 
 
 class Config:
@@ -20,9 +20,9 @@ class Config:
 
 sys.path += [Config.OFA_DIR]
 
-from utils.zero_shot_utils import zero_shot_step
-from tasks.mm_tasks.vqa_gen import VqaGenTask
 from PIL import Image
+from tasks.mm_tasks.vqa_gen import VqaGenTask
+from utils.zero_shot_utils import zero_shot_step
 
 
 # Normalize the question

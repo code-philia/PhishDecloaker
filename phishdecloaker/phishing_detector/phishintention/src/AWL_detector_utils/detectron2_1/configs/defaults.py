@@ -1,5 +1,5 @@
-from detectron2.config.defaults import _C
 from detectron2.config.config import CfgNode as CN
+from detectron2.config.defaults import _C
 
 # ---------------------------------------------------------------------------- #
 # Additional Configuration for Active Learning

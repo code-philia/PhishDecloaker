@@ -1,7 +1,8 @@
-from lxml import html
 import io
 import os
+
 import numpy as np
+from lxml import html
 
 
 def read_html(html_code):

@@ -1,10 +1,10 @@
-from detectron2.config import get_cfg
-import detectron2.data.transforms as T
-from phishintention.src.AWL_detector_utils.detectron2_1.datasets import *
-from detectron2.data import build_detection_test_loader
-from tqdm import tqdm
 import json
 
+import detectron2.data.transforms as T
+from detectron2.config import get_cfg
+from detectron2.data import build_detection_test_loader
+from phishintention.src.AWL_detector_utils.detectron2_1.datasets import *
+from tqdm import tqdm
 
 if __name__ == "__main__":
     # Modify config

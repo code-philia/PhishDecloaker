@@ -6,11 +6,12 @@ Reference:
         Dahun Kim, Tsung-Yi Lin, Anelia Angelova, In So Kweon and Weicheng Kuo
 """
 
-import numpy as np
+import copy
 import datetime
 import time
 from collections import defaultdict
-import copy
+
+import numpy as np
 from pycocotools.cocoeval import COCOeval
 
 

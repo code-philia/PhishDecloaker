@@ -1,5 +1,5 @@
-import uuid
 import random
+import uuid
 
 from playwright.sync_api import Page, Route
 

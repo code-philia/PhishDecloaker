@@ -1,15 +1,15 @@
-import re
-import io
-import random
-import base64
 import asyncio
+import base64
+import io
 import logging
-from PIL import Image
+import random
+import re
 from dataclasses import dataclass
 
 import openai
 from openai import OpenAI
-from playwright.async_api import Page, Response, ElementHandle, TimeoutError
+from PIL import Image
+from playwright.async_api import ElementHandle, Page, Response, TimeoutError
 
 logger = logging.getLogger("solver")
 

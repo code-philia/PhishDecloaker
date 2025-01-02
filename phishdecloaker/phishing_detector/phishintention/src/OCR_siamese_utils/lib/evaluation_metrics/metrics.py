@@ -1,14 +1,14 @@
 from __future__ import absolute_import
 
-import numpy as np
-import editdistance
-import string
 import math
+import string
 
+import editdistance
+import numpy as np
 import torch
 import torch.nn.functional as F
 
-from ..utils import to_torch, to_numpy
+from ..utils import to_numpy, to_torch
 
 
 def _normalize_text(text):

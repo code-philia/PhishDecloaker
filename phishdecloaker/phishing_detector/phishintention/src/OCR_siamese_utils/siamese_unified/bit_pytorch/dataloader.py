@@ -1,10 +1,11 @@
-import torch.utils.data as data
-from PIL import Image, ImageOps
-import pickle
-import numpy as np
 import os
+import pickle
+
+import numpy as np
 import torch
+import torch.utils.data as data
 from phishintention.src.OCR_siamese_utils.demo import *
+from PIL import Image, ImageOps
 
 
 class GetLoader(data.Dataset):
@@ -75,8 +76,8 @@ class GetLoader(data.Dataset):
 
 
 if __name__ == "__main__":
-    import torchvision as tv
     import siamese_unified.bit_hyperrule as bit_hyperrule
+    import torchvision as tv
 
     # load OCR model
     ocr_model = ocr_model_config(

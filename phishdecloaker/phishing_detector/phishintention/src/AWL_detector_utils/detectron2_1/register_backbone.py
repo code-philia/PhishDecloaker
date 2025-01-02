@@ -1,26 +1,16 @@
 import math
-import fvcore.nn.weight_init as weight_init
-import torch.nn.functional as F
-from torch import nn
 
+import fvcore.nn.weight_init as weight_init
+import torch
+import torch.nn.functional as F
+from detectron2.config import get_cfg
+from detectron2.layers import (CNNBlockBase, Conv2d, DeformConv,
+                               ModulatedDeformConv, ShapeSpec, get_norm)
+from detectron2.modeling import build_model
 from detectron2.modeling.backbone.build import *
 from detectron2.modeling.backbone.fpn import *
 from detectron2.modeling.backbone.fpn import LastLevelMaxPool
 from detectron2.modeling.backbone.resnet import *
-
-from detectron2.config import get_cfg
-from detectron2.modeling import build_model
-
-from detectron2.layers import (
-    CNNBlockBase,
-    Conv2d,
-    DeformConv,
-    ModulatedDeformConv,
-    ShapeSpec,
-    get_norm,
-)
-
-import torch
 from torch import nn
 
 

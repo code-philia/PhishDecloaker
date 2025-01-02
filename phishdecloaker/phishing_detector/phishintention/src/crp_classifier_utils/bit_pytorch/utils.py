@@ -1,9 +1,10 @@
-import xml.etree.ElementTree as ET
-import re
-from sklearn.model_selection import train_test_split
-import numpy as np
 import os
+import re
 import shutil
+import xml.etree.ElementTree as ET
+
+import numpy as np
+from sklearn.model_selection import train_test_split
 
 
 def read_xml(xml_file: str):

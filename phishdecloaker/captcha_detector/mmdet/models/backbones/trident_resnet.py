@@ -3,10 +3,9 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.checkpoint as cp
 from mmcv.cnn import build_conv_layer, build_norm_layer, kaiming_init
-from torch.nn.modules.utils import _pair
-
 from mmdet.models.backbones.resnet import Bottleneck, ResNet
 from mmdet.models.builder import BACKBONES
+from torch.nn.modules.utils import _pair
 
 
 class TridentConv(nn.Module):

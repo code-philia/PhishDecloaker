@@ -1,13 +1,12 @@
-import os
 import json
+import os
 
 import pika
 import requests
-from playwright.sync_api import sync_playwright, Browser
-
-from crawler_captcha import Crawler as CaptchaCrawler
 from crawler_baseline import Crawler as BaselineCrawler
+from crawler_captcha import Crawler as CaptchaCrawler
 from crawler_group import Crawler as GroupCrawler
+from playwright.sync_api import Browser, sync_playwright
 
 # Configurations
 CRAWL_MODE = os.getenv("CRAWL_MODE", "").upper()

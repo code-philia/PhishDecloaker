@@ -1,9 +1,9 @@
 from __future__ import absolute_import
 
 import math
-import numpy as np
 import sys
 
+import numpy as np
 import torch
 from torch import nn
 from torch.nn import functional as F

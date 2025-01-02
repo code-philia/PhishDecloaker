@@ -1,18 +1,18 @@
-import io
-import re
-import json
-import base64
-import random
 import asyncio
+import base64
+import io
+import json
 import logging
+import random
+import re
 from dataclasses import dataclass
 
 import numpy as np
-from PIL import Image
-from playwright.async_api import Page, Response, FrameLocator, Locator, TimeoutError
-
 import utils
-from detector import CustomDetector, CocoDetector, YoloDetector
+from detector import CocoDetector, CustomDetector, YoloDetector
+from PIL import Image
+from playwright.async_api import (FrameLocator, Locator, Page, Response,
+                                  TimeoutError)
 
 logger = logging.getLogger("solver")
 

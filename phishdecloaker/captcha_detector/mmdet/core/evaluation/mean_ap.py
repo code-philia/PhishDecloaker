@@ -4,10 +4,11 @@ import mmcv
 import numpy as np
 from mmcv.utils import print_log
 
-# from terminaltables import AsciiTable
-
 from .bbox_overlaps import bbox_overlaps
 from .class_names import get_classes
+
+# from terminaltables import AsciiTable
+
 
 
 def average_precision(recalls, precisions, mode="area"):

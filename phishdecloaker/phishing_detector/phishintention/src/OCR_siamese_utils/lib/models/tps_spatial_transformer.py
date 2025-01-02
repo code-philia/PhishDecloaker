@@ -1,8 +1,8 @@
 from __future__ import absolute_import
 
-import numpy as np
 import itertools
 
+import numpy as np
 import torch
 import torch.nn as nn
 import torch.nn.functional as F

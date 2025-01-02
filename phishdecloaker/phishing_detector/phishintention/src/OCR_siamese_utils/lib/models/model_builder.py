@@ -1,21 +1,20 @@
 from __future__ import absolute_import
 
-from PIL import Image
-import numpy as np
-from collections import OrderedDict
 import sys
+from collections import OrderedDict
 
+import numpy as np
 import torch
+from PIL import Image
 from torch import nn
 from torch.nn import functional as F
 from torch.nn import init
 
+from ..loss.sequenceCrossEntropyLoss import SequenceCrossEntropyLoss
 from . import create
 from .attention_recognition_head import AttentionRecognitionHead
-from ..loss.sequenceCrossEntropyLoss import SequenceCrossEntropyLoss
-from .tps_spatial_transformer import TPSSpatialTransformer
 from .stn_head import STNHead
-
+from .tps_spatial_transformer import TPSSpatialTransformer
 
 # from config import get_args
 # global_args = get_args(sys.argv[1:])

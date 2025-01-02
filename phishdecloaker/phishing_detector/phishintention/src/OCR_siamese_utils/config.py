@@ -1,16 +1,15 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
+from __future__ import absolute_import, division, print_function
+
 import sys
 
 sys.path.append("./")
 
-import six
+import argparse
+import math
 import os
 import os.path as osp
-import math
-import argparse
 
+import six
 
 parser = argparse.ArgumentParser(description="Softmax loss classification")
 # data

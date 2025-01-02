@@ -1,22 +1,25 @@
 from __future__ import absolute_import
-import sys
-
-# sys.path.append('./')
 
 import argparse
+import math
 import os
 import os.path as osp
-import numpy as np
-import math
+import sys
 import time
-from PIL import Image, ImageFile
 
+import numpy as np
 import torch
+from PIL import Image, ImageFile
 from torch.backends import cudnn
 from torchvision import transforms
 
 from .lib.models.model_builder import ModelBuilder
 from .lib.utils.labelmaps import get_vocabulary, labels2strs
+
+# sys.path.append('./')
+
+
+
 
 
 def image_process(image_path, imgH=32, imgW=100, keep_ratio=False, min_ratio=1):

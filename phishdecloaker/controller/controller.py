@@ -1,17 +1,15 @@
-import os
-import sys
 import json
 import logging
+import os
+import sys
 import traceback
 from datetime import datetime
-from bson.objectid import ObjectId
 
 import pika
-
 import utils
-from connector import phishdecloaker
-from connector import phishintention
-from connector.database import Client, BaselineSample, CaptchaSample
+from bson.objectid import ObjectId
+from connector import phishdecloaker, phishintention
+from connector.database import BaselineSample, CaptchaSample, Client
 
 # Configurations
 DATABASE_URL = os.getenv("DATABASE_URL", None)

@@ -3,8 +3,7 @@ from dataclasses import dataclass
 
 import cv2
 import numpy as np
-from playwright.async_api import Page, ElementHandle
-
+from playwright.async_api import ElementHandle, Page
 from trajectory import Trajectory
 
 logger = logging.getLogger("solver")

@@ -1,6 +1,7 @@
+import argparse
+
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
-import argparse
 
 
 def evaluate(gt_coco_path, results_coco_path):

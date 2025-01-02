@@ -1,14 +1,13 @@
-import re
-import io
-import random
 import asyncio
+import io
 import logging
-from PIL import Image
+import random
+import re
 from dataclasses import dataclass
 
-from playwright.async_api import Page, Response, ElementHandle, TimeoutError
-
 from ofa_vqa import OfaVqa
+from PIL import Image
+from playwright.async_api import ElementHandle, Page, Response, TimeoutError
 
 logger = logging.getLogger("solver")
 

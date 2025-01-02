@@ -1,7 +1,7 @@
 import os
 
 import darknet
-from darknet_images import load_images, image_detection, batch_detection
+from darknet_images import batch_detection, image_detection, load_images
 
 
 class Config:

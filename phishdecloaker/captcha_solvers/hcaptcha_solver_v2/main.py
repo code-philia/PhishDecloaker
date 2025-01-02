@@ -1,23 +1,17 @@
+import asyncio
+import json
+import logging
 import os
 import re
 import sys
 import time
-import json
-import asyncio
-import logging
 
 import aiormq
-from aiormq.abc import DeliveredMessage
-from playwright.async_api import (
-    Browser,
-    BrowserContext,
-    Page,
-    CDPSession,
-    async_playwright,
-)
-
 import hcaptcha_challenger as Solver
+from aiormq.abc import DeliveredMessage
 from hcaptcha_challenger.agents import AgentT
+from playwright.async_api import (Browser, BrowserContext, CDPSession, Page,
+                                  async_playwright)
 
 # COnfigurations
 BROWSER_HOST = os.getenv("BROWSER_HOST", None)

@@ -1,6 +1,6 @@
-from scipy.spatial.distance import pdist, squareform, cdist
 import numpy as np
 from numpy import unravel_index
+from scipy.spatial.distance import cdist, pdist, squareform
 
 
 def boarder_distance(compos):

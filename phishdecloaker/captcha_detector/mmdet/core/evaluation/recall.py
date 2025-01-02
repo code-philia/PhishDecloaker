@@ -3,9 +3,10 @@ from collections.abc import Sequence
 import numpy as np
 from mmcv.utils import print_log
 
+from .bbox_overlaps import bbox_overlaps
+
 # from terminaltables import AsciiTable
 
-from .bbox_overlaps import bbox_overlaps
 
 
 def _recalls(all_ious, proposal_nums, thrs):

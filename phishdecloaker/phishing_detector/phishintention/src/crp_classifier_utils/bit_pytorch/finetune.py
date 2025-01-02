@@ -14,26 +14,21 @@
 
 # Lint as: python3
 """Fine-tune a BiT model on some downstream dataset."""
+import os
+import time
 #!/usr/bin/env python3
 # coding: utf-8
 from os.path import join as pjoin  # pylint: disable=g-importing-member
-import time
 
 import numpy as np
+import phishintention.src.crp_classifier_utils.bit_pytorch.fewshot as fs
+import phishintention.src.crp_classifier_utils.bit_pytorch.models as models
 import torch
 import torchvision as tv
-from torchsummary import summary
-
-import os
-import phishintention.src.crp_classifier_utils.bit_pytorch.models as models
-
-from phishintention.src.crp_classifier_utils import bit_common
-from phishintention.src.crp_classifier_utils import bit_hyperrule
-
+from phishintention.src.crp_classifier_utils import bit_common, bit_hyperrule
 from phishintention.src.crp_classifier_utils.bit_pytorch.dataloader import *
 from torch.utils.tensorboard import SummaryWriter
-import phishintention.src.crp_classifier_utils.bit_pytorch.fewshot as fs
-import os
+from torchsummary import summary
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0, 1"
 

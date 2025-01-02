@@ -3,9 +3,8 @@ import torch
 import torch.nn as nn
 from mmcv.cnn import Conv2d, Linear, MaxPool2d, kaiming_init, normal_init
 from mmcv.runner import force_fp32
-from torch.nn.modules.utils import _pair
-
 from mmdet.models.builder import HEADS, build_loss
+from torch.nn.modules.utils import _pair
 
 
 @HEADS.register_module()

@@ -1,17 +1,17 @@
+import json
+import math
 import os
 import re
-import math
-import yaml
-import json
 from datetime import datetime, timedelta
 
+import certstream
 import pika
 import tqdm
-import certstream
-from tld import get_tld
-from Levenshtein import distance
-from confusables import unconfuse
+import yaml
 from cachetools import TTLCache
+from confusables import unconfuse
+from Levenshtein import distance
+from tld import get_tld
 
 # Configurations
 EXCHANGE_NAME = "urls"

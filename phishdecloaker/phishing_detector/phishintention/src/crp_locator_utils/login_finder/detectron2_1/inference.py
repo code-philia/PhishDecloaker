@@ -1,7 +1,7 @@
-from detectron2.engine import DefaultPredictor
-from detectron2.config import get_cfg
 import cv2
 import numpy as np
+from detectron2.config import get_cfg
+from detectron2.engine import DefaultPredictor
 
 
 def login_element_config(rcnn_weights_path: str, rcnn_cfg_path: str):

@@ -1,21 +1,19 @@
+import json
 import os
-from phishintention.src.util.chrome import *
 import re
 import time
-from tqdm import tqdm
-from selenium.common.exceptions import TimeoutException, NoAlertPresentException
-import json
-from phishintention.src.crp_locator import (
-    login_config,
-    login_recognition,
-    dynamic_analysis,
-)
-from phishintention.src.AWL_detector import vis
+
 import cv2
-from phishintention.src.AWL_detector import element_config
-from phishintention.src.crp_classifier import credential_config
 import numpy as np
 from bs4 import BeautifulSoup as Soup
+from phishintention.src.AWL_detector import element_config, vis
+from phishintention.src.crp_classifier import credential_config
+from phishintention.src.crp_locator import (dynamic_analysis, login_config,
+                                            login_recognition)
+from phishintention.src.util.chrome import *
+from selenium.common.exceptions import (NoAlertPresentException,
+                                        TimeoutException)
+from tqdm import tqdm
 
 
 def temporal_driver(lang_txt: str):
@@ -219,10 +217,11 @@ def rel2abs(html_path):
 
 if __name__ == "__main__":
     ############################ Temporal scripts ################################################################################################################
-    from seleniumwire import webdriver
-    from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-    from webdriver_manager.chrome import ChromeDriverManager
     import helium
+    from selenium.webdriver.common.desired_capabilities import \
+        DesiredCapabilities
+    from seleniumwire import webdriver
+    from webdriver_manager.chrome import ChromeDriverManager
 
     # load driver
     options = temporal_driver(lang_txt="./src/util/lang.txt")

@@ -1,14 +1,15 @@
 import os
-import numpy as np
-from PIL import Image, ImageOps
-from torchvision import transforms
-import matplotlib.pyplot as plt
-from torch import nn
-import torch.nn.functional as F
-import torch
 from collections import OrderedDict
-from .utils import brand_converter, resolution_alignment
+
 import matplotlib.pyplot as plt
+import numpy as np
+import torch
+import torch.nn.functional as F
+from PIL import Image, ImageOps
+from torch import nn
+from torchvision import transforms
+
+from .utils import brand_converter, resolution_alignment
 
 
 def l2_norm(x):

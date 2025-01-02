@@ -1,13 +1,11 @@
-from phishintention.src.OCR_siamese_utils.siamese_unified.bit_pytorch.train import (
-    run_eval,
-    mktrainval,
-)
-import phishintention.src.OCR_siamese_utils.siamese_unified.bit_common as bit_common
 import logging
-import phishintention.src.OCR_siamese_utils.siamese_unified.bit_pytorch.models as models
-import torch
 from os.path import join as pjoin
 
+import phishintention.src.OCR_siamese_utils.siamese_unified.bit_common as bit_common
+import phishintention.src.OCR_siamese_utils.siamese_unified.bit_pytorch.models as models
+import torch
+from phishintention.src.OCR_siamese_utils.siamese_unified.bit_pytorch.train import (
+    mktrainval, run_eval)
 
 if __name__ == "__main__":
     parser = bit_common.argparser(models.KNOWN_MODELS.keys())

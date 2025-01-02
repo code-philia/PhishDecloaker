@@ -1,12 +1,13 @@
+import base64
 import io
 import os
-import time
-import base64
 import socket
+import time
 
 import tldextract
 from PIL import Image
-from playwright.sync_api import Request, Browser, BrowserContext, Page, CDPSession
+from playwright.sync_api import (Browser, BrowserContext, CDPSession, Page,
+                                 Request)
 
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080

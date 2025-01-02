@@ -2,10 +2,10 @@ import inspect
 
 import mmcv
 import numpy as np
-from numpy import random
-
 from mmdet.core import PolygonMasks
 from mmdet.core.evaluation.bbox_overlaps import bbox_overlaps
+from numpy import random
+
 from ..builder import PIPELINES
 
 try:

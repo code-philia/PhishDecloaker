@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
-from mmcv.cnn import Linear, build_activation_layer, build_norm_layer, xavier_init
+from mmcv.cnn import (Linear, build_activation_layer, build_norm_layer,
+                      xavier_init)
 
 from .builder import TRANSFORMER
 

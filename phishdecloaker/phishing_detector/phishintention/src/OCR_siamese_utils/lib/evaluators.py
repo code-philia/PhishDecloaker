@@ -1,15 +1,15 @@
-from __future__ import print_function, absolute_import
-import time
-from time import gmtime, strftime
-from datetime import datetime
-from collections import OrderedDict
+from __future__ import absolute_import, print_function
 
-import torch
+import sys
+import time
+from collections import OrderedDict
+from datetime import datetime
+from random import randint
+from time import gmtime, strftime
 
 import numpy as np
-from random import randint
+import torch
 from PIL import Image
-import sys
 
 from . import evaluation_metrics
 from .evaluation_metrics import Accuracy, EditDistance, RecPostProcess

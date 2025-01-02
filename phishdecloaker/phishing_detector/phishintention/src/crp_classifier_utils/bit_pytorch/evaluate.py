@@ -1,17 +1,15 @@
-import torch
+import argparse
+import logging
+import os
+from collections import OrderedDict
+
+import matplotlib.pyplot as plt
 import numpy as np
 import phishintention.src.crp_classifier_utils.bit_pytorch.models as models
+import torch
 from phishintention.src.crp_classifier_utils.bit_pytorch.dataloader import (
-    LayoutLoader,
-    ScreenshotLoader,
-    HybridLoader,
-)
-import os
-import matplotlib.pyplot as plt
-from collections import OrderedDict
-import argparse
+    HybridLoader, LayoutLoader, ScreenshotLoader)
 from tqdm import tqdm
-import logging
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1,0"
 

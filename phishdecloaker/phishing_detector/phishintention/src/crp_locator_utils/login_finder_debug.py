@@ -1,13 +1,12 @@
+import os
+
+import cv2
+import numpy as np
 from phishintention.src.crp_locator import login_config, login_recognition, vis
 from phishintention.src.crp_locator_utils.login_finder_evaluate import (
-    keyword_heuristic_debug,
-    temporal_driver,
-)
-from selenium.common.exceptions import *
+    keyword_heuristic_debug, temporal_driver)
 from phishintention.src.util.chrome import *
-import cv2
-import os
-import numpy as np
+from selenium.common.exceptions import *
 from tqdm import tqdm
 
 
@@ -67,12 +66,12 @@ def cv_heuristic_debug(driver, orig_url, old_screenshot_path):
     return top3_urls
 
 
+import helium
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 ########################### Temporal scripts ################################################################################################################
 # load driver ONCE
 from seleniumwire import webdriver
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from webdriver_manager.chrome import ChromeDriverManager
-import helium
 
 # load driver
 options = temporal_driver(lang_txt="./src/util/lang.txt", enable_translate=False)

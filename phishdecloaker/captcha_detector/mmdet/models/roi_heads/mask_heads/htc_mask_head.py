@@ -1,6 +1,6 @@
 from mmcv.cnn import ConvModule
-
 from mmdet.models.builder import HEADS
+
 from .fcn_mask_head import FCNMaskHead
 
 

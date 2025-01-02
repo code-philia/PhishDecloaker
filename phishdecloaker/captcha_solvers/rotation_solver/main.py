@@ -1,22 +1,16 @@
+import asyncio
+import json
+import logging
 import os
 import re
 import sys
 import time
-import json
-import asyncio
-import logging
 
 import aiormq
 from aiormq.abc import DeliveredMessage
-from playwright.async_api import (
-    Browser,
-    BrowserContext,
-    Page,
-    CDPSession,
-    async_playwright,
-)
-
-from solver import Solver, Config
+from playwright.async_api import (Browser, BrowserContext, CDPSession, Page,
+                                  async_playwright)
+from solver import Config, Solver
 
 # Configurations
 BROWSER_HOST = os.getenv("BROWSER_HOST", None)

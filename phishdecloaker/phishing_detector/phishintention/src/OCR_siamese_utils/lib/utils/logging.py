@@ -1,9 +1,11 @@
 from __future__ import absolute_import
+
 import os
 import sys
+
 import numpy as np
-import tensorflow as tf
 import scipy.misc
+import tensorflow as tf
 
 try:
     from StringIO import StringIO  # Python 2.7

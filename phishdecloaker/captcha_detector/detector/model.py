@@ -1,12 +1,13 @@
 from __future__ import annotations
+
 import os
 
 import mmcv
-import torch
 import numpy as np
 import numpy.typing as npt
+import torch
+from mmdet.apis import inference_detector, init_detector
 from PIL import Image
-from mmdet.apis import init_detector, inference_detector
 
 
 class Config:

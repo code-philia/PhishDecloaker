@@ -23,20 +23,12 @@ import yaml
 from detectron2.checkpoint import DetectionCheckpointer
 from detectron2.config import get_cfg
 from detectron2.data import build_detection_train_loader
-from detectron2.engine import (
-    DefaultTrainer,
-    default_argument_parser,
-    default_setup,
-    hooks,
-    launch,
-)
+from detectron2.engine import (DefaultTrainer, default_argument_parser,
+                               default_setup, hooks, launch)
 from detectron2.evaluation import COCOEvaluator, verify_results
 from detectron2.modeling import GeneralizedRCNNWithTTA
-
-from phishintention.src.crp_locator_utils.login_finder.detectron2_1.datasets import (
-    LoginMapper,
-)
-import os
+from phishintention.src.crp_locator_utils.login_finder.detectron2_1.datasets import \
+    LoginMapper
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"
 

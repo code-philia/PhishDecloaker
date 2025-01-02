@@ -1,12 +1,13 @@
-import torch
+import argparse
+import os
+from collections import OrderedDict
+
+import matplotlib.pyplot as plt
 import numpy as np
 import phishintention.src.crp_classifier_utils.bit_pytorch.models as models
+import torch
 from phishintention.src.crp_classifier_utils.bit_pytorch.dataloader import *
 from phishintention.src.crp_classifier_utils.HTML_heuristic.post_form import *
-import os
-import matplotlib.pyplot as plt
-from collections import OrderedDict
-import argparse
 from tqdm import tqdm
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "0"

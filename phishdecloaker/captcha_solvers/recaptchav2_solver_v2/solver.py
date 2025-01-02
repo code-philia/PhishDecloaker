@@ -1,17 +1,18 @@
-import io
-import re
-import json
-import time
-import random
 import asyncio
+import base64
+import io
+import json
 import logging
+import random
+import re
+import time
 from dataclasses import dataclass
 
-import base64
 from openai import OpenAI
 from openai.types.audio import Transcription
 from PIL import Image
-from playwright.async_api import Page, Response, FrameLocator, Locator, TimeoutError
+from playwright.async_api import (FrameLocator, Locator, Page, Response,
+                                  TimeoutError)
 
 logger = logging.getLogger("solver")
 

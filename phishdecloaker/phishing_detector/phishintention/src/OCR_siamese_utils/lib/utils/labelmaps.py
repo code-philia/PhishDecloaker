@@ -2,7 +2,7 @@ from __future__ import absolute_import
 
 import string
 
-from . import to_torch, to_numpy
+from . import to_numpy, to_torch
 
 
 def get_vocabulary(voc_type, EOS="EOS", PADDING="PADDING", UNKNOWN="UNKNOWN"):

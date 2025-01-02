@@ -1,5 +1,4 @@
 import torch
-
 from mmdet.utils import util_mixins
 
 

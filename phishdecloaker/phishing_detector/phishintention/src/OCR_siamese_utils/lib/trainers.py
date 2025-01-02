@@ -1,14 +1,15 @@
-from __future__ import print_function, absolute_import
-import time
-from time import gmtime, strftime
-from datetime import datetime
+from __future__ import absolute_import, print_function
+
 import gc
 import os.path as osp
 import sys
-from PIL import Image
-import numpy as np
+import time
+from datetime import datetime
+from time import gmtime, strftime
 
+import numpy as np
 import torch
+from PIL import Image
 from torchvision import transforms
 
 from . import evaluation_metrics

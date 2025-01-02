@@ -1,11 +1,11 @@
-from __future__ import print_function, absolute_import
+from __future__ import absolute_import, print_function
+
 import json
 import os
-import sys
-
 # import moxing as mox
 import os.path as osp
 import shutil
+import sys
 
 import torch
 from torch.nn import Parameter

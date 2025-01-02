@@ -1,7 +1,7 @@
-from detectron2.engine import DefaultPredictor
-from detectron2.config import get_cfg
 import cv2
 import numpy as np
+from detectron2.config import get_cfg
+from detectron2.engine import DefaultPredictor
 
 # global dict
 class_dict = {0: "logo", 1: "input", 2: "button", 3: "label", 4: "block"}

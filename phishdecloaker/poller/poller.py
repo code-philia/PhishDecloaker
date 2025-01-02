@@ -3,11 +3,9 @@ import time
 import traceback
 
 import telebot
-from flask import Flask, Response, request, abort, jsonify
-
 import telegram
 from database import Database
-
+from flask import Flask, Response, abort, jsonify, request
 
 DATABASE_URL = os.getenv("DATABASE_URL", None)
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", None)

@@ -1,15 +1,14 @@
-import os
 import io
 import logging
+import os
 from dataclasses import dataclass
 
 import torch
-from PIL import Image
-from playwright.async_api import Page, ElementHandle
-from torchvision.transforms import transforms
-
-from trajectory import Trajectory
 from model import RotModel
+from PIL import Image
+from playwright.async_api import ElementHandle, Page
+from torchvision.transforms import transforms
+from trajectory import Trajectory
 
 logger = logging.getLogger("solver")
 

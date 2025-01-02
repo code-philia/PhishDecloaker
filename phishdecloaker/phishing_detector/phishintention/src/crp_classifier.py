@@ -1,16 +1,14 @@
-from phishintention.src.crp_classifier_utils.bit_pytorch.models import KNOWN_MODELS
-from phishintention.src.crp_classifier_utils.bit_pytorch.grid_divider import (
-    read_img_reverse,
-    coord2pixel_reverse,
-    topo2pixel,
-)
-from phishintention.src.crp_classifier_utils.HTML_heuristic.post_form import *
+from collections import OrderedDict
 
 import torch
 import torch.nn.functional as F
-from PIL import Image
 import torchvision.transforms as transform
-from collections import OrderedDict
+from phishintention.src.crp_classifier_utils.bit_pytorch.grid_divider import (
+    coord2pixel_reverse, read_img_reverse, topo2pixel)
+from phishintention.src.crp_classifier_utils.bit_pytorch.models import \
+    KNOWN_MODELS
+from phishintention.src.crp_classifier_utils.HTML_heuristic.post_form import *
+from PIL import Image
 
 
 def credential_config(checkpoint, model_type="mixed"):

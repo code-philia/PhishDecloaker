@@ -1,13 +1,13 @@
 import os
-import lmdb  # install lmdb by "pip install lmdb"
+import re
+
 import cv2
+import lmdb  # install lmdb by "pip install lmdb"
 import numpy as np
-from tqdm import tqdm
+import scipy.io as sio
 import six
 from PIL import Image
-import scipy.io as sio
 from tqdm import tqdm
-import re
 
 
 def checkImageIsValid(imageBin):

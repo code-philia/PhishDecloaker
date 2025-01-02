@@ -1,16 +1,16 @@
-import os
-import io
-import sys
-import time
 import base64
-import tempfile
-import traceback
+import io
 import logging
+import os
+import sys
+import tempfile
+import time
+import traceback
 
 import torch
-from PIL import Image
-from flask import Flask, jsonify, request, Response
+from flask import Flask, Response, jsonify, request
 from phishintention.phishintention_main import load_config, test
+from PIL import Image
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "True"
 logging.basicConfig(stream=sys.stdout, level=logging.INFO)

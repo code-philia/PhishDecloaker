@@ -1,6 +1,6 @@
 import torch
-
 from mmdet.core import bbox2result
+
 from ..builder import DETECTORS
 from .rpn import RPN
 
