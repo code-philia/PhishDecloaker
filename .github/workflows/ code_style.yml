@@ -1,0 +1,79 @@
+name: Code style checks
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-format-test:
+    name: CI - Lint, Format
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Miniconda
+        uses: conda-incubator/setup-miniconda@v2
+        with:
+          auto-update-conda: true
+          python-version: 3.10
+          activate-environment: base  # 使用 base 环境
+
+      - name: Cache Conda packages
+        uses: actions/cache@v3
+        with:
+          path: ~/miniconda3/pkgs
+          key: ${{ runner.os }}-conda-${{ hashFiles('**/environment.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-conda-
+
+      - name: Install Conda
+        run: |
+          conda install -y mamba
+          mamba update -n base -c defaults conda
+
+      - name: Find all environment.yml files
+        id: find_env
+        run: |
+          echo "env_files<<EOF" >> $GITHUB_ENV
+          find . -type f -name "environment.yml" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Process each environment.yml
+        run: |
+          for env_file in $(find . -type f -name "environment.yml"); do
+            echo "Processing $env_file"
+
+            # 获取项目名称（例如：captcha_detector）
+            project_dir=$(dirname "$env_file")
+            project_name=$(basename "$project_dir")
+
+            # 创建唯一的环境名称
+            env_name="${project_name}_env"
+
+            # 创建和激活 Conda 环境
+            conda env create -f "$env_file" -n "$env_name" || conda env update -f "$env_file" -n "$env_name"
+
+            # 激活环境
+            source activate "$env_name"
+
+            # 安装代码质量检查工具（如果未包含在 environment.yml 中）
+            pip install black flake8 mypy bandit vulture pytest
+
+            # 运行代码质量检查
+            black --check "$project_dir"
+            flake8 "$project_dir" --ignore=E203,W503
+            mypy "$project_dir" --explicit-package-bases
+            bandit -r "$project_dir"
+            vulture "$project_dir"
+
+            # 运行测试（如果适用）
+            if [ -d "${project_dir}/tests" ]; then
+              pytest "$project_dir/tests" --junitxml=reports/${project_name}_test-results.xml
+            fi
+
+            # 退出环境
+            conda deactivate
+          done
