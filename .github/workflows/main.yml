@@ -32,7 +32,8 @@ jobs:
             ${{ runner.os }}-pip-
 
       - run: pip install --upgrade pip
-      - run: pip install black
+      - run: pip install black 
+      - run: pip install "black[jupyter]"
       - run: black --check .
 
   # Linting with flake8
