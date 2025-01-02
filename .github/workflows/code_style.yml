@@ -43,7 +43,7 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/miniconda/pkgs
-          key: ${{ runner.os }}-conda-${{ hashFiles(matrix.project + '/environment.yml') }}
+          key: ${{ runner.os }}-conda-${{ hashFiles(format('{0}/environment.yml', matrix.project)) }}
           restore-keys: |
             ${{ runner.os }}-conda-
 
