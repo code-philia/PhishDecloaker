@@ -25,7 +25,6 @@ jobs:
         with:
           auto-update-conda: true
           python-version: "3.10"
-          activate-environment: base  # 使用 base 环境
 
       - name: Cache Conda packages
         uses: actions/cache@v3
