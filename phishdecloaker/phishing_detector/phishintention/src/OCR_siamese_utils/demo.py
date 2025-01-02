@@ -19,9 +19,6 @@ from .lib.utils.labelmaps import get_vocabulary, labels2strs
 # sys.path.append('./')
 
 
-
-
-
 def image_process(image_path, imgH=32, imgW=100, keep_ratio=False, min_ratio=1):
     img = (
         Image.open(image_path).convert("RGB")

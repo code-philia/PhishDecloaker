@@ -4,6 +4,7 @@ import time
 from os.path import join as pjoin  # pylint: disable=g-importing-member
 
 import numpy as np
+
 # from torch.utils.tensorboard import SummaryWriter
 import phishintention.src.crp_classifier_utils.bit_pytorch.fewshot as fs
 import phishintention.src.crp_classifier_utils.bit_pytorch.models as models
@@ -11,12 +12,12 @@ import torch
 import torchvision as tv
 from phishintention.src.crp_classifier_utils import bit_common, bit_hyperrule
 from phishintention.src.crp_classifier_utils.bit_pytorch.dataloader import (
-    HybridLoader, LayoutLoader, ScreenshotLoader)
+    HybridLoader,
+    LayoutLoader,
+    ScreenshotLoader,
+)
 
 # from torchsummary import summary
-
-
-
 
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1,0"

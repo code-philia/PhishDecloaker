@@ -16,6 +16,7 @@
 """Fine-tune a BiT model on some downstream dataset."""
 import os
 import time
+
 #!/usr/bin/env python3
 # coding: utf-8
 from os.path import join as pjoin  # pylint: disable=g-importing-member

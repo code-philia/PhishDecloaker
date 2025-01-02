@@ -8,7 +8,10 @@ import numpy as np
 import phishintention.src.crp_classifier_utils.bit_pytorch.models as models
 import torch
 from phishintention.src.crp_classifier_utils.bit_pytorch.dataloader import (
-    HybridLoader, LayoutLoader, ScreenshotLoader)
+    HybridLoader,
+    LayoutLoader,
+    ScreenshotLoader,
+)
 from tqdm import tqdm
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "1,0"

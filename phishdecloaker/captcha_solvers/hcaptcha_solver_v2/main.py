@@ -10,8 +10,13 @@ import aiormq
 import hcaptcha_challenger as Solver
 from aiormq.abc import DeliveredMessage
 from hcaptcha_challenger.agents import AgentT
-from playwright.async_api import (Browser, BrowserContext, CDPSession, Page,
-                                  async_playwright)
+from playwright.async_api import (
+    Browser,
+    BrowserContext,
+    CDPSession,
+    Page,
+    async_playwright,
+)
 
 # COnfigurations
 BROWSER_HOST = os.getenv("BROWSER_HOST", None)

@@ -8,8 +8,13 @@ import time
 
 import aiormq
 from aiormq.abc import DeliveredMessage
-from playwright.async_api import (Browser, BrowserContext, CDPSession, Page,
-                                  async_playwright)
+from playwright.async_api import (
+    Browser,
+    BrowserContext,
+    CDPSession,
+    Page,
+    async_playwright,
+)
 from solver import Config, Solver
 
 # Configurations

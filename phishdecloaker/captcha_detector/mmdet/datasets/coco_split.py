@@ -20,6 +20,7 @@ from pycocotools.coco import COCO
 
 from .builder import DATASETS
 from .coco import CocoDataset
+
 # Added for cross-category evaluation
 from .cocoeval_wrappers import COCOEvalWrapper, COCOEvalXclassWrapper
 

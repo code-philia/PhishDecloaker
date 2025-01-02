@@ -3,6 +3,7 @@ import logging
 from phishintention.src.AWL_detector import *
 from phishintention.src.crp_classifier import *
 from phishintention.src.crp_locator import *
+
 # Global configuration
 from phishintention.src.OCR_aided_siamese import *
 from phishintention.src.util.chrome import *

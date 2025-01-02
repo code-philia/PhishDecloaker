@@ -1,16 +1,46 @@
-from .auto_augment import (AutoAugment, BrightnessTransform, ColorTransform,
-                           ContrastTransform, EqualizeTransform, Rotate, Shear,
-                           Translate)
+from .auto_augment import (
+    AutoAugment,
+    BrightnessTransform,
+    ColorTransform,
+    ContrastTransform,
+    EqualizeTransform,
+    Rotate,
+    Shear,
+    Translate,
+)
 from .compose import Compose
-from .formating import (Collect, DefaultFormatBundle, ImageToTensor,
-                        ToDataContainer, ToTensor, Transpose, to_tensor)
+from .formating import (
+    Collect,
+    DefaultFormatBundle,
+    ImageToTensor,
+    ToDataContainer,
+    ToTensor,
+    Transpose,
+    to_tensor,
+)
 from .instaboost import InstaBoost
-from .loading import (LoadAnnotations, LoadImageFromFile, LoadImageFromWebcam,
-                      LoadMultiChannelImageFromFiles, LoadProposals)
+from .loading import (
+    LoadAnnotations,
+    LoadImageFromFile,
+    LoadImageFromWebcam,
+    LoadMultiChannelImageFromFiles,
+    LoadProposals,
+)
 from .test_time_aug import MultiScaleFlipAug
-from .transforms import (Albu, CutOut, Expand, MinIoURandomCrop, Normalize,
-                         Pad, PhotoMetricDistortion, RandomCenterCropPad,
-                         RandomCrop, RandomFlip, Resize, SegRescale)
+from .transforms import (
+    Albu,
+    CutOut,
+    Expand,
+    MinIoURandomCrop,
+    Normalize,
+    Pad,
+    PhotoMetricDistortion,
+    RandomCenterCropPad,
+    RandomCrop,
+    RandomFlip,
+    Resize,
+    SegRescale,
+)
 
 __all__ = [
     "Compose",

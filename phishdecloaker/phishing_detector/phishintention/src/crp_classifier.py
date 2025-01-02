@@ -4,9 +4,11 @@ import torch
 import torch.nn.functional as F
 import torchvision.transforms as transform
 from phishintention.src.crp_classifier_utils.bit_pytorch.grid_divider import (
-    coord2pixel_reverse, read_img_reverse, topo2pixel)
-from phishintention.src.crp_classifier_utils.bit_pytorch.models import \
-    KNOWN_MODELS
+    coord2pixel_reverse,
+    read_img_reverse,
+    topo2pixel,
+)
+from phishintention.src.crp_classifier_utils.bit_pytorch.models import KNOWN_MODELS
 from phishintention.src.crp_classifier_utils.HTML_heuristic.post_form import *
 from PIL import Image
 

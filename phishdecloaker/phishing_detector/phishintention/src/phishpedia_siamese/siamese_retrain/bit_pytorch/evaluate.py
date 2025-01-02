@@ -7,8 +7,7 @@ import src.phishpedia_siamese.siamese_retrain.bit_pytorch.models as models
 import torch
 import torch.nn.functional as F
 import torchvision as tv
-from src.phishpedia_siamese.siamese_retrain.bit_pytorch.dataloader import \
-    GetLoader
+from src.phishpedia_siamese.siamese_retrain.bit_pytorch.dataloader import GetLoader
 
 
 def evaluate(model, loader):

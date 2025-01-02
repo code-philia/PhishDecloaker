@@ -4,14 +4,19 @@ import time
 
 import helium
 import matplotlib
-from phishintention.src.AWL_detector import (element_config,
-                                             element_recognition,
-                                             find_element_type, vis)
-from phishintention.src.crp_locator import (dynamic_analysis, login_config,
-                                            login_recognition)
+from phishintention.src.AWL_detector import (
+    element_config,
+    element_recognition,
+    find_element_type,
+    vis,
+)
+from phishintention.src.crp_locator import (
+    dynamic_analysis,
+    login_config,
+    login_recognition,
+)
 from phishintention.src.util.chrome import *
-from selenium.common.exceptions import (NoAlertPresentException,
-                                        TimeoutException)
+from selenium.common.exceptions import NoAlertPresentException, TimeoutException
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 from seleniumwire import webdriver
 from tldextract import tldextract

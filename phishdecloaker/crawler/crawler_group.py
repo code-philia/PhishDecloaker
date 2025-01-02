@@ -6,8 +6,7 @@ from enum import Flag, auto
 import tldextract
 import utils
 from PIL import Image
-from playwright.sync_api import (Browser, BrowserContext, CDPSession, Dialog,
-                                 Page)
+from playwright.sync_api import Browser, BrowserContext, CDPSession, Dialog, Page
 
 SCREEN_WIDTH = 1920
 SCREEN_HEIGHT = 1080

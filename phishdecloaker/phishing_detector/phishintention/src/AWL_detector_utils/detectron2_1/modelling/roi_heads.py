@@ -11,11 +11,15 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 from detectron2.modeling.box_regression import Box2BoxTransform
-from detectron2.modeling.roi_heads.fast_rcnn import (FastRCNNOutputLayers,
-                                                     FastRCNNOutputs)
-from detectron2.modeling.roi_heads.roi_heads import (ROI_HEADS_REGISTRY,
-                                                     ROIHeads,
-                                                     StandardROIHeads)
+from detectron2.modeling.roi_heads.fast_rcnn import (
+    FastRCNNOutputLayers,
+    FastRCNNOutputs,
+)
+from detectron2.modeling.roi_heads.roi_heads import (
+    ROI_HEADS_REGISTRY,
+    ROIHeads,
+    StandardROIHeads,
+)
 from detectron2.structures import Boxes, ImageList, Instances, pairwise_iou
 from detectron2.structures.boxes import Boxes
 from detectron2.utils.registry import Registry

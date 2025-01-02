@@ -17,8 +17,11 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 import wandb
-from detectron2.data import (DatasetCatalog, MetadataCatalog,
-                             build_detection_train_loader)
+from detectron2.data import (
+    DatasetCatalog,
+    MetadataCatalog,
+    build_detection_train_loader,
+)
 from detectron2.structures import Boxes, BoxMode, Instances
 from detectron2.utils.visualizer import Visualizer
 from fvcore.common.file_io import PathManager

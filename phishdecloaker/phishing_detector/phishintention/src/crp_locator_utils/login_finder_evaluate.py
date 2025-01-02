@@ -8,11 +8,13 @@ import numpy as np
 from bs4 import BeautifulSoup as Soup
 from phishintention.src.AWL_detector import element_config, vis
 from phishintention.src.crp_classifier import credential_config
-from phishintention.src.crp_locator import (dynamic_analysis, login_config,
-                                            login_recognition)
+from phishintention.src.crp_locator import (
+    dynamic_analysis,
+    login_config,
+    login_recognition,
+)
 from phishintention.src.util.chrome import *
-from selenium.common.exceptions import (NoAlertPresentException,
-                                        TimeoutException)
+from selenium.common.exceptions import NoAlertPresentException, TimeoutException
 from tqdm import tqdm
 
 
@@ -218,8 +220,7 @@ def rel2abs(html_path):
 if __name__ == "__main__":
     ############################ Temporal scripts ################################################################################################################
     import helium
-    from selenium.webdriver.common.desired_capabilities import \
-        DesiredCapabilities
+    from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
     from seleniumwire import webdriver
     from webdriver_manager.chrome import ChromeDriverManager
 

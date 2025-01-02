@@ -10,7 +10,6 @@ from .class_names import get_classes
 # from terminaltables import AsciiTable
 
 
-
 def average_precision(recalls, precisions, mode="area"):
     """Calculate average precision (for single or multiple scales).
 

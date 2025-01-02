@@ -11,8 +11,7 @@ import numpy as np
 import utils
 from detector import CocoDetector, CustomDetector, YoloDetector
 from PIL import Image
-from playwright.async_api import (FrameLocator, Locator, Page, Response,
-                                  TimeoutError)
+from playwright.async_api import FrameLocator, Locator, Page, Response, TimeoutError
 
 logger = logging.getLogger("solver")
 

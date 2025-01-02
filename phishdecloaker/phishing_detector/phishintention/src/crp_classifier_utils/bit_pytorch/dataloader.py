@@ -7,9 +7,14 @@ import torch
 import torch.utils.data as data
 import torchvision.transforms as transform
 from phishintention.src.crp_classifier_utils.bit_pytorch.grid_divider import (
-    coord2pixel, read_img, topo2pixel)
+    coord2pixel,
+    read_img,
+    topo2pixel,
+)
 from phishintention.src.crp_classifier_utils.bit_pytorch.utils import (
-    read_txt, read_txt_screenshot)
+    read_txt,
+    read_txt_screenshot,
+)
 from PIL import Image
 
 

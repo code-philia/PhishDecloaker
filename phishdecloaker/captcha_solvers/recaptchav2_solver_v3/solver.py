@@ -10,8 +10,7 @@ from dataclasses import dataclass
 
 from openai import OpenAI
 from PIL import Image
-from playwright.async_api import (FrameLocator, Locator, Page, Response,
-                                  TimeoutError)
+from playwright.async_api import FrameLocator, Locator, Page, Response, TimeoutError
 
 logger = logging.getLogger("solver")
 

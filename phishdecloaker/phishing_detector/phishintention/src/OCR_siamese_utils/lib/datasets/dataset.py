@@ -12,7 +12,9 @@ import six
 import torch
 from phishintention.src.OCR_siamese_utils.lib.utils import to_numpy
 from phishintention.src.OCR_siamese_utils.lib.utils.labelmaps import (
-    get_vocabulary, labels2strs)
+    get_vocabulary,
+    labels2strs,
+)
 from PIL import Image, ImageFile
 from torch.utils import data
 from torch.utils.data import sampler
@@ -24,8 +26,6 @@ from tqdm import tqdm
 
 
 # import moxing as mox
-
-
 
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True

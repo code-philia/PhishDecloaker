@@ -2,8 +2,13 @@ import logging
 import os
 
 from phishintention.phishintention_config import *
-from playwright.sync_api import (Browser, BrowserContext, CDPSession, Page,
-                                 sync_playwright)
+from playwright.sync_api import (
+    Browser,
+    BrowserContext,
+    CDPSession,
+    Page,
+    sync_playwright,
+)
 
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
