@@ -8,7 +8,7 @@ from .utils import weighted_loss
 @weighted_loss
 def mse_loss(pred, target):
     """Warpper of mse loss."""
-    return F.mse_loss(pred, target, reduction='none')
+    return F.mse_loss(pred, target, reduction="none")
 
 
 @LOSSES.register_module()
@@ -21,7 +21,7 @@ class MSELoss(nn.Module):
         loss_weight (float, optional): The weight of the loss. Defaults to 1.0
     """
 
-    def __init__(self, reduction='mean', loss_weight=1.0):
+    def __init__(self, reduction="mean", loss_weight=1.0):
         super().__init__()
         self.reduction = reduction
         self.loss_weight = loss_weight
@@ -41,9 +41,6 @@ class MSELoss(nn.Module):
             torch.Tensor: The calculated loss
         """
         loss = self.loss_weight * mse_loss(
-            pred,
-            target,
-            weight,
-            reduction=self.reduction,
-            avg_factor=avg_factor)
+            pred, target, weight, reduction=self.reduction, avg_factor=avg_factor
+        )
         return loss

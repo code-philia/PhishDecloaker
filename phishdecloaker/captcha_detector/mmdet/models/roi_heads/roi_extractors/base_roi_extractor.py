@@ -47,11 +47,12 @@ class BaseRoIExtractor(nn.Module, metaclass=ABCMeta):
         """
 
         cfg = layer_cfg.copy()
-        layer_type = cfg.pop('type')
+        layer_type = cfg.pop("type")
         assert hasattr(ops, layer_type)
         layer_cls = getattr(ops, layer_type)
         roi_layers = nn.ModuleList(
-            [layer_cls(spatial_scale=1 / s, **cfg) for s in featmap_strides])
+            [layer_cls(spatial_scale=1 / s, **cfg) for s in featmap_strides]
+        )
         return roi_layers
 
     def roi_rescale(self, rois, scale_factor):

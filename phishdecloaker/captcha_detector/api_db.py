@@ -1,12 +1,11 @@
-import io
 import base64
-
-from flask import Blueprint, Response, request, jsonify
-from PIL import Image
+import io
 
 from database.client import client
-from siamese.model import embedder
+from flask import Blueprint, Response, jsonify, request
 from ocr.model import text_encoder
+from PIL import Image
+from siamese.model import embedder
 
 db = Blueprint("database", __name__)
 

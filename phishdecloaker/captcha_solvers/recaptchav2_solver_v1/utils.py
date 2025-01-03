@@ -46,7 +46,6 @@ def equal_dicts(d1, d2, ignore_keys):
 
 
 def get_clicks(detection, gw, gh, img_shape, detector):
-
     w, h, c = img_shape
     clicks = set()
 

@@ -54,9 +54,9 @@ def encode_mask_results(mask_results):
         for cls_segm in cls_segms[i]:
             encoded_mask_results[i].append(
                 mask_util.encode(
-                    np.array(
-                        cls_segm[:, :, np.newaxis], order='F',
-                        dtype='uint8'))[0])  # encoded with RLE
+                    np.array(cls_segm[:, :, np.newaxis], order="F", dtype="uint8")
+                )[0]
+            )  # encoded with RLE
     if isinstance(mask_results, tuple):
         return encoded_mask_results, cls_mask_scores
     else:

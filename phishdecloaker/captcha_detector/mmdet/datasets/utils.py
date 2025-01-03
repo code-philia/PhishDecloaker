@@ -48,17 +48,18 @@ def replace_ImageToTensor(pipelines):
     """
     pipelines = copy.deepcopy(pipelines)
     for i, pipeline in enumerate(pipelines):
-        if pipeline['type'] == 'MultiScaleFlipAug':
-            assert 'transforms' in pipeline
-            pipeline['transforms'] = replace_ImageToTensor(
-                pipeline['transforms'])
-        elif pipeline['type'] == 'ImageToTensor':
+        if pipeline["type"] == "MultiScaleFlipAug":
+            assert "transforms" in pipeline
+            pipeline["transforms"] = replace_ImageToTensor(pipeline["transforms"])
+        elif pipeline["type"] == "ImageToTensor":
             warnings.warn(
                 '"ImageToTensor" pipeline is replaced by '
                 '"DefaultFormatBundle" for batch inference. It is '
-                'recommended to manually replace it in the test '
-                'data pipeline in your config file.', UserWarning)
-            pipelines[i] = {'type': 'DefaultFormatBundle'}
+                "recommended to manually replace it in the test "
+                "data pipeline in your config file.",
+                UserWarning,
+            )
+            pipelines[i] = {"type": "DefaultFormatBundle"}
     return pipelines
 
 
@@ -92,9 +93,10 @@ def get_loading_pipeline(pipeline):
     """
     loading_pipeline_cfg = []
     for cfg in pipeline:
-        if cfg['type'].startswith('Load'):
+        if cfg["type"].startswith("Load"):
             loading_pipeline_cfg.append(cfg)
-    assert len(loading_pipeline_cfg) == 2, \
-        'The data pipeline in your config file must include ' \
-        'loading image and annotations related pipeline.'
+    assert len(loading_pipeline_cfg) == 2, (
+        "The data pipeline in your config file must include "
+        "loading image and annotations related pipeline."
+    )
     return loading_pipeline_cfg

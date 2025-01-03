@@ -19,14 +19,16 @@ class BaseDenseHead(nn.Module, metaclass=ABCMeta):
         """Transform network output for a batch into bbox predictions."""
         pass
 
-    def forward_train(self,
-                      x,
-                      img_metas,
-                      gt_bboxes,
-                      gt_labels=None,
-                      gt_bboxes_ignore=None,
-                      proposal_cfg=None,
-                      **kwargs):
+    def forward_train(
+        self,
+        x,
+        img_metas,
+        gt_bboxes,
+        gt_labels=None,
+        gt_bboxes_ignore=None,
+        proposal_cfg=None,
+        **kwargs
+    ):
         """
         Args:
             x (list[Tensor]): Features from FPN.

@@ -1,5 +1,6 @@
-import os
 import logging
+import os
+
 import requests
 
 VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY", None)
@@ -32,9 +33,9 @@ def submit_virustotal(domain: str):
     headers = {
         "accept": "application/json",
         "content-type": "application/x-www-form-urlencoded",
-        "x-apikey": VIRUSTOTAL_API_KEY
+        "x-apikey": VIRUSTOTAL_API_KEY,
     }
-    payload = { "url": url }
+    payload = {"url": url}
     url = "https://www.virustotal.com/api/v3/urls"
     response = requests.post(url, data=payload, headers=headers)
     if response.ok:

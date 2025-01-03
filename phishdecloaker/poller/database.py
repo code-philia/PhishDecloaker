@@ -1,7 +1,6 @@
 from bson.objectid import ObjectId
-
 from pymongo import MongoClient
-    
+
 
 class Database:
     def __init__(self, database_url: str) -> None:
@@ -9,7 +8,7 @@ class Database:
         self.db = self.client["phishdecloaker"]
         self.collections = {
             "BASELINE": self.db["baseline"],
-            "CAPTCHA": self.db["captcha"]
+            "CAPTCHA": self.db["captcha"],
         }
         self.projections = {
             "BASELINE": {
@@ -38,12 +37,14 @@ class Database:
                 "phish_target": 1,
                 "has_captcha": 1,
                 "captcha_type": 1,
-                "captcha_solved": 1
-            }
+                "captcha_solved": 1,
+            },
         }
 
     def update_poll_id(self, crawl_mode: str, sample_id: str, poll_id: str):
-        self.collections[crawl_mode].find_one_and_update({"_id": ObjectId(sample_id)}, {"$set": {"poll_id": poll_id}})
+        self.collections[crawl_mode].find_one_and_update(
+            {"_id": ObjectId(sample_id)}, {"$set": {"poll_id": poll_id}}
+        )
 
     def update_ground_truth(self, crawl_mode: str, sample_id: str, verdict: str):
         choice_to_ground_truth = {
@@ -60,9 +61,13 @@ class Database:
         if not ground_truth["ground_phishing"]:
             ground_truth |= {"is_monitoring": False}
 
-        self.collections[crawl_mode].find_one_and_update({"_id": ObjectId(sample_id)}, {"$set": ground_truth})
+        self.collections[crawl_mode].find_one_and_update(
+            {"_id": ObjectId(sample_id)}, {"$set": ground_truth}
+        )
 
     def get_sample(self, crawl_mode: str, sample_id: str):
         projection = self.projections[crawl_mode]
-        sample = self.collections[crawl_mode].find_one({"_id": ObjectId(sample_id)}, projection)
+        sample = self.collections[crawl_mode].find_one(
+            {"_id": ObjectId(sample_id)}, projection
+        )
         return sample

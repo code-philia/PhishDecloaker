@@ -1,19 +1,19 @@
-import io
-import re
-import json
-import time
-import random
 import asyncio
+import base64
+import io
+import json
 import logging
+import random
+import re
+import time
 from dataclasses import dataclass
 
-import base64
 from openai import OpenAI
 from openai.types.audio import Transcription
 from PIL import Image
-from playwright.async_api import Page, Response, FrameLocator, Locator, TimeoutError
+from playwright.async_api import FrameLocator, Locator, Page, Response, TimeoutError
 
-logger = logging.getLogger('solver')
+logger = logging.getLogger("solver")
 
 RECAPTCHA_IMAGES = "images"
 RECAPTCHA_SQUARES = "squares"
@@ -60,107 +60,107 @@ SELECTORS = {
     "reload": "//div[contains(@class, 'reload-button-holder')]",
 }
 
+
 @dataclass
 class ReloadResponse:
     next_challenge_type: str = None
+
 
 @dataclass
 class UserVerifyResponse:
     solved: bool = False
 
+
 @dataclass
 class Status:
-    SUCCESS = "success"           # CAPTCHA solved, all challenges completed
-    RELOAD = "reload"             # CAPTCHA not solved yet, please select all matching images error
-    CONTINUE = "continue"         # CAPTCHA not solved yet, there are new challenges / please try again error
-    UNSEEN = "unseen"             # CAPTCHA not solved yet, new target object detected
-    BLOCKED = "blocked"           # CAPTCHA failed, solver is detected/blocked
+    SUCCESS = "success"  # CAPTCHA solved, all challenges completed
+    RELOAD = "reload"  # CAPTCHA not solved yet, please select all matching images error
+    CONTINUE = "continue"  # CAPTCHA not solved yet, there are new challenges / please try again error
+    UNSEEN = "unseen"  # CAPTCHA not solved yet, new target object detected
+    BLOCKED = "blocked"  # CAPTCHA failed, solver is detected/blocked
+
 
 class Solver:
     def __init__(self, openai_api_key: str):
-        self.openai_client = OpenAI(
-            api_key=openai_api_key
-        )
-        self.sitekey_pattern = re.compile(r'&k=(.*?)&co=')
+        self.openai_client = OpenAI(api_key=openai_api_key)
+        self.sitekey_pattern = re.compile(r"&k=(.*?)&co=")
 
     def set_page(self, page: Page):
-        """Prepare to interact with reCAPTCHAv2 widget on page, use hook to listen to responses.
-        """
+        """Prepare to interact with reCAPTCHAv2 widget on page, use hook to listen to responses."""
         self.page = page
         self.r_queue = asyncio.Queue()
         self.audio_queue = asyncio.Queue()
-        self.challenge_frame = page.frame_locator("//iframe[contains(@title,'recaptcha challenge expires in two minutes')]")
+        self.challenge_frame = page.frame_locator(
+            "//iframe[contains(@title,'recaptcha challenge expires in two minutes')]"
+        )
 
     def set_hook(self):
-        """Set hooks to start listening for responses.
-        """
+        """Set hooks to start listening for responses."""
         self.page.on("response", self.handle_response)
 
     async def __call__(self, *args, **kwargs):
-        """Solve reCAPTCHAv2
-        """
+        """Solve reCAPTCHAv2"""
         return await self.solve(**kwargs)
 
     async def get_sitekey(self):
-        """Get sitekey of CAPTCHA.
-        """
-        src = await self.page.get_attribute("//iframe[contains(@title,'reCAPTCHA')]", "src")
+        """Get sitekey of CAPTCHA."""
+        src = await self.page.get_attribute(
+            "//iframe[contains(@title,'reCAPTCHA')]", "src"
+        )
         sitekey = self.sitekey_pattern.search(src)
-        if sitekey: 
+        if sitekey:
             sitekey: str = sitekey.group()
             sitekey = sitekey.replace("&k=", "")
             sitekey = sitekey.replace("&co=", "")
         return sitekey
 
     async def handle_checkbox(self):
-        """Click on checkbox in reCAPTCHAv2 widget frame.
-        """
+        """Click on checkbox in reCAPTCHAv2 widget frame."""
         checkbox = self.page.frame_locator("//iframe[contains(@title,'reCAPTCHA')]")
         checkbox = await checkbox.locator("#recaptcha-anchor").element_handle()
         await checkbox.click(timeout=3000)
         logger.info("\t[>] clicked checkbox")
 
     async def handle_audio_button(self):
-        """Click on audio icon to begin audio challenge in reCAPTCHAv2 challenge frame.
-        """
-        audio_button = await self.challenge_frame.locator("//button[contains(@id, 'recaptcha-audio-button')]").element_handle()
+        """Click on audio icon to begin audio challenge in reCAPTCHAv2 challenge frame."""
+        audio_button = await self.challenge_frame.locator(
+            "//button[contains(@id, 'recaptcha-audio-button')]"
+        ).element_handle()
         await audio_button.click()
         logger.info("\t[>] clicked audio icon (audio challenge)")
 
     async def handle_play_button(self):
-        """Click on play button to mimic human listening to audio challenge.
-        """
-        play_button: Locator = self.challenge_frame.locator("//button[contains(@aria-labelledby, 'audio-instructions')]")
+        """Click on play button to mimic human listening to audio challenge."""
+        play_button: Locator = self.challenge_frame.locator(
+            "//button[contains(@aria-labelledby, 'audio-instructions')]"
+        )
         await play_button.click()
         logger.info("\t[>] clicked play button")
 
     async def type_answer(self, answer: str):
-        """Type answer of audio challenge into input.
-        """
-        input: Locator = self.challenge_frame.locator("//input[contains(@id, 'audio-response')]")
+        """Type answer of audio challenge into input."""
+        input: Locator = self.challenge_frame.locator(
+            "//input[contains(@id, 'audio-response')]"
+        )
         await input.type(answer)
         logger.info("\t[>] typed answer")
 
     async def transcribe_audio(self):
-        """Transcribe audio challenge.
-        """
+        """Transcribe audio challenge."""
         audio_data = await self.audio_queue.get()
         transcription: Transcription = self.openai_client.audio.transcriptions.create(
-            model="whisper-1",
-            language="en",
-            file=audio_data
+            model="whisper-1", language="en", file=audio_data
         )
         logger.info(f"\t[>] raw audio transcription: {repr(transcription.text)}")
-        pattern = re.compile('[^a-z0-9\s]+')
+        pattern = re.compile("[^a-z0-9\s]+")
         text = transcription.text.lower()
-        text = pattern.sub('', text)
+        text = pattern.sub("", text)
         text = " ".join(text.split())
         logger.info(f"\t[>] processed transcription: {repr(text)}")
         return text
 
     async def handle_response(self, response: Response):
-        """Intercept responses to determine current state of reCAPTCHAv2 challenge.
-        """
+        """Intercept responses to determine current state of reCAPTCHAv2 challenge."""
         if "recaptcha/api2/payload" in response.url:
             content_type = await response.header_value("Content-Type")
             if "audio" in content_type:
@@ -171,16 +171,17 @@ class Solver:
 
         if "recaptcha/api2/reload" in response.url:
             r_data = await response.text()
-            r_data = json.loads(r_data.replace(")]}\'\n", ""))
+            r_data = json.loads(r_data.replace(")]}'\n", ""))
             if r_data[5] in ["audio", "nocaptcha", "doscaptcha"]:
                 r = ReloadResponse(next_challenge_type=r_data[5])
                 self.r_queue.put_nowait(r)
                 logging.info(f"/reload (next: {r_data[5]})")
-    
+
     async def handle_reload(self):
-        """Click on reload button in reCAPTCHAv2 challenge frame.
-        """
-        reload_button = await self.challenge_frame.locator("//button[contains(@id, 'recaptcha-reload-button')]").element_handle()
+        """Click on reload button in reCAPTCHAv2 challenge frame."""
+        reload_button = await self.challenge_frame.locator(
+            "//button[contains(@id, 'recaptcha-reload-button')]"
+        ).element_handle()
         await reload_button.click()
         logger.info("\t[>] clicked reload button")
 
@@ -192,7 +193,9 @@ class Solver:
             logging.info("\t[>] success w/o challenge")
             return Status.SUCCESS
         elif r.next_challenge_type == "doscaptcha":
-            logging.info("\t[>] your computer or network may be sending automated queries")
+            logging.info(
+                "\t[>] your computer or network may be sending automated queries"
+            )
             return Status.BLOCKED
 
         # Audio transcription
@@ -206,10 +209,11 @@ class Solver:
         logger.info("\t[>] waiting for /userverify (request)")
         try:
             async with self.page.expect_request(
-                lambda request: "recaptcha/api2/userverify" in request.url,
-                timeout=3000
+                lambda request: "recaptcha/api2/userverify" in request.url, timeout=3000
             ) as request_info:
-                verify_button = await self.challenge_frame.locator("#recaptcha-verify-button").element_handle()
+                verify_button = await self.challenge_frame.locator(
+                    "#recaptcha-verify-button"
+                ).element_handle()
                 await verify_button.click()
                 logger.info("\t[>] clicked verify button")
                 await request_info.value
@@ -219,7 +223,7 @@ class Solver:
                 ) as response_info:
                     response = await response_info.value
                     uv_data = await response.text()
-                    uv_data = json.loads(uv_data.replace(")]}\'\n", ""))
+                    uv_data = json.loads(uv_data.replace(")]}'\n", ""))
                     if str(uv_data[0]) == "uvresp" and str(uv_data[3]) == "120":
                         logging.info("\t[>] /userverify (success)")
                         return Status.SUCCESS
@@ -235,6 +239,6 @@ class Solver:
             logger.info("\t[>] no /userverify (request)")
             await self.handle_reload()
             return Status.RELOAD
-            
+
     def random_sleep(self, amount):
         time.sleep(amount * (1 + random.uniform(-0.2, 0.2)))

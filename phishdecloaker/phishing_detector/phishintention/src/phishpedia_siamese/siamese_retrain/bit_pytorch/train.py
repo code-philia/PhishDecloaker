@@ -14,25 +14,24 @@
 
 # Lint as: python3
 """Fine-tune a BiT model on some downstream dataset."""
-#!/usr/bin/env python3
-# coding: utf-8
-from os.path import join as pjoin    # pylint: disable=g-importing-member
+import os
 import time
 
-import numpy as np
-import torch
-import torchvision as tv
+#!/usr/bin/env python3
+# coding: utf-8
+from os.path import join as pjoin  # pylint: disable=g-importing-member
 
+import numpy as np
 import src.phishpedia_siamese.siamese_retrain.bit_pytorch.fewshot as fs
 import src.phishpedia_siamese.siamese_retrain.bit_pytorch.lbtoolbox as lb
 import src.phishpedia_siamese.siamese_retrain.bit_pytorch.models as models
-
-from src.phishpedia_siamese.siamese_retrain import bit_common
-from src.phishpedia_siamese.siamese_retrain import bit_hyperrule
+import torch
+import torchvision as tv
+from src.phishpedia_siamese.siamese_retrain import bit_common, bit_hyperrule
 
 from .dataloader import GetLoader
-import os
-os.environ["CUDA_VISIBLE_DEVICES"]="0,1"
+
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1"
 
 
 def topk(output, target, ks=(1,)):
@@ -53,50 +52,70 @@ def recycle(iterable):
 def mktrainval(args, logger):
     """Returns train and validation datasets."""
     precrop, crop = bit_hyperrule.get_resolution_from_dataset(args.dataset)
-    train_tx = tv.transforms.Compose([
+    train_tx = tv.transforms.Compose(
+        [
             tv.transforms.Resize((precrop, precrop)),
             tv.transforms.RandomCrop((crop, crop)),
             tv.transforms.RandomHorizontalFlip(),
             tv.transforms.ToTensor(),
             tv.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-    ])
-    val_tx = tv.transforms.Compose([
+        ]
+    )
+    val_tx = tv.transforms.Compose(
+        [
             tv.transforms.Resize((crop, crop)),
             tv.transforms.ToTensor(),
             tv.transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)),
-    ])
+        ]
+    )
 
     if args.dataset == "cifar10":
-        train_set = tv.datasets.CIFAR10(args.datadir, transform=train_tx, train=True, download=True)
-        valid_set = tv.datasets.CIFAR10(args.datadir, transform=val_tx, train=False, download=True)
+        train_set = tv.datasets.CIFAR10(
+            args.datadir, transform=train_tx, train=True, download=True
+        )
+        valid_set = tv.datasets.CIFAR10(
+            args.datadir, transform=val_tx, train=False, download=True
+        )
     elif args.dataset == "cifar100":
-        train_set = tv.datasets.CIFAR100(args.datadir, transform=train_tx, train=True, download=True)
-        valid_set = tv.datasets.CIFAR100(args.datadir, transform=val_tx, train=False, download=True)
+        train_set = tv.datasets.CIFAR100(
+            args.datadir, transform=train_tx, train=True, download=True
+        )
+        valid_set = tv.datasets.CIFAR100(
+            args.datadir, transform=val_tx, train=False, download=True
+        )
     elif args.dataset == "imagenet2012":
         train_set = tv.datasets.ImageFolder(pjoin(args.datadir, "train"), train_tx)
         valid_set = tv.datasets.ImageFolder(pjoin(args.datadir, "val"), val_tx)
     # TODO: Define custom dataloading logic here for custom datasets
     elif args.dataset == "logo_2k":
-        train_set = GetLoader(data_root='logo2k/Logo-2K+',
-                                data_list='logo2k/train.txt',
-                                label_dict='logo2k/logo2k_labeldict.pkl',
-                                transform=train_tx)
-        
-        valid_set = GetLoader(data_root='logo2k/Logo-2K+',
-                              data_list='logo2k/test.txt',
-                              label_dict='logo2k/logo2k_labeldict.pkl',
-                              transform=val_tx)
-        
+        train_set = GetLoader(
+            data_root="logo2k/Logo-2K+",
+            data_list="logo2k/train.txt",
+            label_dict="logo2k/logo2k_labeldict.pkl",
+            transform=train_tx,
+        )
+
+        valid_set = GetLoader(
+            data_root="logo2k/Logo-2K+",
+            data_list="logo2k/test.txt",
+            label_dict="logo2k/logo2k_labeldict.pkl",
+            transform=val_tx,
+        )
+
     elif args.dataset == "targetlist":
-        train_set = GetLoader(data_root='../phishpedia/expand_targetlist',
-                                            data_list='train_targets.txt',
-                                            label_dict='target_dict.json',
-                                            transform=train_tx)
-        
-        valid_set = GetLoader(data_root='../phishpedia/expand_targetlist',
-                              data_list='test_targets.txt',
-                              label_dict='target_dict.json',
-                              transform=val_tx)
+        train_set = GetLoader(
+            data_root="../phishpedia/expand_targetlist",
+            data_list="train_targets.txt",
+            label_dict="target_dict.json",
+            transform=train_tx,
+        )
+
+        valid_set = GetLoader(
+            data_root="../phishpedia/expand_targetlist",
+            data_list="test_targets.txt",
+            label_dict="target_dict.json",
+            transform=val_tx,
+        )
 
     logger.info("Using a training set with {} images.".format(len(train_set)))
     logger.info("Using a validation set with {} images.".format(len(valid_set)))
@@ -105,25 +124,42 @@ def mktrainval(args, logger):
     micro_batch_size = args.batch // args.batch_split
 
     valid_loader = torch.utils.data.DataLoader(
-            valid_set, batch_size=micro_batch_size, shuffle=False,
-            num_workers=args.workers, pin_memory=True, drop_last=False)
+        valid_set,
+        batch_size=micro_batch_size,
+        shuffle=False,
+        num_workers=args.workers,
+        pin_memory=True,
+        drop_last=False,
+    )
 
     if micro_batch_size <= len(train_set):
         train_loader = torch.utils.data.DataLoader(
-                train_set, batch_size=micro_batch_size, shuffle=True,
-                num_workers=args.workers, pin_memory=True, drop_last=True)
+            train_set,
+            batch_size=micro_batch_size,
+            shuffle=True,
+            num_workers=args.workers,
+            pin_memory=True,
+            drop_last=True,
+        )
     else:
         # In the few-shot cases, the total dataset size might be smaller than the batch-size.
         # In these cases, the default sampler doesn't repeat, so we need to make it do that
         # if we want to match the behaviour from the paper.
         train_loader = torch.utils.data.DataLoader(
-                train_set, batch_size=micro_batch_size, num_workers=args.workers, pin_memory=True, drop_last=True,
-                sampler=torch.utils.data.RandomSampler(train_set, replacement=True, num_samples=micro_batch_size))
+            train_set,
+            batch_size=micro_batch_size,
+            num_workers=args.workers,
+            pin_memory=True,
+            drop_last=True,
+            sampler=torch.utils.data.RandomSampler(
+                train_set, replacement=True, num_samples=micro_batch_size
+            ),
+        )
 
     return train_set, valid_set, train_loader, valid_loader
 
 
-def run_eval(model, data_loader, device, chrono, logger,  step):
+def run_eval(model, data_loader, device, chrono, logger, step):
     # switch to evaluate mode
     model.eval()
 
@@ -143,9 +179,9 @@ def run_eval(model, data_loader, device, chrono, logger,  step):
             # compute output, measure accuracy and record loss.
             with chrono.measure("eval fprop"):
                 logits = model(x)
-                c = torch.nn.CrossEntropyLoss(reduction='none')(logits, y)
+                c = torch.nn.CrossEntropyLoss(reduction="none")(logits, y)
                 top1, top5 = topk(logits, y, ks=(1, 5))
-                all_c.extend(c.cpu())    # Also ensures a sync point.
+                all_c.extend(c.cpu())  # Also ensures a sync point.
                 all_top1.extend(top1.cpu())
                 all_top5.extend(top5.cpu())
 
@@ -172,6 +208,7 @@ def mixup_data(x, y, l):
 def mixup_criterion(criterion, pred, y_a, y_b, l):
     return l * criterion(pred, y_a) + (1 - l) * criterion(pred, y_b)
 
+
 def optimizer_to(optim, device):
     for param in optim.state.values():
         # Not sure there are any global tensors in the state dict
@@ -186,6 +223,7 @@ def optimizer_to(optim, device):
                     if subparam._grad is not None:
                         subparam._grad.data = subparam._grad.data.to(device)
 
+
 def main(args):
     logger = bit_common.setup_logger(args)
 
@@ -198,24 +236,26 @@ def main(args):
 
     train_set, valid_set, train_loader, valid_loader = mktrainval(args, logger)
 
-    if args.model.startswith('BiT'):
+    if args.model.startswith("BiT"):
         logger.info("Loading model from {}.npz".format(args.model))
-        model = models.KNOWN_MODELS[args.model](head_size=len(valid_set.classes), zero_head=True)
+        model = models.KNOWN_MODELS[args.model](
+            head_size=len(valid_set.classes), zero_head=True
+        )
         model.load_from(np.load("{}.npz".format(args.model)))
     else:
         model = models.KNOWN_MODELS[args.model](head_size=len(valid_set.classes))
         checkpoint = torch.load("{}.pth".format(args.model), map_location="cpu")
-        del checkpoint['last_linear.weight']
-        del checkpoint['last_linear.bias']
+        del checkpoint["last_linear.weight"]
+        del checkpoint["last_linear.bias"]
         model.load_state_dict(checkpoint, strict=False)
 
     logger.info("Moving model onto all GPUs")
     logger.info(model)
     model = torch.nn.DataParallel(model)
-    
+
     # Note: no weight-decay!
     optim = torch.optim.SGD(model.parameters(), lr=args.base_lr, momentum=0.9)
-    
+
     # Optionally resume from a checkpoint.
     # Load it to CPU first as we'll move the model to GPU later.
     # This way, we save a little bit of GPU memory when loading.
@@ -225,15 +265,15 @@ def main(args):
     if args.weights_path:
         logger.info("Loading weights from {}".format(args.weights_path))
         checkpoint = torch.load(args.weights_path, map_location="cpu")
-#         checkpoint = torch.load(args.weights_path)
-#         print(checkpoint['model'].keys())
-        if args.model.startswith('BiT'):
+        #         checkpoint = torch.load(args.weights_path)
+        #         print(checkpoint['model'].keys())
+        if args.model.startswith("BiT"):
             # New task might have different classes; remove the pretrained classifier weights
-            del checkpoint['model']['module.head.conv.weight']
-            del checkpoint['model']['module.head.conv.bias']
+            del checkpoint["model"]["module.head.conv.weight"]
+            del checkpoint["model"]["module.head.conv.bias"]
         else:
-            del checkpoint['model']['module.last_linear.weight']
-            del checkpoint['model']['module.last_linear.bias']
+            del checkpoint["model"]["module.last_linear.weight"]
+            del checkpoint["model"]["module.last_linear.bias"]
         model.module.load_state_dict(checkpoint["model"], strict=False)
         logger.info("Weights successfully loaded")
 
@@ -248,13 +288,13 @@ def main(args):
         model.load_state_dict(checkpoint["model"])
         optim.load_state_dict(checkpoint["optim"])
         logger.info("Resumed at step {}".format(step))
-        
+
     except FileNotFoundError:
         logger.info("Fine-tuning from BiT")
 
     # Send to GPU
     model = model.to(device)
-    optimizer_to(optim,device)
+    optimizer_to(optim, device)
     optim.zero_grad()
 
     model.train()
@@ -295,12 +335,12 @@ def main(args):
                 c = mixup_criterion(cri, logits, y_a, y_b, mixup_l)
             else:
                 c = cri(logits, y)
-            c_num = float(c.data.cpu().numpy())    # Also ensures a sync point.
+            c_num = float(c.data.cpu().numpy())  # Also ensures a sync point.
 
             # Accumulate grads
             (c / args.batch_split).backward()
 
-            logger.info("[step {}]: loss={:.5f} (lr={:.1e})".format(step, c_num, lr))    
+            logger.info("[step {}]: loss={:.5f} (lr={:.1e})".format(step, c_num, lr))
             logger.flush()
 
             # Update params
@@ -310,31 +350,40 @@ def main(args):
 
             # Sample new mixup ratio for next batch
             mixup_l = np.random.beta(mixup, mixup) if mixup > 0 else 1
-            
+
             # Save model
             end = time.time()
             if step % 50 == 0:
-                torch.save({
-                    "step": step,
-                    "model": model.state_dict(),
-                    "optim" : optim.state_dict(),
-                }, savename)
+                torch.save(
+                    {
+                        "step": step,
+                        "model": model.state_dict(),
+                        "optim": optim.state_dict(),
+                    },
+                    savename,
+                )
 
         # Final eval at end of training.
-        run_eval(model, valid_loader, device, chrono, logger, step='end')
-        torch.save({
-            "step": step,
-            "model": model.state_dict(),
-            "optim" : optim.state_dict(),
-        }, savename)
-
+        run_eval(model, valid_loader, device, chrono, logger, step="end")
+        torch.save(
+            {
+                "step": step,
+                "model": model.state_dict(),
+                "optim": optim.state_dict(),
+            },
+            savename,
+        )
 
     logger.info("Timings:\n{}".format(chrono))
 
 
 if __name__ == "__main__":
     parser = bit_common.argparser(models.KNOWN_MODELS.keys())
-    parser.add_argument("--workers", type=int, default=8,
-                                            help="Number of background threads used to load data.")
+    parser.add_argument(
+        "--workers",
+        type=int,
+        default=8,
+        help="Number of background threads used to load data.",
+    )
     parser.add_argument("--no-save", dest="save", action="store_false")
     main(parser.parse_args())

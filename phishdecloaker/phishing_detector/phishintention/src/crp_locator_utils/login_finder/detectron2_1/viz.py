@@ -26,9 +26,8 @@ from detectron2.structures import Boxes, BoxMode, Instances
 from detectron2.utils.visualizer import Visualizer
 from fvcore.common.file_io import PathManager
 from PIL import Image
-from tqdm import tqdm
-
 from src.crp_locator_utils.login_finder.detectron2_1.datasets import LoginMapper
+from tqdm import tqdm
 
 
 def viz_data(cfg) -> List[wandb.Image]:

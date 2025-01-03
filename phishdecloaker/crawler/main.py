@@ -1,13 +1,12 @@
-import os
 import json
+import os
 
 import pika
 import requests
-from playwright.sync_api import sync_playwright, Browser
-
-from crawler_captcha import Crawler as CaptchaCrawler
 from crawler_baseline import Crawler as BaselineCrawler
+from crawler_captcha import Crawler as CaptchaCrawler
 from crawler_group import Crawler as GroupCrawler
+from playwright.sync_api import Browser, sync_playwright
 
 # Configurations
 CRAWL_MODE = os.getenv("CRAWL_MODE", "").upper()
@@ -21,11 +20,29 @@ OUTPUT_QUEUE_NAME = "crawled"
 
 # Initialize crawler
 if CRAWL_MODE == "BASELINE":
-    in_priority, out_priority, crawler, whitelist, timeout = 6, 0, BaselineCrawler(), True, 30000
+    in_priority, out_priority, crawler, whitelist, timeout = (
+        6,
+        0,
+        BaselineCrawler(),
+        True,
+        30000,
+    )
 elif CRAWL_MODE == "CAPTCHA":
-    in_priority, out_priority, crawler, whitelist, timeout = 6, 1, CaptchaCrawler(), False, 30000
+    in_priority, out_priority, crawler, whitelist, timeout = (
+        6,
+        1,
+        CaptchaCrawler(),
+        False,
+        30000,
+    )
 elif CRAWL_MODE == "GROUP":
-    in_priority, out_priority, crawler, whitelist, timeout = 1, 2, GroupCrawler(), False, 150000
+    in_priority, out_priority, crawler, whitelist, timeout = (
+        1,
+        2,
+        GroupCrawler(),
+        False,
+        150000,
+    )
 else:
     raise NotImplementedError(f"Unknown crawl mode: {CRAWL_MODE}")
 
@@ -39,29 +56,39 @@ channel.basic_qos(prefetch_count=1)
 
 
 def callback(ch, method, properties, body: bytes):
-    try: message: dict = json.loads(body)
-    except: return
+    try:
+        message: dict = json.loads(body)
+    except:
+        return
     domain: str = message.get("domain", None)
     score: int = message.get("score", 0)
     print(f"[+] {domain}")
 
     try:
         if whitelist:
-            if any([domain.endswith(x) for x in DOMAIN_WHITELIST]): return
-            if any([domain.startswith(x) for x in SUBDOMAIN_WHITELIST]): return
+            if any([domain.endswith(x) for x in DOMAIN_WHITELIST]):
+                return
+            if any([domain.startswith(x) for x in SUBDOMAIN_WHITELIST]):
+                return
             response = requests.head(f"https://{domain}", timeout=3)
-            if response.status_code < 200 or response.status_code >= 404: return
+            if response.status_code < 200 or response.status_code >= 404:
+                return
 
         with sync_playwright() as p:
-            browser: Browser = p.chromium.connect_over_cdp(f"ws://{BROWSER_HOST}?stealth&timeout={timeout}")
+            browser: Browser = p.chromium.connect_over_cdp(
+                f"ws://{BROWSER_HOST}?stealth&timeout={timeout}"
+            )
             message = crawler.crawl(message, browser, domain)
-            if not message: return
+            if not message:
+                return
             message["score"] = score
             channel.basic_publish(
-                exchange='',
+                exchange="",
                 routing_key=OUTPUT_QUEUE_NAME,
                 body=json.dumps(message),
-                properties=pika.BasicProperties(delivery_mode=pika.DeliveryMode.Persistent, priority=out_priority)
+                properties=pika.BasicProperties(
+                    delivery_mode=pika.DeliveryMode.Persistent, priority=out_priority
+                ),
             )
 
     except Exception as e:

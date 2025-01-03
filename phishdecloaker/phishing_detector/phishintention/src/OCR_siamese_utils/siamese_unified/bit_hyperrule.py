@@ -19,14 +19,14 @@
 
 
 known_dataset_sizes = {
-    'cifar10': (32, 32),
-    'cifar100': (32, 32),
-    'oxford_iiit_pet': (224, 224),
-    'oxford_flowers102': (224, 224),
-    'imagenet2012': (224, 224),
+    "cifar10": (32, 32),
+    "cifar100": (32, 32),
+    "oxford_iiit_pet": (224, 224),
+    "oxford_flowers102": (224, 224),
+    "imagenet2012": (224, 224),
     # TODO: Specify image size of custom dataset here
-    'logo_2k': (224, 224),
-    'targetlist': (224, 224),
+    "logo_2k": (224, 224),
+    "targetlist": (224, 224),
 }
 
 

@@ -3,11 +3,9 @@ import time
 import traceback
 
 import telebot
-from flask import Flask, Response, request, abort, jsonify
-
 import telegram
 from database import Database
-
+from flask import Flask, Response, abort, jsonify, request
 
 DATABASE_URL = os.getenv("DATABASE_URL", None)
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", None)
@@ -31,7 +29,7 @@ def telegram_webhook():
         json_string = request.get_data().decode("utf-8")
         update = telebot.types.Update.de_json(json_string)
         bot.process_new_updates([update])
-        return ''
+        return ""
     else:
         abort(403)
 
@@ -43,7 +41,8 @@ def poll():
     crawl_mode = content.get("crawl_mode", None)
     sample_id = content.get("sample_id", None)
     sample = database.get_sample(crawl_mode, sample_id)
-    if not sample: raise Exception("Sample not found")
+    if not sample:
+        raise Exception("Sample not found")
     message_id = telegram.create_poll(bot, TELEGRAM_GROUP_ID, crawl_mode, sample)
     database.update_poll_id(crawl_mode, sample_id, message_id)
     return Response(status=200)
@@ -72,10 +71,10 @@ def daily_stats():
     content: dict = request.json
     telegram.report_daily_stats(bot, TELEGRAM_GROUP_ID, content)
     return Response(status=200)
-    
+
 
 # Check bot connectivity
-@bot.message_handler(commands=['ping'])
+@bot.message_handler(commands=["ping"])
 def start(message: telebot.types.Message):
     chat_id = str(message.chat.id)
     bot.send_message(chat_id, f"Listening. Group ID: {chat_id}")
@@ -86,21 +85,27 @@ def start(message: telebot.types.Message):
 # When a user votes on a poll.
 @bot.poll_handler(func=lambda x: True)
 def poll_answer(answer: telebot.types.Poll):
-    sample_info: str = answer.question[answer.question.find("[")+1:answer.question.find("]")]
+    sample_info: str = answer.question[
+        answer.question.find("[") + 1 : answer.question.find("]")
+    ]
     sample_info = sample_info.split(":")
     sample_id = sample_info[1]
     crawl_mode = "BASELINE" if sample_info[0] == "B" else "CAPTCHA"
 
     sample = database.get_sample(crawl_mode, sample_id)
-    if not sample: return
+    if not sample:
+        return
     poll_id = int(sample.get("poll_id", None))
     try:
         bot.stop_poll(TELEGRAM_GROUP_ID, poll_id)
         options = answer.options
-        
+
         for option in options:
             if option.voter_count:
-                bot.send_message(TELEGRAM_GROUP_ID, f"🟩 Poll {sample_id} closed. Verdict: {option.text}")
+                bot.send_message(
+                    TELEGRAM_GROUP_ID,
+                    f"🟩 Poll {sample_id} closed. Verdict: {option.text}",
+                )
                 database.update_ground_truth(crawl_mode, sample_id, option.text)
                 return
     except:
