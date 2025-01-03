@@ -1325,7 +1325,8 @@ class Albu(object):
         if 'bboxes' in results:
             # to list of boxes
             if isinstance(results['bboxes'], np.ndarray):
-                results['bboxes'] = [x for x in results['bboxes']]
+                results['bboxes'] = list(results['bboxes'])
+                
             # add pseudo-field for filtration
             if self.filter_lost_elements:
                 results['idx_mapper'] = np.arange(len(results['bboxes']))
@@ -1339,7 +1340,7 @@ class Albu(object):
             if albumentations.__version__ < '0.5':
                 results['masks'] = results['masks'].masks
             else:
-                results['masks'] = [mask for mask in results['masks'].masks]
+                results['masks'] = list(results['masks'].masks)
 
         results = self.aug(**results)
 
