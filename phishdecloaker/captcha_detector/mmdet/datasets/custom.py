@@ -5,9 +5,9 @@ from collections import OrderedDict
 import mmcv
 import numpy as np
 from mmcv.utils import print_log
-from mmdet.core import eval_map, eval_recalls
 from torch.utils.data import Dataset
 
+from mmdet.core import eval_map, eval_recalls
 from .builder import DATASETS
 from .pipelines import Compose
 
@@ -52,18 +52,16 @@ class CustomDataset(Dataset):
 
     CLASSES = None
 
-    def __init__(
-        self,
-        ann_file,
-        pipeline,
-        classes=None,
-        data_root=None,
-        img_prefix="",
-        seg_prefix=None,
-        proposal_file=None,
-        test_mode=False,
-        filter_empty_gt=True,
-    ):
+    def __init__(self,
+                 ann_file,
+                 pipeline,
+                 classes=None,
+                 data_root=None,
+                 img_prefix='',
+                 seg_prefix=None,
+                 proposal_file=None,
+                 test_mode=False,
+                 filter_empty_gt=True):
         self.ann_file = ann_file
         self.data_root = data_root
         self.img_prefix = img_prefix
@@ -81,8 +79,10 @@ class CustomDataset(Dataset):
                 self.img_prefix = osp.join(self.data_root, self.img_prefix)
             if not (self.seg_prefix is None or osp.isabs(self.seg_prefix)):
                 self.seg_prefix = osp.join(self.data_root, self.seg_prefix)
-            if not (self.proposal_file is None or osp.isabs(self.proposal_file)):
-                self.proposal_file = osp.join(self.data_root, self.proposal_file)
+            if not (self.proposal_file is None
+                    or osp.isabs(self.proposal_file)):
+                self.proposal_file = osp.join(self.data_root,
+                                              self.proposal_file)
         # load annotations (and proposals)
         self.data_infos = self.load_annotations(self.ann_file)
 
@@ -125,7 +125,7 @@ class CustomDataset(Dataset):
             dict: Annotation info of specified index.
         """
 
-        return self.data_infos[idx]["ann"]
+        return self.data_infos[idx]['ann']
 
     def get_cat_ids(self, idx):
         """Get category ids by index.
@@ -137,24 +137,25 @@ class CustomDataset(Dataset):
             list[int]: All categories in the image of specified index.
         """
 
-        return self.data_infos[idx]["ann"]["labels"].astype(np.int).tolist()
+        return self.data_infos[idx]['ann']['labels'].astype(np.int).tolist()
 
     def pre_pipeline(self, results):
         """Prepare results dict for pipeline."""
-        results["img_prefix"] = self.img_prefix
-        results["seg_prefix"] = self.seg_prefix
-        results["proposal_file"] = self.proposal_file
-        results["bbox_fields"] = []
-        results["mask_fields"] = []
-        results["seg_fields"] = []
+        results['img_prefix'] = self.img_prefix
+        results['seg_prefix'] = self.seg_prefix
+        results['proposal_file'] = self.proposal_file
+        results['bbox_fields'] = []
+        results['mask_fields'] = []
+        results['seg_fields'] = []
 
     def _filter_imgs(self, min_size=32):
         """Filter images too small."""
         if self.filter_empty_gt:
-            warnings.warn("CustomDataset does not support filtering empty gt images.")
+            warnings.warn(
+                'CustomDataset does not support filtering empty gt images.')
         valid_inds = []
         for i, img_info in enumerate(self.data_infos):
-            if min(img_info["width"], img_info["height"]) >= min_size:
+            if min(img_info['width'], img_info['height']) >= min_size:
                 valid_inds.append(i)
         return valid_inds
 
@@ -167,7 +168,7 @@ class CustomDataset(Dataset):
         self.flag = np.zeros(len(self), dtype=np.uint8)
         for i in range(len(self)):
             img_info = self.data_infos[i]
-            if img_info["width"] / img_info["height"] > 1:
+            if img_info['width'] / img_info['height'] > 1:
                 self.flag[i] = 1
 
     def _rand_another(self, idx):
@@ -210,7 +211,7 @@ class CustomDataset(Dataset):
         ann_info = self.get_ann_info(idx)
         results = dict(img_info=img_info, ann_info=ann_info)
         if self.proposals is not None:
-            results["proposals"] = self.proposals[idx]
+            results['proposals'] = self.proposals[idx]
         self.pre_pipeline(results)
         return self.pipeline(results)
 
@@ -228,7 +229,7 @@ class CustomDataset(Dataset):
         img_info = self.data_infos[idx]
         results = dict(img_info=img_info)
         if self.proposals is not None:
-            results["proposals"] = self.proposals[idx]
+            results['proposals'] = self.proposals[idx]
         self.pre_pipeline(results)
         return self.pipeline(results)
 
@@ -255,7 +256,7 @@ class CustomDataset(Dataset):
         elif isinstance(classes, (tuple, list)):
             class_names = classes
         else:
-            raise ValueError(f"Unsupported type {type(classes)} of classes.")
+            raise ValueError(f'Unsupported type {type(classes)} of classes.')
 
         return class_names
 
@@ -263,15 +264,13 @@ class CustomDataset(Dataset):
         """Place holder to format result to dataset specific output."""
         pass
 
-    def evaluate(
-        self,
-        results,
-        metric="mAP",
-        logger=None,
-        proposal_nums=(100, 300, 1000),
-        iou_thr=0.5,
-        scale_ranges=None,
-    ):
+    def evaluate(self,
+                 results,
+                 metric='mAP',
+                 logger=None,
+                 proposal_nums=(100, 300, 1000),
+                 iou_thr=0.5,
+                 scale_ranges=None):
         """Evaluate the dataset.
 
         Args:
@@ -290,13 +289,13 @@ class CustomDataset(Dataset):
         if not isinstance(metric, str):
             assert len(metric) == 1
             metric = metric[0]
-        allowed_metrics = ["mAP", "recall"]
+        allowed_metrics = ['mAP', 'recall']
         if metric not in allowed_metrics:
-            raise KeyError(f"metric {metric} is not supported")
+            raise KeyError(f'metric {metric} is not supported')
         annotations = [self.get_ann_info(i) for i in range(len(self))]
         eval_results = OrderedDict()
         iou_thrs = [iou_thr] if isinstance(iou_thr, float) else iou_thr
-        if metric == "mAP":
+        if metric == 'mAP':
             assert isinstance(iou_thrs, list)
             mean_aps = []
             for iou_thr in iou_thrs:
@@ -307,21 +306,19 @@ class CustomDataset(Dataset):
                     scale_ranges=scale_ranges,
                     iou_thr=iou_thr,
                     dataset=self.CLASSES,
-                    logger=logger,
-                )
+                    logger=logger)
                 mean_aps.append(mean_ap)
-                eval_results[f"AP{int(iou_thr * 100):02d}"] = round(mean_ap, 3)
-            eval_results["mAP"] = sum(mean_aps) / len(mean_aps)
-        elif metric == "recall":
-            gt_bboxes = [ann["bboxes"] for ann in annotations]
+                eval_results[f'AP{int(iou_thr * 100):02d}'] = round(mean_ap, 3)
+            eval_results['mAP'] = sum(mean_aps) / len(mean_aps)
+        elif metric == 'recall':
+            gt_bboxes = [ann['bboxes'] for ann in annotations]
             recalls = eval_recalls(
-                gt_bboxes, results, proposal_nums, iou_thr, logger=logger
-            )
+                gt_bboxes, results, proposal_nums, iou_thr, logger=logger)
             for i, num in enumerate(proposal_nums):
                 for j, iou in enumerate(iou_thr):
-                    eval_results[f"recall@{num}@{iou}"] = recalls[i, j]
+                    eval_results[f'recall@{num}@{iou}'] = recalls[i, j]
             if recalls.shape[1] > 1:
                 ar = recalls.mean(axis=1)
                 for i, num in enumerate(proposal_nums):
-                    eval_results[f"AR@{num}"] = ar[i]
+                    eval_results[f'AR@{num}'] = ar[i]
         return eval_results

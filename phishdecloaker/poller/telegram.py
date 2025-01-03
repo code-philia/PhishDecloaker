@@ -1,5 +1,5 @@
-import base64
 import io
+import base64
 
 import telebot
 
@@ -18,35 +18,20 @@ def create_poll(bot: telebot.TeleBot, group_id: str, crawl_mode: str, sample: di
         verdicts = ["🟩" if sample.get(f"group_{i+1}", False) else "🟥" for i in range(5)]
         screenshot = None
         for i in range(4, -1, -1):
-            screenshot = (
-                str(sample.get(f"screenshot_{i+1}"))
-                .replace("data:image/png;base64,", "", 1)
-                .replace("None", "", 1)
-            )
-            if screenshot:
-                break
+            screenshot = str(sample.get(f"screenshot_{i+1}")).replace("data:image/png;base64,", "", 1).replace("None", "", 1)
+            if screenshot: break
 
     elif crawl_mode == "CAPTCHA":
         verdicts = ["🟩" if phish_pred else "🟥"]
-        screenshot = str(sample.get("screenshot", "")).replace(
-            "data:image/png;base64,", "", 1
-        )
-
+        screenshot = str(sample.get("screenshot", "")).replace("data:image/png;base64,", "", 1)
+    
     caption = [f"https://{domain}"]
-    if has_captcha:
-        caption.append(f"<b>CAPTCHA:</b> {captcha_type}, solved: {captcha_solved}")
-    if phish_pred:
-        caption.append(f"<b>Target:</b> {phish_target}, verdicts: {''.join(verdicts)}")
+    if has_captcha: caption.append(f"<b>CAPTCHA:</b> {captcha_type}, solved: {captcha_solved}")
+    if phish_pred: caption.append(f"<b>Target:</b> {phish_target}, verdicts: {''.join(verdicts)}")
 
     captcha_poll = True if has_captcha else False
-    question = (
-        f"[{crawl_mode[0]}:{sample_id}]\nCAPTCHA? Phishing?"
-        if captcha_poll
-        else f"[{crawl_mode[0]}:{sample_id}]\nPhishing?"
-    )
-    options = (
-        ["No, No", "No, Yes", "Yes, No", "Yes, Yes"] if captcha_poll else ["Yes", "No"]
-    )
+    question = f"[{crawl_mode[0]}:{sample_id}]\nCAPTCHA? Phishing?" if captcha_poll else f"[{crawl_mode[0]}:{sample_id}]\nPhishing?"
+    options = ["No, No", "No, Yes", "Yes, No", "Yes, Yes"] if captcha_poll else  ["Yes", "No"]
 
     if screenshot:
         screenshot = io.BytesIO(base64.b64decode(screenshot))
@@ -56,22 +41,25 @@ def create_poll(bot: telebot.TeleBot, group_id: str, crawl_mode: str, sample: di
             photo=screenshot,
             caption="\n".join(caption),
             parse_mode="HTML",
-            disable_notification=True,
+            disable_notification=True
         )
     else:
         bot.send_message(
             chat_id=group_id,
             text="\n".join(caption),
             parse_mode="HTML",
-            disable_notification=True,
+            disable_notification=True
         )
 
     poll_id = bot.send_poll(
-        chat_id=group_id, question=question, options=options, disable_notification=True
+        chat_id=group_id,
+        question=question,
+        options=options,
+        disable_notification=True
     ).message_id
 
     return poll_id
-
+    
 
 def report_hourly_stats(bot: telebot.TeleBot, group_id: str, stats: dict):
     monitoring = int(stats.get("monitoring", 0))
@@ -88,7 +76,7 @@ def report_hourly_stats(bot: telebot.TeleBot, group_id: str, stats: dict):
         chat_id=group_id,
         text="\n".join(text),
         parse_mode="HTML",
-        disable_notification=True,
+        disable_notification=True
     )
 
 
@@ -107,7 +95,7 @@ def report_daily_stats(bot: telebot.TeleBot, group_id: str, stats: dict):
         chat_id=group_id,
         text="\n".join(text),
         parse_mode="HTML",
-        disable_notification=True,
+        disable_notification=True
     )
 
 
@@ -116,5 +104,5 @@ def report_captcha(bot: telebot.TeleBot, group_id: str, domain: str):
         chat_id=group_id,
         text=f"⚠️ May have CAPTCHA: https://{domain}",
         parse_mode="HTML",
-        disable_notification=True,
+        disable_notification=True
     )

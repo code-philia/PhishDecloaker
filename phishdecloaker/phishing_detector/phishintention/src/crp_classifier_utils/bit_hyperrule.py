@@ -19,16 +19,16 @@
 
 
 known_dataset_sizes = {
-    "cifar10": (32, 32),
-    "cifar100": (32, 32),
-    "oxford_iiit_pet": (224, 224),
-    "oxford_flowers102": (224, 224),
-    "imagenet2012": (224, 224),
-    # TODO: Specify image size of custom dataset here
-    "logo_2k": (224, 224),
-    "targetlist": (224, 224),
-    "web": (10, 10),
-    "screenshot": (256, 512),
+  'cifar10': (32, 32),
+  'cifar100': (32, 32),
+  'oxford_iiit_pet': (224, 224),
+  'oxford_flowers102': (224, 224),
+  'imagenet2012': (224, 224),
+  # TODO: Specify image size of custom dataset here
+  'logo_2k': (224, 224),
+  'targetlist': (224, 224),
+  'web':(10, 10),
+  'screenshot': (256, 512)
 }
 
 
@@ -68,14 +68,11 @@ def get_lr(step, dataset_size, base_lr):
                 base_lr /= 10
     return base_lr
 
-
-################## Schedule designed for finetuning ######################################################
-
+################## Schedule designed for finetuning ###################################################### 
 
 def get_schedule_finetune(dataset_size, batch_size):
-    epoch_steps = dataset_size // batch_size  # one epoch takes xxx iterations
-    return [epoch_steps * 5]  # only finetune for 5 epochs
-
+    epoch_steps = dataset_size // batch_size # one epoch takes xxx iterations
+    return [epoch_steps*5] # only finetune for 5 epochs
 
 def get_lr_finetune(step, dataset_size, base_lr, batch_size):
     """Returns learning-rate for `step` or None at the end."""
@@ -86,3 +83,4 @@ def get_lr_finetune(step, dataset_size, base_lr, batch_size):
     # End of training
     else:
         return None
+

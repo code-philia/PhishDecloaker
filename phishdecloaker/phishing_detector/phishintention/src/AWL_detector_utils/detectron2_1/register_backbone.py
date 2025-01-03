@@ -1,9 +1,16 @@
 import math
-
 import fvcore.nn.weight_init as weight_init
-import torch
 import torch.nn.functional as F
+from torch import nn
+
+from detectron2.modeling.backbone.build import *
+from detectron2.modeling.backbone.fpn import *
+from detectron2.modeling.backbone.fpn import LastLevelMaxPool
+from detectron2.modeling.backbone.resnet import *
+
 from detectron2.config import get_cfg
+from detectron2.modeling import build_model
+
 from detectron2.layers import (
     CNNBlockBase,
     Conv2d,
@@ -12,19 +19,15 @@ from detectron2.layers import (
     ShapeSpec,
     get_norm,
 )
-from detectron2.modeling import build_model
-from detectron2.modeling.backbone.build import *
-from detectron2.modeling.backbone.fpn import *
-from detectron2.modeling.backbone.fpn import LastLevelMaxPool
-from detectron2.modeling.backbone.resnet import *
+
+import torch
 from torch import nn
 
 
 class QuantizeRelu(nn.Module):
-    """
+    '''
     Definition of StepReLu
-    """
-
+    '''
     def __init__(self, step_size=0.01):
         super().__init__()
         self.step_size = step_size
@@ -32,9 +35,7 @@ class QuantizeRelu(nn.Module):
     def forward(self, x):
         mask = torch.ge(x, 0).bool()  # mask for positive values
         quantize = torch.ones_like(x) * self.step_size
-        out = torch.mul(
-            torch.floor(torch.div(x, quantize)), self.step_size
-        )  # quantize by step_size
+        out = torch.mul(torch.floor(torch.div(x, quantize)), self.step_size)  # quantize by step_size
         out = torch.mul(out, mask)  # zero-out negative values
         out = torch.abs(out)  # remove sign
         return out
@@ -48,16 +49,16 @@ class BottleneckBlockQuantize(CNNBlockBase):
     """
 
     def __init__(
-        self,
-        in_channels,
-        out_channels,
-        *,
-        bottleneck_channels,
-        stride=1,
-        num_groups=1,
-        norm="BN",
-        stride_in_1x1=False,
-        dilation=1,
+            self,
+            in_channels,
+            out_channels,
+            *,
+            bottleneck_channels,
+            stride=1,
+            num_groups=1,
+            norm="BN",
+            stride_in_1x1=False,
+            dilation=1,
     ):
         """
         Args:
@@ -122,8 +123,9 @@ class BottleneckBlockQuantize(CNNBlockBase):
             if layer is not None:  # shortcut can be None
                 weight_init.c2_msra_fill(layer)
 
+ 
     def forward(self, x):
-        QReLu = QuantizeRelu()  # steprelu
+        QReLu = QuantizeRelu() # steprelu
         out = self.conv1(x)
         out = QReLu(out)
 
@@ -167,12 +169,14 @@ class BasicStemQuantize(CNNBlockBase):
         weight_init.c2_msra_fill(self.conv1)
 
     def forward(self, x):
-        QReLu = QuantizeRelu()  # steprelu
+        QReLu = QuantizeRelu() # steprelu
         x = self.conv1(x)
         x = QReLu(x)
         x = F.max_pool2d(x, kernel_size=3, stride=2, padding=1)
         return x
-
+    
+    
+    
 
 class BasicBlockQuantize(CNNBlockBase):
     """
@@ -228,7 +232,7 @@ class BasicBlockQuantize(CNNBlockBase):
                 weight_init.c2_msra_fill(layer)
 
     def forward(self, x):
-        QReLu = QuantizeRelu()  # steprelu
+        QReLu = QuantizeRelu() # steprelu
         out = self.conv1(x)
         out = QReLu(out)
         out = self.conv2(out)
@@ -242,7 +246,8 @@ class BasicBlockQuantize(CNNBlockBase):
         out = QReLu(out)
         return out
 
-
+    
+    
 class DeformBottleneckBlockQuantize(CNNBlockBase):
     """
     Similar to :class:`BottleneckBlock`, but with :paper:`deformable conv <deformconv>`
@@ -334,7 +339,7 @@ class DeformBottleneckBlockQuantize(CNNBlockBase):
         nn.init.constant_(self.conv2_offset.bias, 0)
 
     def forward(self, x):
-        QReLu = QuantizeRelu()  # steprelu
+        QReLu = QuantizeRelu() # steprelu
         out = self.conv1(x)
         out = QReLu(out)
 
@@ -359,8 +364,8 @@ class DeformBottleneckBlockQuantize(CNNBlockBase):
         out += shortcut
         out = QReLu(out)
         return out
-
-
+    
+    
 @BACKBONE_REGISTRY.register()
 def build_resnet_backbone_quantize(cfg, input_shape):
     """
@@ -370,7 +375,7 @@ def build_resnet_backbone_quantize(cfg, input_shape):
     """
     # need registration of new blocks/stems?
     norm = cfg.MODEL.RESNETS.NORM
-
+    
     # replace ReLu in stem with StepReLu
     stem = BasicStemQuantize(
         in_channels=input_shape.channels,
@@ -404,24 +409,18 @@ def build_resnet_backbone_quantize(cfg, input_shape):
     }[depth]
 
     if depth in [18, 34]:
-        assert (
-            out_channels == 64
-        ), "Must set MODEL.RESNETS.RES2_OUT_CHANNELS = 64 for R18/R34"
+        assert out_channels == 64, "Must set MODEL.RESNETS.RES2_OUT_CHANNELS = 64 for R18/R34"
         assert not any(
             deform_on_per_stage
         ), "MODEL.RESNETS.DEFORM_ON_PER_STAGE unsupported for R18/R34"
-        assert (
-            res5_dilation == 1
-        ), "Must set MODEL.RESNETS.RES5_DILATION = 1 for R18/R34"
+        assert res5_dilation == 1, "Must set MODEL.RESNETS.RES5_DILATION = 1 for R18/R34"
         assert num_groups == 1, "Must set MODEL.RESNETS.NUM_GROUPS = 1 for R18/R34"
 
     stages = []
 
     # Avoid creating variables without gradients
     # It consumes extra memory and may cause allreduce to fail
-    out_stage_idx = [
-        {"res2": 2, "res3": 3, "res4": 4, "res5": 5}[f] for f in out_features
-    ]
+    out_stage_idx = [{"res2": 2, "res3": 3, "res4": 4, "res5": 5}[f] for f in out_features]
     max_stage_idx = max(out_stage_idx)
     for idx, stage_idx in enumerate(range(2, max_stage_idx + 1)):
         dilation = res5_dilation if stage_idx == 5 else 1
@@ -478,3 +477,4 @@ def build_resnet_fpn_backbone_quantize(cfg, input_shape: ShapeSpec):
         fuse_type=cfg.MODEL.FPN.FUSE_TYPE,
     )
     return backbone
+

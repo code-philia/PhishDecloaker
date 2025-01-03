@@ -7,15 +7,13 @@ from collections import OrderedDict
 import mmcv
 import numpy as np
 from mmcv.utils import print_log
-from mmdet.core import eval_recalls
 from pycocotools.coco import COCO
 from pycocotools.cocoeval import COCOeval
-
-from .builder import DATASETS
-from .custom import CustomDataset
-
 # from terminaltables import AsciiTable
 
+from mmdet.core import eval_recalls
+from .builder import DATASETS
+from .custom import CustomDataset
 
 """
 try:
@@ -32,6 +30,7 @@ except AssertionError:
 
 @DATASETS.register_module()
 class CocoDataset(CustomDataset):
+
     CLASSES = (
         "person",
         "bicycle",

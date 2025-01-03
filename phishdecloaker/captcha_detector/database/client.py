@@ -1,14 +1,17 @@
 from __future__ import annotations
-
-import json
 import os
 import uuid
+import json
 from collections import defaultdict
-from typing import Sequence, Union
+from typing import (
+    Sequence,
+    Union,
+)
 
 import numpy as np
 import numpy.typing as npt
-from qdrant_client import QdrantClient, models
+from qdrant_client import models
+from qdrant_client import QdrantClient
 from qdrant_client.conversions import common_types as types
 
 
@@ -166,6 +169,5 @@ class Client:
             type: str = candidate.payload["type"]
             if score >= self.thresholds[type]:
                 return type
-
 
 client = Client()

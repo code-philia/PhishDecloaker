@@ -1,8 +1,9 @@
 import traceback
 
+from flask import Flask, jsonify
+
 from api_db import db
 from api_main import main
-from flask import Flask, jsonify
 
 
 def handle_exception(e: Exception):

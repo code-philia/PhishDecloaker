@@ -1,7 +1,6 @@
-from detectron2.config.config import CfgNode
+from detectron2.config.config import CfgNode 
 
 global_cfg = CfgNode()
-
 
 def get_cfg() -> CfgNode:
     """

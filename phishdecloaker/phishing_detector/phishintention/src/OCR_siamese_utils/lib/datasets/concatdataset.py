@@ -1,5 +1,4 @@
 from __future__ import absolute_import
-
 import bisect
 import warnings
 
@@ -7,7 +6,6 @@ import torch
 from torch import randperm
 from torch._utils import _accumulate
 from torch.utils.data import Dataset
-
 
 class ConcatDataset(Dataset):
     """
@@ -30,7 +28,7 @@ class ConcatDataset(Dataset):
 
     def __init__(self, datasets):
         super(ConcatDataset, self).__init__()
-        assert len(datasets) > 0, "datasets should not be an empty iterable"
+        assert len(datasets) > 0, 'datasets should not be an empty iterable'
         self.datasets = list(datasets)
         self.cumulative_sizes = self.cumsum(self.datasets)
         self.max_len = max([_dataset.max_len for _dataset in self.datasets])
@@ -50,9 +48,6 @@ class ConcatDataset(Dataset):
 
     @property
     def cummulative_sizes(self):
-        warnings.warn(
-            "cummulative_sizes attribute is renamed to " "cumulative_sizes",
-            DeprecationWarning,
-            stacklevel=2,
-        )
+        warnings.warn("cummulative_sizes attribute is renamed to "
+                      "cumulative_sizes", DeprecationWarning, stacklevel=2)
         return self.cumulative_sizes

@@ -46,8 +46,8 @@ class Uninterrupt:
         self.orig_handlers = [signal.getsignal(sig) for sig in self.sigs]
 
         def handler(signum, frame):
-            del signum  # unused
-            del frame  # unused
+            del signum    # unused
+            del frame    # unused
             self.release()
             self.interrupted = True
             if self.verbose:
@@ -101,16 +101,15 @@ class Chrono:
         timings = self.timings[what]
         if dropfirst and len(timings) > 1:
             timings = timings[1:]
-        return sum(timings) / len(timings)
+        return sum(timings)/len(timings)
 
     def __str__(self, fmt="{:{w}.5f}", dropfirst=False):
         avgtimes = {k: self.avgtime(k, dropfirst) for k in self.timings}
         l = max(map(len, avgtimes))
         w = max(len(fmt.format(v, w=0)) for v in avgtimes.values())
         avg_by_time = sorted(avgtimes.items(), key=lambda t: t[1], reverse=True)
-        return "\n".join(
-            f"{name:{l}s}: " + fmt.format(t, w=w) + "s" for name, t in avg_by_time
-        )
+        return "\n".join(f"{name:{l}s}: " + fmt.format(t, w=w) + "s"
+                                         for name, t in avg_by_time)
 
 
 def create_dat(basename, dtype, shape, fillvalue=None, **meta):

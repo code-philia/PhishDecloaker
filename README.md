@@ -19,3 +19,4 @@ Feel free to open a GitHub issue if you encounter a bug or want to suggest a fea
 Special thanks:
 - [Siqi Li](https://github.com/siqirua)
 - [Zedong Peng](https://github.com/zedong-peng)
+- [Danyu Luo](https://github.com/lfe921)

@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.utils.checkpoint as cp
 from mmcv.cnn import build_conv_layer, build_norm_layer, kaiming_init
+from torch.nn.modules.utils import _pair
+
 from mmdet.models.backbones.resnet import Bottleneck, ResNet
 from mmdet.models.builder import BACKBONES
-from torch.nn.modules.utils import _pair
 
 
 class TridentConv(nn.Module):
@@ -25,16 +26,14 @@ class TridentConv(nn.Module):
             Default: False.
     """
 
-    def __init__(
-        self,
-        in_channels,
-        out_channels,
-        kernel_size,
-        stride=1,
-        trident_dilations=(1, 2, 3),
-        test_branch_idx=1,
-        bias=False,
-    ):
+    def __init__(self,
+                 in_channels,
+                 out_channels,
+                 kernel_size,
+                 stride=1,
+                 trident_dilations=(1, 2, 3),
+                 test_branch_idx=1,
+                 bias=False):
         super(TridentConv, self).__init__()
         self.num_branch = len(trident_dilations)
         self.with_bias = bias
@@ -48,8 +47,7 @@ class TridentConv(nn.Module):
         self.bias = bias
 
         self.weight = nn.Parameter(
-            torch.Tensor(out_channels, in_channels, *self.kernel_size)
-        )
+            torch.Tensor(out_channels, in_channels, *self.kernel_size))
         if bias:
             self.bias = nn.Parameter(torch.Tensor(out_channels))
         else:
@@ -57,39 +55,33 @@ class TridentConv(nn.Module):
         self.init_weights()
 
     def init_weights(self):
-        kaiming_init(self, distribution="uniform", mode="fan_in")
+        kaiming_init(self, distribution='uniform', mode='fan_in')
 
     def extra_repr(self):
-        tmpstr = f"in_channels={self.in_channels}"
-        tmpstr += f", out_channels={self.out_channels}"
-        tmpstr += f", kernel_size={self.kernel_size}"
-        tmpstr += f", num_branch={self.num_branch}"
-        tmpstr += f", test_branch_idx={self.test_branch_idx}"
-        tmpstr += f", stride={self.stride}"
-        tmpstr += f", paddings={self.paddings}"
-        tmpstr += f", dilations={self.dilations}"
-        tmpstr += f", bias={self.bias}"
+        tmpstr = f'in_channels={self.in_channels}'
+        tmpstr += f', out_channels={self.out_channels}'
+        tmpstr += f', kernel_size={self.kernel_size}'
+        tmpstr += f', num_branch={self.num_branch}'
+        tmpstr += f', test_branch_idx={self.test_branch_idx}'
+        tmpstr += f', stride={self.stride}'
+        tmpstr += f', paddings={self.paddings}'
+        tmpstr += f', dilations={self.dilations}'
+        tmpstr += f', bias={self.bias}'
         return tmpstr
 
     def forward(self, inputs):
         if self.training or self.test_branch_idx == -1:
             outputs = [
-                F.conv2d(input, self.weight, self.bias, self.stride, padding, dilation)
-                for input, dilation, padding in zip(
-                    inputs, self.dilations, self.paddings
-                )
+                F.conv2d(input, self.weight, self.bias, self.stride, padding,
+                         dilation) for input, dilation, padding in zip(
+                             inputs, self.dilations, self.paddings)
             ]
         else:
             assert len(inputs) == 1
             outputs = [
-                F.conv2d(
-                    inputs[0],
-                    self.weight,
-                    self.bias,
-                    self.stride,
-                    self.paddings[self.test_branch_idx],
-                    self.dilations[self.test_branch_idx],
-                )
+                F.conv2d(inputs[0], self.weight, self.bias, self.stride,
+                         self.paddings[self.test_branch_idx],
+                         self.dilations[self.test_branch_idx])
             ]
 
         return outputs
@@ -110,7 +102,9 @@ class TridentBottleneck(Bottleneck):
             `True` only in the last Block.
     """
 
-    def __init__(self, trident_dilations, test_branch_idx, concat_output, **kwargs):
+    def __init__(self, trident_dilations, test_branch_idx, concat_output,
+                 **kwargs):
+
         super(TridentBottleneck, self).__init__(**kwargs)
         self.trident_dilations = trident_dilations
         self.num_branch = len(trident_dilations)
@@ -123,17 +117,17 @@ class TridentBottleneck(Bottleneck):
             stride=self.conv2_stride,
             bias=False,
             trident_dilations=self.trident_dilations,
-            test_branch_idx=test_branch_idx,
-        )
+            test_branch_idx=test_branch_idx)
 
     def forward(self, x):
+
         def _inner_forward(x):
             num_branch = (
-                self.num_branch if self.training or self.test_branch_idx == -1 else 1
-            )
+                self.num_branch
+                if self.training or self.test_branch_idx == -1 else 1)
             identity = x
             if not isinstance(x, list):
-                x = (x,) * num_branch
+                x = (x, ) * num_branch
                 identity = x
                 if self.downsample is not None:
                     identity = [self.downsample(b) for b in x]
@@ -144,23 +138,28 @@ class TridentBottleneck(Bottleneck):
 
             if self.with_plugins:
                 for k in range(len(out)):
-                    out[k] = self.forward_plugin(out[k], self.after_conv1_plugin_names)
+                    out[k] = self.forward_plugin(out[k],
+                                                 self.after_conv1_plugin_names)
 
             out = self.conv2(out)
             out = [self.norm2(b) for b in out]
             out = [self.relu(b) for b in out]
             if self.with_plugins:
                 for k in range(len(out)):
-                    out[k] = self.forward_plugin(out[k], self.after_conv2_plugin_names)
+                    out[k] = self.forward_plugin(out[k],
+                                                 self.after_conv2_plugin_names)
 
             out = [self.conv3(b) for b in out]
             out = [self.norm3(b) for b in out]
 
             if self.with_plugins:
                 for k in range(len(out)):
-                    out[k] = self.forward_plugin(out[k], self.after_conv3_plugin_names)
+                    out[k] = self.forward_plugin(out[k],
+                                                 self.after_conv3_plugin_names)
 
-            out = [out_b + identity_b for out_b, identity_b in zip(out, identity)]
+            out = [
+                out_b + identity_b for out_b, identity_b in zip(out, identity)
+            ]
             return out
 
         if self.with_cp and x.requires_grad:
@@ -174,40 +173,35 @@ class TridentBottleneck(Bottleneck):
         return out
 
 
-def make_trident_res_layer(
-    block,
-    inplanes,
-    planes,
-    num_blocks,
-    stride=1,
-    trident_dilations=(1, 2, 3),
-    style="pytorch",
-    with_cp=False,
-    conv_cfg=None,
-    norm_cfg=dict(type="BN"),
-    dcn=None,
-    plugins=None,
-    test_branch_idx=-1,
-):
+def make_trident_res_layer(block,
+                           inplanes,
+                           planes,
+                           num_blocks,
+                           stride=1,
+                           trident_dilations=(1, 2, 3),
+                           style='pytorch',
+                           with_cp=False,
+                           conv_cfg=None,
+                           norm_cfg=dict(type='BN'),
+                           dcn=None,
+                           plugins=None,
+                           test_branch_idx=-1):
     """Build Trident Res Layers."""
 
     downsample = None
     if stride != 1 or inplanes != planes * block.expansion:
         downsample = []
         conv_stride = stride
-        downsample.extend(
-            [
-                build_conv_layer(
-                    conv_cfg,
-                    inplanes,
-                    planes * block.expansion,
-                    kernel_size=1,
-                    stride=conv_stride,
-                    bias=False,
-                ),
-                build_norm_layer(norm_cfg, planes * block.expansion)[1],
-            ]
-        )
+        downsample.extend([
+            build_conv_layer(
+                conv_cfg,
+                inplanes,
+                planes * block.expansion,
+                kernel_size=1,
+                stride=conv_stride,
+                bias=False),
+            build_norm_layer(norm_cfg, planes * block.expansion)[1]
+        ])
         downsample = nn.Sequential(*downsample)
 
     layers = []
@@ -226,9 +220,7 @@ def make_trident_res_layer(
                 dcn=dcn,
                 plugins=plugins,
                 test_branch_idx=test_branch_idx,
-                concat_output=True if i == num_blocks - 1 else False,
-            )
-        )
+                concat_output=True if i == num_blocks - 1 else False))
         inplanes = planes * block.expansion
     return nn.Sequential(*layers)
 
@@ -255,7 +247,9 @@ class TridentResNet(ResNet):
             len(trident_dilations) should be equal to num_branch.
     """  # noqa
 
-    def __init__(self, depth, num_branch, test_branch_idx, trident_dilations, **kwargs):
+    def __init__(self, depth, num_branch, test_branch_idx, trident_dilations,
+                 **kwargs):
+
         assert num_branch == len(trident_dilations)
         assert depth in (50, 101, 152)
         super(TridentResNet, self).__init__(depth, **kwargs)
@@ -268,15 +262,15 @@ class TridentResNet(ResNet):
         dilation = trident_dilations
         dcn = self.dcn if self.stage_with_dcn[last_stage_idx] else None
         if self.plugins is not None:
-            stage_plugins = self.make_stage_plugins(self.plugins, last_stage_idx)
+            stage_plugins = self.make_stage_plugins(self.plugins,
+                                                    last_stage_idx)
         else:
             stage_plugins = None
         planes = self.base_channels * 2**last_stage_idx
         res_layer = make_trident_res_layer(
             TridentBottleneck,
-            inplanes=(
-                self.block.expansion * self.base_channels * 2 ** (last_stage_idx - 1)
-            ),
+            inplanes=(self.block.expansion * self.base_channels *
+                      2**(last_stage_idx - 1)),
             planes=planes,
             num_blocks=self.stage_blocks[last_stage_idx],
             stride=stride,
@@ -287,10 +281,9 @@ class TridentResNet(ResNet):
             norm_cfg=self.norm_cfg,
             dcn=dcn,
             plugins=stage_plugins,
-            test_branch_idx=self.test_branch_idx,
-        )
+            test_branch_idx=self.test_branch_idx)
 
-        layer_name = f"layer{last_stage_idx + 1}"
+        layer_name = f'layer{last_stage_idx + 1}'
 
         self.__setattr__(layer_name, res_layer)
         self.res_layers.pop(last_stage_idx)

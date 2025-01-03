@@ -1,11 +1,11 @@
-import logging
 import os
+import logging
 
 import requests
 
 # Configurations
 CAPTCHA_DETECTOR_URL = os.getenv("CAPTCHA_DETECTOR_URL", None)
-
+    
 
 def check_captcha(screenshot_b64: str):
     """
@@ -24,9 +24,9 @@ def check_captcha(screenshot_b64: str):
 
     try:
         response = requests.post(
-            url=f"{CAPTCHA_DETECTOR_URL}/predict",
+            url=f"{CAPTCHA_DETECTOR_URL}/predict", 
             json={"screenshot": screenshot_b64},
-            timeout=30,
+            timeout=30
         )
     except Exception as e:
         logging.error(f"\t[>] captcha detector error: {e}")
@@ -42,8 +42,8 @@ def check_captcha(screenshot_b64: str):
         return detected, pred_types, det_time, rec_time
 
     logging.info(f"\t[>] {res_json}")
-
-    detected = bool(res_json.get("detected", False))
+    
+    detected = bool(res_json.get('detected', False))
     pred = res_json.get("results", None)
     pred_types = pred[-1]["type"] if pred else None
     det_time = float(res_json.get("det_time", 0))

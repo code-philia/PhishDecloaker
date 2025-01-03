@@ -1,14 +1,15 @@
-import base64
-import io
 import os
+import io
 import time
+import base64
 
-from database.client import client
-from detector.model import detector
-from flask import Blueprint, Response, jsonify, request
-from ocr.model import text_encoder
 from PIL import Image, ImageDraw, ImageFont
+from flask import Blueprint, request, jsonify, Response
+
+from ocr.model import text_encoder
+from database.client import client
 from siamese.model import embedder
+from detector.model import detector
 
 
 class Config:
@@ -47,13 +48,10 @@ def predict():
             results.append({"bbox": bbox, "type": captcha_type})
 
     detected = True if results else False
-    rec_time = (time.process_time() - start_time) - det_time
-    return (
-        jsonify(
-            detected=detected,
-            results=results,
-            det_time=det_time,
-            rec_time=rec_time,
-        ),
-        200,
-    )
+    rec_time = (time.process_time()  - start_time) - det_time
+    return jsonify(
+        detected=detected,
+        results=results,
+        det_time=det_time,
+        rec_time=rec_time,
+    ), 200

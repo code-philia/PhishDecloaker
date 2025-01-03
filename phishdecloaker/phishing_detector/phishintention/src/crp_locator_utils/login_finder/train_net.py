@@ -32,11 +32,10 @@ from detectron2.engine import (
 )
 from detectron2.evaluation import COCOEvaluator, verify_results
 from detectron2.modeling import GeneralizedRCNNWithTTA
-from phishintention.src.crp_locator_utils.login_finder.detectron2_1.datasets import (
-    LoginMapper,
-)
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "0"
+from phishintention.src.crp_locator_utils.login_finder.detectron2_1.datasets import LoginMapper
+import os
+os.environ["CUDA_VISIBLE_DEVICES"]="0"
 
 
 # Implement evaluation here
@@ -71,7 +70,9 @@ class Trainer(DefaultTrainer):
     # Insert custom data loading logic
     @classmethod
     def build_train_loader(cls, cfg):
-        return build_detection_train_loader(cfg, mapper=LoginMapper(cfg, is_train=True))
+        return build_detection_train_loader(
+            cfg, mapper=LoginMapper(cfg, is_train=True)
+        )
 
 
 def setup(args):

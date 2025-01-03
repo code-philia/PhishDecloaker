@@ -1,14 +1,13 @@
 from __future__ import annotations
-
 import os
 
 import easyocr
-import numpy as np
 import torch
 import torch.nn as nn
-from easyocr.utils import get_image_list, reformat_input
+import numpy as np
 from PIL import Image
 from torch.utils.data import DataLoader
+from easyocr.utils import reformat_input, get_image_list
 
 from .utils import AlignCollate, ListDataset
 
@@ -197,9 +196,7 @@ class TextEncoder(easyocr.Reader):
                 visual_feature = visual_feature.squeeze(3)
 
                 """ Sequence modeling stage """
-                contextual_feature = self.recognizer.module.SequenceModeling(
-                    visual_feature
-                )
+                contextual_feature = self.recognizer.module.SequenceModeling(visual_feature)
 
                 visual_feature = visual_feature.permute(0, 2, 1)
                 visual_features.append(visual_feature)
@@ -207,8 +204,7 @@ class TextEncoder(easyocr.Reader):
                 contextual_features.append(contextual_feature)
 
         return visual_features, contextual_features
-
-
+    
 text_encoder = TextEncoder(
     ["ch_sim", "en"], gpu=True, model_storage_directory=Config.CURRENT_DIR
 )
