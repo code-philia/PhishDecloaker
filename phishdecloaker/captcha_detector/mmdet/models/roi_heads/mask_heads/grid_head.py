@@ -342,7 +342,7 @@ class GridHead(nn.Module):
         abs_ys = (ys.float() + 0.5) / h * heights + y1
 
         # get the grid points indices that fall on the bbox boundaries
-        x1_inds = [i for i in range(self.grid_size)]
+        x1_inds = list(range(self.grid_size))
         y1_inds = [i * self.grid_size for i in range(self.grid_size)]
         x2_inds = [self.grid_points - self.grid_size + i for i in range(self.grid_size)]
         y2_inds = [(i + 1) * self.grid_size - 1 for i in range(self.grid_size)]

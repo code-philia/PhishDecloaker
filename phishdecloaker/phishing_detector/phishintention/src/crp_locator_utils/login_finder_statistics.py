@@ -32,7 +32,7 @@ for base_url in set(list(gt["folder"])):
         total += 1
         continue
 
-    reported_urls = [x for x in urldict[base_url]]
+    reported_urls = list(urldict[base_url])
     found = False
 
     for url in reported_urls:

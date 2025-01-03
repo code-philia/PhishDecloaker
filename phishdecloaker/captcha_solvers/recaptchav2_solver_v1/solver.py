@@ -167,7 +167,7 @@ class Solver:
         tiles: list[Locator] = await _get_tiles(frame)
         img_full: np.ndarray = await self.img_queue.get()
         imgs = utils.divide_image(img_full, 3, 3)
-        indices = [i for i in range(9)]
+        indices = list(range(9))
         detections = [detector.detect_on_image(img, threshold=0.2) for img in imgs]
         clicks = set(
             [
@@ -192,7 +192,7 @@ class Solver:
         """Select all images with X, click verify once there are none left"""
         img_full: np.ndarray = await self.img_queue.get()
         imgs = utils.divide_image(img_full, 3, 3)
-        indices = [i for i in range(9)]
+        indices = list(range(9))
 
         while True:
             tiles = await frame.locator(".rc-imageselect-tile").all()

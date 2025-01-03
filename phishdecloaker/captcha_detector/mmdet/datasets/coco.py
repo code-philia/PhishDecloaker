@@ -601,7 +601,7 @@ class CocoDataset(CustomDataset):
                         *[results_flatten[i::num_columns] for i in range(num_columns)]
                     )
                     table_data = [headers]
-                    table_data += [result for result in results_2d]
+                    table_data += list(results_2d)
                     table = AsciiTable(table_data)
                     print_log("\n" + table.table, logger=logger)
 
